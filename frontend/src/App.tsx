@@ -1,17 +1,24 @@
-import "./App.css";
-import MainPage from "../src/pages/MainPage";
-import Navbar from "./components/Navbar";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+// src/App.tsx
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import MainPage from './pages/MainPage';
+import ResumeFeedbackPage from './pages/ResumeFeedbackPage';
 
-function App() {
+const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<MainPage />} />
-      </Routes>
+      <div className="flex flex-col min-h-screen">
+        <Navbar />
+        <div className="flex-grow">
+          <Routes>
+            <Route path="/" element={<MainPage />} />
+            <Route path="/resume-feedback" element={<ResumeFeedbackPage />} />
+          </Routes>
+        </div>
+      </div>
     </BrowserRouter>
   );
-}
+};
 
 export default App;
