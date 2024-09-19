@@ -36,7 +36,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
 
       # 4. Yarn 캐시 설정 (frontend/yarn.lock 기반)
       - name: Cache Yarn dependencies
