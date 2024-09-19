@@ -21,44 +21,52 @@ jobs:
     if: startsWith(github.head_ref, 'fe/') || startsWith(github.event.pull_request.head.ref, 'fe/')
 
     steps:
+      # 1. 리포지토리 체크아웃
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0  # 전체 히스토리를 가져오도록 설정 (필요시)
 
+      # 2. frontend 디렉토리 내용 확인 (디버깅용)
       - name: List frontend directory (Debug)
         run: ls -la frontend/
-        # 이 단계는 frontend/ 디렉토리에 yarn.lock이 있는지 확인하는 데 도움이 됩니다.
 
+      # 3. Node.js 설정 (Yarn 캐싱 비활성화)
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
+          cache: false  # 기본 Yarn 캐싱 비활성화
 
+      # 4. Yarn 캐시 설정 (frontend/yarn.lock 기반)
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-${{ hashFiles('frontend/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      # 5. 의존성 설치
       - name: Install dependencies
         run: yarn install --frozen-lockfile
         working-directory: frontend
 
+      # 6. ESLint 실행
       - name: Run ESLint
         run: yarn lint
         working-directory: frontend
 
+      # 7. 타입 체크
       - name: Type Check
         run: yarn type-check
         working-directory: frontend
 
+      # 8. 테스트 실행
       - name: Run Tests
         run: yarn test --coverage
         working-directory: frontend
 
+      # 9. 빌드 실행
       - name: Build
-        run: yarn build
-        working-directory: frontend
 
-      - name: Upload Artifacts
-        if: success()
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-artifacts
-          path: frontend/build/
