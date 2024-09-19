@@ -62,9 +62,15 @@ jobs:
         run: yarn lint
         working-directory: frontend
 
-      # 7. Prettier 체크
-      - name: Run Prettier
-        run: yarn prettier --check "src/**/*.{js,jsx,ts,tsx,css,scss,md}"
+      # 7. Prettier 자동 수정 및 커밋
+      - name: Run Prettier and fix issues
+        run: |
+          yarn prettier --write "src/**/*.{js,jsx,ts,tsx,css,scss,md}"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Fix Prettier formatting issues" || echo "No changes to commit"
+          git push
         working-directory: frontend
 
       # 8. 타입 체크
