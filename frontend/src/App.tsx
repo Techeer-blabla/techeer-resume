@@ -1,11 +1,11 @@
 // src/App.tsx
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import MainPage from './pages/MainPage';
-import ResumeFeedbackPage from './pages/ResumeFeedbackPage';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import MainPage from "./pages/MainPage";
+import ResumeFeedbackPage from "./pages/ResumeFeedbackPage";
+import Upload from "./pages/Upload";
 
-const App: React.FC = () => {
+export default function App() {
   return (
     <BrowserRouter>
       <div className="flex flex-col min-h-screen">
@@ -14,11 +14,10 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<MainPage />} />
             <Route path="/resume-feedback" element={<ResumeFeedbackPage />} />
+            <Route path="/upload" element={<Upload />} />
           </Routes>
         </div>
       </div>
     </BrowserRouter>
   );
-};
-
-export default App;
+}
