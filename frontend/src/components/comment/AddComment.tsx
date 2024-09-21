@@ -1,4 +1,3 @@
-// src/components/AddComment.tsx
 import React, { useState, ChangeEvent, FormEvent } from "react";
 
 interface AddCommentProps {

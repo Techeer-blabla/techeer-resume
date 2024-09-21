@@ -1,7 +1,6 @@
-// src/components/CommentList.tsx
 import React from "react";
-import Comment from "./Comment";
-import { CommentType } from "../mockApi";
+import Comment from "./Comment.tsx";
+import { CommentType } from "../../mockApi.ts";
 
 interface CommentListProps {
   comments: CommentType[];
