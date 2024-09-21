@@ -1,7 +1,5 @@
-// src/components/CommentList.tsx
-import React from "react";
-import Comment from "./Comment";
-import { CommentType } from "../mockApi";
+import Comment from "./Comment.tsx";
+import { CommentType } from "../../mockApi.ts";
 
 interface CommentListProps {
   comments: CommentType[];
@@ -9,11 +7,7 @@ interface CommentListProps {
   onEdit: (id: number, newText: string) => void;
 }
 
-const CommentList: React.FC<CommentListProps> = ({
-  comments,
-  onDelete,
-  onEdit,
-}) => {
+function CommentList({ comments, onDelete, onEdit }: CommentListProps) {
   return (
     <div className="w-full max-w-[450px] mt-4">
       {comments.map((comment) => (
@@ -29,6 +23,6 @@ const CommentList: React.FC<CommentListProps> = ({
       ))}
     </div>
   );
-};
+}
 
 export default CommentList;

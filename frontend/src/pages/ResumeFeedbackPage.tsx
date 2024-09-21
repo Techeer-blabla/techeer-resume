@@ -1,7 +1,6 @@
-// src/pages/ResumeFeedbackPage.tsx
-import React, { useState, useEffect } from "react";
-import AddComment from "../components/AddComment";
-import CommentList from "../components/CommentList";
+import { useState, useEffect } from "react";
+import AddComment from "../components/comment/AddComment.tsx";
+import CommentList from "../components/comment/CommentList.tsx";
 import {
   CommentType,
   getComments,
@@ -9,8 +8,9 @@ import {
   deleteComment as apiDeleteComment,
   editComment as apiEditComment,
 } from "../mockApi";
+import ResumeOverview from "../components/resumeoverview/ResumeOverview.tsx";
 
-const ResumeFeedbackPage: React.FC = () => {
+function ResumeFeedbackPage() {
   const [comments, setComments] = useState<CommentType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
@@ -30,7 +30,7 @@ const ResumeFeedbackPage: React.FC = () => {
       });
   }, []);
 
-  const addNewComment = (newCommentText: string) => {
+  function addNewComment(newCommentText: string) {
     setLoading(true);
     addComment(newCommentText)
       .then((newComment) => {
@@ -42,9 +42,9 @@ const ResumeFeedbackPage: React.FC = () => {
         setLoading(false);
         console.error(err);
       });
-  };
+  }
 
-  const deleteCommentHandler = (id: number) => {
+  function deleteCommentHandler(id: number) {
     setLoading(true);
     apiDeleteComment(id)
       .then(() => {
@@ -56,9 +56,9 @@ const ResumeFeedbackPage: React.FC = () => {
         setLoading(false);
         console.error(err);
       });
-  };
+  }
 
-  const editCommentHandler = (id: number, newText: string) => {
+  function editCommentHandler(id: number, newText: string) {
     setLoading(true);
     apiEditComment(id, newText)
       .then((updatedComment) => {
@@ -74,7 +74,7 @@ const ResumeFeedbackPage: React.FC = () => {
         setLoading(false);
         console.error(err);
       });
-  };
+  }
 
   // 에러 메시지 자동 사라지게 설정
   useEffect(() => {
@@ -103,6 +103,9 @@ const ResumeFeedbackPage: React.FC = () => {
           </button>
         </div>
       )}
+
+      {/* Resume Overview Component */}
+      <ResumeOverview />
 
       {/* AddComment 컴포넌트 */}
       <AddComment onAdd={addNewComment} disabled={loading} />
@@ -141,6 +144,6 @@ const ResumeFeedbackPage: React.FC = () => {
       )}
     </div>
   );
-};
+}
 
 export default ResumeFeedbackPage;
