@@ -6,7 +6,11 @@ import logo from "../assets/logo.svg";
 
 function Navbar() {
   const navigate = useNavigate();
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   const [searchText, setSearchText] = useState<string>("");
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   const [userName, setUserName] = useState<string>("김테커"); //임시
 
   const handlesearchBar = (e: React.ChangeEvent<HTMLInputElement>) => {
