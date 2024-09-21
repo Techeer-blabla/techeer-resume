@@ -25,11 +25,11 @@ function Navbar() {
   };
 
   /*
-    마이 페이지로 이동 ('/mypage/:id') - p2
-    const moveToMyPage = () => {
-    navigate(`/mypage/${user.id}`);
-  };
-  */
+      마이 페이지로 이동 ('/mypage/:id') - p2
+      const moveToMyPage = () => {
+      navigate(`/mypage/${user.id}`);
+    };
+    */
 
   return (
     <div className="flex flex-row justify-center items-center w-full h-12 bg-white">
