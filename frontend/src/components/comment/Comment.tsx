@@ -7,15 +7,14 @@ interface CommentProps extends CommentType {
   onDelete: (id: number) => void;
   onEdit: (id: number, newText: string) => void;
 }
-
-const Comment: React.FC<CommentProps> = ({
+function Comment({
   id,
   text,
   timestamp,
   modified = false,
   onDelete,
   onEdit,
-}) => {
+}: CommentProps) {
   const timeAgo = formatDistanceToNow(timestamp, {
     addSuffix: true,
     locale: ko,
@@ -101,6 +100,6 @@ const Comment: React.FC<CommentProps> = ({
       </div>
     </div>
   );
-};
+}
 
 export default Comment;

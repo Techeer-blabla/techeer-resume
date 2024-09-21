@@ -5,7 +5,7 @@ interface AddCommentProps {
   disabled?: boolean;
 }
 
-const AddComment: React.FC<AddCommentProps> = ({ onAdd, disabled = false }) => {
+function AddComment({ onAdd, disabled = false }: AddCommentProps) {
   const [comment, setComment] = useState<string>("");
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -51,6 +51,6 @@ const AddComment: React.FC<AddCommentProps> = ({ onAdd, disabled = false }) => {
       </form>
     </div>
   );
-};
+}
 
 export default AddComment;
