@@ -1,6 +1,6 @@
 package com.techeer.backend.domain.resume.controller;
 
-import com.techeer.backend.domain.resume.dto.request.ResumeReq;
+import com.techeer.backend.domain.resume.dto.request.CreateResumeReq;
 import com.techeer.backend.domain.resume.service.ResumeService;
 import com.techeer.backend.domain.user.entity.User;
 import com.techeer.backend.domain.user.service.UserService;
@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @Tag(name = "resume", description = "Resume API")
@@ -30,8 +32,8 @@ public class ResumeController {
     @Operation(summary = "이력서 등록")
     @PostMapping("/resume")
     public ResponseEntity<SuccessResponse> resumeRegistration(
-            @RequestPart @Validated ResumeReq resumeReq,
-            @RequestPart(name = "resume_file") MultipartFile resumeFile){
+            @RequestPart @Validated CreateResumeReq createResumeReq,
+            @RequestPart(name = "resume_file") MultipartFile resumeFile) throws IOException {
 
 
         // 파일 유효성 검사 -> 나중에 vaildtor로 변경해서 유효성 검사할 예정
@@ -49,14 +51,15 @@ public class ResumeController {
         */
 
         // 유저 이름으로 객체 탐색
-        User registrar = userService.findUserByName(resumeReq.getUsername());
+        User registrar = userService.findUserByName(createResumeReq.getUsername());
 
-        // S3에 PDF 저장 후 URL 받음
+        // resume db에 저장
+        try {
+            resumeService.createResume(registrar, createResumeReq, resumeFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        // request으로 entity 생성
-
-
-
-        return null;
+        return ResponseEntity.ok().build();
     }
 }

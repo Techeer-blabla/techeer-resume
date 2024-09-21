@@ -11,7 +11,7 @@ import lombok.Getter;
 import java.util.List;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ResumeReq {
+public class CreateResumeReq {
     // 나중에 로그인 생기면 수정해야 된다.
     @Getter
     @NotBlank
@@ -30,8 +30,8 @@ public class ResumeReq {
     @Getter
     private List<String> techStack;
 
-    public Resume toResume(User user, ResumeReq req, String url) {
-        return Resume.createResume(user, req, url);
+    public Resume toResume(User user, CreateResumeReq req) {
+        return Resume.createResume(user, req);
     }
 
 }
