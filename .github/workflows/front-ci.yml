@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x]  # Node.js 버전을 18.x와 20.x로 업데이트
+        node-version: [20.x]  # Node.js 버전을 18.x와 20.x로 업데이트
 
     # PR의 소스 브랜치가 fe/로 시작하고, 커밋 주체가 GitHub Actions가 아닌 경우에만 실행
     if: >
