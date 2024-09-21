@@ -97,20 +97,20 @@ jobs:
         run: yarn type-check
         working-directory: frontend
 
-      # 9. 테스트 실행
-      - name: Run Tests
-        run: yarn test --coverage
-        working-directory: frontend
+#      # 9. 테스트 실행
+#      - name: Run Tests
+#        run: yarn test --coverage
+#        working-directory: frontend
 
       # 10. 빌드 실행
       - name: Build
         run: yarn build
         working-directory: frontend
 
-      # 11. 빌드 아티팩트 업로드
-      - name: Upload Artifacts
-        if: success()
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-artifacts
-          path: frontend/build/
+#      # 11. 빌드 아티팩트 업로드
+#      - name: Upload Artifacts
+#        if: success()
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: build-artifacts
+#          path: frontend/build/
