@@ -7,7 +7,6 @@ interface CommentProps extends CommentType {
   onDelete: (id: number) => void;
   onEdit: (id: number, newText: string) => void;
 }
-
 function Comment({
   id,
   text,
@@ -50,7 +49,7 @@ function Comment({
   };
 
   return (
-    <div className="w-[450px] h-auto relative mt-4 p-4 bg-white rounded-[14px] shadow-md ">
+    <div className="w-[450px] h-auto relative mt-4 p-4 bg-white rounded-[14px] shadow-md">
       {/* Border with rounded corners */}
       <div className="absolute inset-0 rounded-[14px] border-2 border-lightBlue"></div>
 
