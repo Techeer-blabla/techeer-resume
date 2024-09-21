@@ -7,6 +7,7 @@ interface CommentProps extends CommentType {
   onDelete: (id: number) => void;
   onEdit: (id: number, newText: string) => void;
 }
+
 function Comment({
   id,
   text,
