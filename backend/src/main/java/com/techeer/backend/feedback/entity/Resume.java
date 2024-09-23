@@ -1,10 +1,12 @@
 package com.techeer.backend.feedback.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.util.List;
 
 @Entity
+@Getter
 public class Resume {
 
     @Id
