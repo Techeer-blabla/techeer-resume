@@ -4,11 +4,9 @@ services:
     container_name: mysqldb
     ports:
       - "3306:3306"
-    env_file:
-      - backend-secret.env
-#    environment:
-#      MYSQL_DATABASE: ${MYSQL_DATABASE}
-#      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
 
 
   backend:
@@ -19,8 +17,10 @@ services:
     restart: always
     depends_on:
       - db
-    env_file:
-      - backend-secret.env
+    environment:
+      SPRING_DATASOURCE_URL: ${MYSQL_URL}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "8080:8080"
     volumes:
