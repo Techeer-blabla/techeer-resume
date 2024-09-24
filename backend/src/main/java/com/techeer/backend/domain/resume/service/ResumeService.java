@@ -19,7 +19,6 @@ import java.util.UUID;
 
 @Service
 @Slf4j
-@Transactional(readOnly = true)
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ResumeService {
     private final AmazonS3 amazonS3;
@@ -29,6 +28,7 @@ public class ResumeService {
     private String bucket;
     //todo 이력서 데이터 베이스에 저장
     //todo dto 변경
+    @Transactional
     public void createResume(User user, CreateResumeReq dto, MultipartFile resume_pdf) throws IOException {
 
         Resume resume = dto.toEntity(user, dto);
