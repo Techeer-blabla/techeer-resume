@@ -39,3 +39,6 @@ out/
 
 ### Generated ###
 /src/main/generated/
+
+.env_*
+.DS_Store

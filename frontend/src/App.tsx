@@ -1,9 +1,9 @@
-// src/App.tsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import MainPage from "./pages/MainPage";
 import ResumeFeedbackPage from "./pages/ResumeFeedbackPage";
 import Upload from "./pages/Upload";
+
 
 export default function App() {
   return (
