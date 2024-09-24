@@ -6,9 +6,6 @@ services:
       - "3306:3306"
     env_file:
       - backend-secret.env
-#    environment:
-#      MYSQL_DATABASE: ${MYSQL_DATABASE}
-#      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
 
 
   backend:
@@ -26,3 +23,19 @@ services:
     volumes:
       - .:/app
 #      - ./logs:/var/log/spring-boot
+
+
+  agent:
+    container_name: newrelic-infra
+    build:
+      context: .
+      dockerfile: newrelic-infra.dockerfile
+    cap_add:
+      - SYS_PTRACE
+    network_mode: bridge
+    pid: host
+    privileged: true
+    volumes:
+      - "/:/host:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    restart: unless-stopped
