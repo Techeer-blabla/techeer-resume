@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import noUiSlider from "nouislider";
-import "../styles/nouislider.css";
+import { useState } from "react";
+import Slider from "@mui/material/Slider";
 
 type FileUploadProps = {
   id: string;
@@ -35,67 +34,7 @@ const FileUpload = ({ id }: FileUploadProps) => {
   );
 };
 
-// 슬라이더 컴포넌트
-const Slider = () => {
-  const sliderRef = useRef<HTMLDivElement | null>(null);
-  const [installCount, setInstallCount] = useState<{
-    min: number;
-    max: number;
-  }>({ min: 0, max: 10 });
-
-  const experienceLabels = [
-    "신입",
-    "1년",
-    "2년",
-    "3년",
-    "4년",
-    "5년",
-    "6년",
-    "7년",
-    "8년",
-    "9년",
-    "10년",
-  ];
-
-  useEffect(() => {
-    if (sliderRef.current) {
-      const sliderElement = sliderRef.current;
-
-      noUiSlider.create(sliderElement, {
-        start: [installCount.min, installCount.max],
-        connect: true,
-        step: 1,
-        range: {
-          min: 0,
-          max: 10,
-        },
-      });
-
-      sliderElement.noUiSlider?.on("update", (values: (string | number)[]) => {
-        const minValue = Math.round(Number(values[0]));
-        const maxValue = Math.round(Number(values[1]));
-        setInstallCount({ min: minValue, max: maxValue });
-      });
-
-      return () => {
-        sliderElement.noUiSlider?.destroy();
-      };
-    }
-  }, []);
-
-  return (
-    <div className="w-full p-2 flex flex-col">
-      <div className="flex mb-2 text-gray-700 text-lg justify-center">
-        <span>{experienceLabels[installCount.min]}</span>
-        <span className="mx-2">~</span>
-        <span>{experienceLabels[installCount.max]}</span>
-      </div>
-      <div ref={sliderRef} className="install-slider"></div>
-    </div>
-  );
-};
-
-// 텍스트 배열
+// 포지션, 학력, 회사, 스택 데이터
 const positions = [
   "프론트엔드",
   "백엔드",
@@ -107,87 +46,7 @@ const positions = [
   "앱 (iOS, Android)",
   "데이터",
 ];
-
-const PositionSVG = ({
-  text,
-  isSelected,
-  onClick,
-}: {
-  text: string;
-  isSelected: boolean;
-  onClick: () => void;
-}) => {
-  return (
-    <div
-      className={`flex justify-center cursor-pointer ${isSelected ? "border-2 border-blue-500 rounded-lg" : ""}`}
-      onClick={onClick}
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="121"
-        height="33"
-        viewBox="0 0 121 33"
-        fill="none"
-        className="flex-shrink-0"
-      >
-        <rect width="121" height="32.4206" rx="5" fill="#F3F3F3" />
-        <text
-          x="50%"
-          y="50%"
-          textAnchor="middle"
-          fill="#040404"
-          fontFamily="pretendard"
-          fontSize="16"
-          fontWeight="400"
-          dy=".35em"
-        >
-          {text}
-        </text>
-      </svg>
-    </div>
-  );
-};
 const educations = ["전공자", "비전공자"];
-
-const EducationSVG = ({
-  text,
-  isSelected,
-  onClick,
-}: {
-  text: string;
-  isSelected: boolean;
-  onClick: () => void;
-}) => {
-  return (
-    <div
-      className={`flex justify-center cursor-pointer ${isSelected ? "border-2 border-blue-500 rounded-lg" : ""}`}
-      onClick={onClick}
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="121"
-        height="33"
-        viewBox="0 0 121 33"
-        fill="none"
-        className="flex-shrink-0"
-      >
-        <rect width="121" height="32.4206" rx="5" fill="#F3F3F3" />
-        <text
-          x="50%"
-          y="50%"
-          textAnchor="middle"
-          fill="#040404"
-          fontFamily="pretendard"
-          fontSize="16"
-          fontWeight="400"
-          dy=".35em"
-        >
-          {text}
-        </text>
-      </svg>
-    </div>
-  );
-};
 const companies = [
   "IT대기업",
   "스타트업",
@@ -197,46 +56,6 @@ const companies = [
   "제조업",
   "핀테크",
 ];
-
-const CompanySVG = ({
-  text,
-  isSelected,
-  onClick,
-}: {
-  text: string;
-  isSelected: boolean;
-  onClick: () => void;
-}) => {
-  return (
-    <div
-      className={`flex justify-center cursor-pointer ${isSelected ? "border-2 border-blue-500 rounded-lg" : ""}`}
-      onClick={onClick}
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="121"
-        height="33"
-        viewBox="0 0 121 33"
-        fill="none"
-        className="flex-shrink-0"
-      >
-        <rect width="121" height="32.4206" rx="5" fill="#F3F3F3" />
-        <text
-          x="50%"
-          y="50%"
-          textAnchor="middle"
-          fill="#040404"
-          fontFamily="pretendard"
-          fontSize="16"
-          fontWeight="400"
-          dy=".35em"
-        >
-          {text}
-        </text>
-      </svg>
-    </div>
-  );
-};
 const stacks = [
   "Java",
   "C++",
@@ -248,7 +67,8 @@ const stacks = [
   "Python",
 ];
 
-const StackSVG = ({
+// SVG 컴포넌트
+const PositionSVG = ({
   text,
   isSelected,
   onClick,
@@ -256,63 +76,92 @@ const StackSVG = ({
   text: string;
   isSelected: boolean;
   onClick: () => void;
-}) => {
-  return (
-    <div
-      className={`flex justify-center cursor-pointer ${isSelected ? "border-2 border-blue-500 rounded-lg" : ""}`}
-      onClick={onClick}
+}) => (
+  <div
+    className={`flex justify-center cursor-pointer ${isSelected ? "border-2 border-blue-500 rounded-lg" : ""}`}
+    onClick={onClick}
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="121"
+      height="33"
+      viewBox="0 0 121 33"
+      fill="none"
+      className="flex-shrink-0"
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="121"
-        height="33"
-        viewBox="0 0 121 33"
-        fill="none"
-        className="flex-shrink-0"
+      <rect width="121" height="32.4206" rx="5" fill="#F3F3F3" />
+      <text
+        x="50%"
+        y="50%"
+        textAnchor="middle"
+        fill="#040404"
+        fontFamily="pretendard"
+        fontSize="16"
+        fontWeight="400"
+        dy=".35em"
       >
-        <rect width="121" height="32.4206" rx="5" fill="#F3F3F3" />
-        <text
-          x="50%"
-          y="50%"
-          textAnchor="middle"
-          fill="#040404"
-          fontFamily="pretendard"
-          fontSize="16"
-          fontWeight="400"
-          dy=".35em"
-        >
-          {text}
-        </text>
-      </svg>
-    </div>
-  );
-};
-export default function Upload() {
-  const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
+        {text}
+      </text>
+    </svg>
+  </div>
+);
 
-  const handlePositionClick = (position: string) => {
-    setSelectedPosition(position);
+// 경력 슬라이더 컴포넌트
+const ExperienceSlider = () => {
+  const [value, setValue] = useState<number>(0);
+
+  const handleChange = (_event: Event, newValue: number | number[]) => {
+    setValue(newValue as number);
   };
 
+  const marks = [
+    { value: 0, label: "신입" },
+    { value: 1, label: "1년" },
+    { value: 2, label: "2년" },
+    { value: 3, label: "3년" },
+    { value: 4, label: "4년" },
+    { value: 5, label: "5년" },
+    { value: 6, label: "6년" },
+    { value: 7, label: "7년" },
+    { value: 8, label: "8년" },
+    { value: 9, label: "9년" },
+    { value: 10, label: "10년" },
+  ];
+
+  return (
+    <Slider
+      value={value}
+      onChange={handleChange}
+      aria-labelledby="experience-slider"
+      step={1}
+      marks={marks}
+      min={0}
+      max={10}
+      valueLabelDisplay="auto"
+      sx={{
+        "& .MuiSlider-thumb": { color: "#007bff" },
+        "& .MuiSlider-track": { color: "#007bff" },
+        "& .MuiSlider-rail": { color: "#dddddd" },
+      }}
+    />
+  );
+};
+
+// 메인 컴포넌트
+export default function Upload() {
+  const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
   const [selectedEducation, setSelectedEducation] = useState<string | null>(
     null
   );
-
-  const handleEducationClick = (education: string) => {
-    setSelectedEducation(education);
-  };
-
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
-
-  const handleCompanyClick = (company: string) => {
-    setSelectedCompany(company);
-  };
-
   const [selectedStack, setSelectedStack] = useState<string | null>(null);
 
-  const handleStackClick = (stack: string) => {
-    setSelectedStack(stack);
-  };
+  const handlePositionClick = (position: string) =>
+    setSelectedPosition(position);
+  const handleEducationClick = (education: string) =>
+    setSelectedEducation(education);
+  const handleCompanyClick = (company: string) => setSelectedCompany(company);
+  const handleStackClick = (stack: string) => setSelectedStack(stack);
 
   return (
     <div className="w-full flex mt-[2rem] ml-[4rem] space-x-4">
@@ -353,7 +202,7 @@ export default function Upload() {
         </div>
       </div>
 
-      {/* 오른쪽 섹션: 텍스트 박스 및 슬라이더 */}
+      {/* 오른쪽 섹션 */}
       <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal">
         <div className="ml-[1rem]"># 포지션</div>
         <div className="grid grid-cols-3 gap-4 mt-[1rem] ml-[1rem]">
@@ -366,51 +215,58 @@ export default function Upload() {
             />
           ))}
         </div>
+
+        {/* 경력 슬라이더 추가 */}
         <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
           <div className="ml-[1rem]"># 경력</div>
+          <div className="ml-[1rem]">
+            <ExperienceSlider />
+          </div>
         </div>
-        {/* 슬라이더 컴포넌트 */}
-        <div className="ml-[1rem] mt-[1rem]">
-          <Slider />
-        </div>
+
+        {/* 학력 */}
         <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
           <div className="ml-[1rem]"># 학력</div>
+          <div className="grid grid-cols-3 gap-4 mt-[1rem] ml-[1rem]">
+            {educations.map((education, index) => (
+              <PositionSVG
+                key={index}
+                text={education}
+                isSelected={selectedEducation === education}
+                onClick={() => handleEducationClick(education)}
+              />
+            ))}
+          </div>
         </div>
-        <div className="grid grid-cols-3 gap-4 mt-[1rem] ml-[1rem]">
-          {educations.map((education, index) => (
-            <EducationSVG
-              key={index}
-              text={education}
-              isSelected={selectedEducation === education}
-              onClick={() => handleEducationClick(education)}
-            />
-          ))}
-        </div>
+
+        {/* 회사 */}
         <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
-          <div className="ml-[1rem]"># 지원회사</div>
+          <div className="ml-[1rem]"># 회사</div>
+          <div className="grid grid-cols-3 gap-4 mt-[1rem] ml-[1rem]">
+            {companies.map((company, index) => (
+              <PositionSVG
+                key={index}
+                text={company}
+                isSelected={selectedCompany === company}
+                onClick={() => handleCompanyClick(company)}
+              />
+            ))}
+          </div>
         </div>
-        <div className="grid grid-cols-3 gap-4 mt-[1rem] ml-[1rem]">
-          {companies.map((company, index) => (
-            <CompanySVG
-              key={index}
-              text={company}
-              isSelected={selectedCompany === company}
-              onClick={() => handleCompanyClick(company)}
-            />
-          ))}
-        </div>
+
+        {/* 스택 */}
         <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
-          <div className="ml-[1rem]"># 기술스택</div>
-        </div>
-        <div className="grid grid-cols-3 gap-4 mt-[1rem] ml-[1rem]">
-          {stacks.map((stack, index) => (
-            <StackSVG
-              key={index}
-              text={stack}
-              isSelected={selectedStack === stack}
-              onClick={() => handleStackClick(stack)}
-            />
-          ))}
+          <div className="ml-[1rem]"># 스택</div>
+          <div className="grid grid-cols-3 gap-4 mt-[1rem] ml-[1rem]">
+            {stacks.map((stack, index) => (
+              <PositionSVG
+                key={index}
+                text={stack}
+                isSelected={selectedStack === stack}
+                onClick={() => handleStackClick(stack)}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
