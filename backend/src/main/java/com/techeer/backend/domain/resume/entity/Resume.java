@@ -18,7 +18,7 @@ public class Resume extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "resume_id")
-    private String id;
+    private Long id;
 
     // 하나의 유저가 다수의 이력서를 가진다.
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -44,12 +44,13 @@ public class Resume extends BaseEntity {
     private List<String> techStack;
 
     // 이력서 pdf file 주소 update
-    public void urlUpdate(String url){
+    public void updateUrl(String url){
         if(url.isEmpty()){
             throw new IllegalArgumentException("null 입니다.");
         }
         this.url = url;
     }
+
 
     private Resume(User user, CreateResumeReq req){
         this.user = user;

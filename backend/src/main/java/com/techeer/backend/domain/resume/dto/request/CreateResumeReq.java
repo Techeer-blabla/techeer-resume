@@ -10,27 +10,26 @@ import lombok.Getter;
 
 import java.util.List;
 
+//todo Getter 한번만 사용하기
+@Getter
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CreateResumeReq {
     // 나중에 로그인 생기면 수정해야 된다.
-    @Getter
+
     @NotBlank
     private String username;
 
-    @Getter
     private List<String> position;
 
-    @Getter
     @NotNull
     private int career;
 
-    @Getter
     private List<String> applyingCompany;
 
-    @Getter
     private List<String> techStack;
 
-    public Resume toResume(User user, CreateResumeReq req) {
+    // todo toEntity로 변경 함수
+    public Resume toEntity(User user, CreateResumeReq req) {
         return Resume.createResume(user, req);
     }
 

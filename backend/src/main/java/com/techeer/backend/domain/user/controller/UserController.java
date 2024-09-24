@@ -8,5 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "User", description = "User API")
 @RequestMapping("/api/v1")
 public class UserController {
+    // todo 테스트 용
 
 }

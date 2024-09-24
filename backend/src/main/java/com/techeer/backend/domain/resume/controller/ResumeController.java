@@ -7,7 +7,10 @@ import com.techeer.backend.domain.user.service.UserService;
 import com.techeer.backend.global.success.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -15,26 +18,22 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+//todo @RequiredArgsConstructor 추가 후 만든 생성자 삭제
 @RestController
+@RequiredArgsConstructor
 @Tag(name = "resume", description = "Resume API")
 @RequestMapping("/api/v1")
 public class ResumeController {
-    private UserService userService;
-    private ResumeService resumeService;
-
-    @Autowired
-    public ResumeController(UserService userService, ResumeService resumeService) {
-        this.userService = userService;
-        this.resumeService = resumeService;
-    }
+    private final UserService userService;
+    private final ResumeService resumeService;
 
     // 이력서 등록
+    // todo
     @Operation(summary = "이력서 등록")
-    @PostMapping("/resume")
+    @PostMapping(value="/resume", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SuccessResponse> resumeRegistration(
-            @RequestPart @Validated CreateResumeReq createResumeReq,
-            @RequestPart(name = "resume_file") MultipartFile resumeFile) throws IOException {
-
+            @RequestPart @Valid CreateResumeReq createResumeReq,
+            @RequestPart(name = "resume_file") @Valid MultipartFile resumeFile) throws IOException {
 
         // 파일 유효성 검사 -> 나중에 vaildtor로 변경해서 유효성 검사할 예정
         if (resumeFile.isEmpty()) {
@@ -44,11 +43,6 @@ public class ResumeController {
         if (!resumeFile.getContentType().equals("application/pdf")) {
             throw new IllegalArgumentException("이력서 파일은 PDF 형식만 허용됩니다.");
         }
-        /*
-        if (resumeFile.getSize() > 5 * 1024 * 1024) {  // 예: 5MB 이하 제한
-            throw new IllegalArgumentException("이력서 파일 크기는 5MB 이하로 제한됩니다.");
-        }
-        */
 
         // 유저 이름으로 객체 탐색
         User registrar = userService.findUserByName(createResumeReq.getUsername());
