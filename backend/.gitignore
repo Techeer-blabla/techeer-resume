@@ -40,4 +40,5 @@ out/
 ### Generated ###
 /src/main/generated/
 
-.env
+.env_*
+.DS_Store
