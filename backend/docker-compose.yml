@@ -12,7 +12,7 @@ services:
 #    ports:
 #      - "8080:8080"
 #    env_file:
-#      - .env
+#      - .env_backend
 #    volumes:
 #      - .:/app
 #      - ./logs:/var/log/spring-boot
