@@ -3,9 +3,9 @@ spring:
     name: backend
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USER}
+    password: ${MYSQL_ROOT_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -17,7 +17,7 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
 
   config:
-    import: "optional:file:.env_backend[.properties]"
+    import: "optional:file:backend-secret.env[.properties]"
 
 logging:
   level:
@@ -40,4 +40,3 @@ cloud:
       static: ${AWS_S3_REGION}
     stack:
       auto: false
-
