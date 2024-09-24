@@ -3,6 +3,7 @@ package com.techeer.backend.domain.resume.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.techeer.backend.domain.resume.dto.request.CreateResumeReq;
+import com.techeer.backend.domain.resume.dto.response.FetchResumeContentRes;
 import com.techeer.backend.domain.resume.entity.Resume;
 import com.techeer.backend.domain.resume.repository.ResumeRepository;
 import com.techeer.backend.domain.user.entity.User;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,25 +28,31 @@ public class ResumeService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-    //todo 이력서 데이터 베이스에 저장
-    //todo dto 변경
+
     @Transactional
-    public void createResume(User user, CreateResumeReq dto, MultipartFile resume_pdf) throws IOException {
+    public void createResume(User user, CreateResumeReq dto, MultipartFile resumePdf) throws IOException {
 
         Resume resume = dto.toEntity(user, dto);
 
-        String pdfName = resume_pdf.getOriginalFilename();
-        // todo 중복된 이름이 걸려서 덮어 씌어질 수 있다.
+        String pdfName = resumePdf.getOriginalFilename();
         String s3PdfName = UUID.randomUUID().toString().substring(0, 10) + "_" + pdfName;
 
         ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(resume_pdf.getSize());
-        metadata.setContentType(resume_pdf.getContentType());
+        metadata.setContentLength(resumePdf.getSize());
+        metadata.setContentType(resumePdf.getContentType());
 
-        amazonS3.putObject(bucket, "resume/" + s3PdfName, resume_pdf.getInputStream(), metadata);
+        amazonS3.putObject(bucket, "resume/" + s3PdfName, resumePdf.getInputStream(), metadata);
         String resumeUrl = amazonS3.getUrl(bucket, "resume/" +s3PdfName).toString();
         resume.updateUrl(resumeUrl);
 
         resumeRepository.save(resume);
+    }
+
+    //todo 피드백까지 생기면
+    @Transactional(readOnly = true)
+    public FetchResumeContentRes getResumeContent(Long resumeId){
+        Optional<Resume> foundResume = resumeRepository.findById(resumeId);
+
+        return null;
     }
 }
