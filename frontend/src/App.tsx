@@ -4,7 +4,6 @@ import MainPage from "./pages/MainPage";
 import ResumeFeedbackPage from "./pages/ResumeFeedbackPage";
 import Upload from "./pages/Upload";
 
-
 export default function App() {
   return (
     <BrowserRouter>
