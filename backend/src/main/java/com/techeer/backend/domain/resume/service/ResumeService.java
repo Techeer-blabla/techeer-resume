@@ -6,12 +6,12 @@ import com.techeer.backend.domain.resume.dto.request.CreateResumeReq;
 import com.techeer.backend.domain.resume.entity.Resume;
 import com.techeer.backend.domain.resume.repository.ResumeRepository;
 import com.techeer.backend.domain.user.entity.User;
-import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @Service
 @Slf4j
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ResumeService {
     private final AmazonS3 amazonS3;

@@ -6,6 +6,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserService {
@@ -13,7 +15,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     // 다시 정해됨
-    public User findUserByName(String userName) {
+    public Optional<User> findUserByName(String userName) {
         return userRepository.findByUsername(userName);
     }
 

@@ -62,7 +62,7 @@ public class Resume extends BaseEntity {
     }
 
     // 이력서 등록시 정적 메소드
-    public static Resume createResume(User user, CreateResumeReq req){
+    public static Resume fromResume(User user, CreateResumeReq req){
         return new Resume(user,req);
     }
 }

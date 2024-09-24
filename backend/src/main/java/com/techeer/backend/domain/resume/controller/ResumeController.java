@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Optional;
 
 //todo @RequiredArgsConstructor 추가 후 만든 생성자 삭제
 @RestController
@@ -44,15 +45,14 @@ public class ResumeController {
             throw new IllegalArgumentException("이력서 파일은 PDF 형식만 허용됩니다.");
         }
 
-        // 유저 이름으로 객체 탐색
-        User registrar = userService.findUserByName(createResumeReq.getUsername());
+        // todo 유저 이름으로 객체 탐색
+        Optional<User> registrars = userService.findUserByName(createResumeReq.getUsername());
+        User registrar = null;
+        if (registrars.isPresent()) {registrar = registrars.get();}
 
         // resume db에 저장
-        try {
-            resumeService.createResume(registrar, createResumeReq, resumeFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        resumeService.createResume(registrar, createResumeReq, resumeFile);
+
 
         return ResponseEntity.ok().build();
     }
