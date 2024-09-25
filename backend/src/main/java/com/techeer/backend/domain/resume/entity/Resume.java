@@ -43,6 +43,28 @@ public class Resume extends BaseEntity {
     @Column(name = "tech_stack")
     private List<String> techStack;
 
+    @Column(name = "resume_name", nullable = false)
+    private String resumeName;
+
+    public enum TagType {
+        POSITION,
+        TECH_STACK
+    }
+    public enum Position {
+        BACKEND,
+        FRONTEND,
+        ANDROID,
+        IOS,
+        DEVOPS
+    }
+
+    public enum TechStack {
+        REACT,
+        SPRING
+    }
+
+
+
     // 이력서 pdf file 주소 update
     public void updateUrl(String url){
         if(url.isEmpty()){
