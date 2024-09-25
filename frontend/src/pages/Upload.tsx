@@ -215,45 +215,6 @@ export default function Upload() {
             />
           ))}
         </div>
-
-        {/* 경력 슬라이더 추가 */}
-        <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
-          <div className="ml-[1rem]"># 경력</div>
-          <div className="ml-[1rem]">
-            <ExperienceSlider />
-          </div>
-        </div>
-
-        {/* 학력 */}
-        <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
-          <div className="ml-[1rem]"># 학력</div>
-          <div className="grid grid-cols-3 gap-4 mt-[1rem] ml-[1rem]">
-            {educations.map((education, index) => (
-              <PositionSVG
-                key={index}
-                text={education}
-                isSelected={selectedEducation === education}
-                onClick={() => handleEducationClick(education)}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* 회사 */}
-        <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
-          <div className="ml-[1rem]"># 회사</div>
-          <div className="grid grid-cols-3 gap-4 mt-[1rem] ml-[1rem]">
-            {companies.map((company, index) => (
-              <PositionSVG
-                key={index}
-                text={company}
-                isSelected={selectedCompany === company}
-                onClick={() => handleCompanyClick(company)}
-              />
-            ))}
-          </div>
-        </div>
-
         {/* 스택 */}
         <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
           <div className="ml-[1rem]"># 스택</div>
@@ -266,6 +227,43 @@ export default function Upload() {
                 onClick={() => handleStackClick(stack)}
               />
             ))}
+          </div>
+          {/* 경력 슬라이더 추가 */}
+          <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
+            <div className="ml-[1rem]"># 경력</div>
+            <div className="ml-[1rem]">
+              <ExperienceSlider />
+            </div>
+          </div>
+
+          {/* 학력 */}
+          <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
+            <div className="ml-[1rem]"># 학력</div>
+            <div className="grid grid-cols-3 gap-4 mt-[1rem] ml-[1rem]">
+              {educations.map((education, index) => (
+                <PositionSVG
+                  key={index}
+                  text={education}
+                  isSelected={selectedEducation === education}
+                  onClick={() => handleEducationClick(education)}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* 회사 */}
+          <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
+            <div className="ml-[1rem]"># 회사</div>
+            <div className="grid grid-cols-3 gap-4 mt-[1rem] ml-[1rem]">
+              {companies.map((company, index) => (
+                <PositionSVG
+                  key={index}
+                  text={company}
+                  isSelected={selectedCompany === company}
+                  onClick={() => handleCompanyClick(company)}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
