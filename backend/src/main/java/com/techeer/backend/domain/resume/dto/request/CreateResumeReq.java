@@ -30,7 +30,7 @@ public class CreateResumeReq {
 
     // todo toEntity로 변경 함수
     public Resume toEntity(User user, CreateResumeReq req) {
-        return Resume.fromResume(user, req);
+        return Resume.from(user, req);
     }
 
 }
