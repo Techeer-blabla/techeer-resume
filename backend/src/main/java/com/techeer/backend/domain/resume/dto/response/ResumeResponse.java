@@ -3,7 +3,6 @@ package com.techeer.backend.domain.resume.dto.response;
 import com.techeer.backend.domain.resume.entity.Resume;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @AllArgsConstructor
