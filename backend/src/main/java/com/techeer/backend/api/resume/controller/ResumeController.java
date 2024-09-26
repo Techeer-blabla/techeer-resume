@@ -1,7 +1,9 @@
 package com.techeer.backend.api.resume.controller;
 
+import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.dto.request.CreateResumeRequest;
 import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
+import com.techeer.backend.api.resume.dto.response.FetchResumeContentResponse;
 import com.techeer.backend.api.resume.dto.response.ResumeResponse;
 import com.techeer.backend.api.resume.service.ResumeService;
 import com.techeer.backend.global.success.SuccessResponse;
@@ -72,14 +74,6 @@ public class ResumeController {
         List<ResumeResponse> resumeResponses = resumeService.searchByTages(dto, pageable);
         return ResponseEntity.ok(resumeResponses);
     }
-
-    private Enum<?> getTagEnum(Resume.TagType tagType, String tagValue) {
-        return tagTypeMap.getOrDefault(tagType, t -> {
-            throw new IllegalArgumentException("태그 유형이 존재하지 않습니다.");
-        }).apply(tagValue);
-    }
-
-
 
     //todo 피드백 완성되면 작업
     @Operation(summary = "이력서 개별 조회")

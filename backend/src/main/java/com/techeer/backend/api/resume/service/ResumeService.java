@@ -2,13 +2,17 @@ package com.techeer.backend.api.resume.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.techeer.backend.api.feedback.domain.Feedback;
+import com.techeer.backend.api.feedback.repository.FeedbackRepository;
 import com.techeer.backend.api.resume.dto.request.CreateResumeRequest;
 import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
+import com.techeer.backend.api.resume.dto.response.FetchResumeContentResponse;
 import com.techeer.backend.api.resume.dto.response.ResumeResponse;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.repository.GetResumeRepository;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
 import com.techeer.backend.api.resume.repository.ResumeSpecification;
+import com.techeer.backend.global.error.exception.NotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +43,7 @@ public class ResumeService {
     private String bucket;
 
     @Transactional
-    public void createResume(CreateResumeRequest req, MultipartFile resume_pdf) throws IOException {
+    public void createResume(CreateResumeRequest req, MultipartFile resumePdf) throws IOException {
 
         Resume resume = req.toEntity();
 
@@ -62,14 +66,14 @@ public class ResumeService {
     public FetchResumeContentResponse getResumeContent(Long resumeId) throws IOException {
         // 이력서 찾기
         Resume resume = resumeRepository.findById(resumeId)
-                .orElseThrow(() -> new IllegalArgumentException("Resume not found with id: " + resumeId));
+                .orElseThrow(NotFoundException::new);
 
         // 이력서의 피드백 찾기
         List<Feedback> feedbacks = feedbackRepository.findAllByResumeId(resumeId);
 
         // 피드백이 없을 경우 예외 처리
         if (feedbacks.isEmpty()) {
-            throw new FeedbackNotFoundException("No feedback found for resume with id: " + resumeId);
+            throw new NotFoundException();
         }
 
         // FetchResumeContentResponse 객체 생성 후 반환
