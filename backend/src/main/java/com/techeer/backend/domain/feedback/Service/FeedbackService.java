@@ -29,7 +29,9 @@ public class FeedbackService {
 
     @Transactional
     public FeedbackResponse createFeedback(Long resumeId, String content, BigDecimal xCoordinate, BigDecimal yCoordinate) {
-        Resume resume = getResumeById(resumeId);
+        Resume resume = resumeRepository.findByIdAndDeletedAtIsNull(resumeId)
+                .orElseThrow(() -> new EntityNotFoundException(RESUME_NOT_FOUND_MESSAGE));
+
         log.info("이력서 ID: {} 에 피드백 생성 중", resumeId);
 
         Feedback feedback = Feedback.builder()
@@ -69,11 +71,6 @@ public class FeedbackService {
     }
 
 
-
-    private Resume getResumeById(Long resumeId) {
-        return resumeRepository.findById(resumeId)
-                .orElseThrow(() -> new IllegalArgumentException(RESUME_NOT_FOUND_MESSAGE));
-    }
 
     private FeedbackResponse toFeedbackResponse(Feedback feedback) {
         return FeedbackResponse.of(
