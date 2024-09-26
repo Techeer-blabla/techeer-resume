@@ -39,3 +39,7 @@ out/
 
 ### Generated ###
 /src/main/generated/
+
+backend-secret.env
+.env_*
+.DS_Store

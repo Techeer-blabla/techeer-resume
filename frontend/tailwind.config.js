@@ -21,10 +21,19 @@ export default {
         75: "18.75rem",
         140: "35rem",
       },
+      fontFamily: {
+        Pretendard: ["Pretendard", "sans-serif"],
+      },
       colors: {
         primary: {
           DEFAULT: "#2bca43",
-          maincolor: "#D7E1F5",
+          skyblue: "#D7E1F5",
+          black: "#000000",
+          grayDark: "#333333",
+          grayMedium: "#9c9c9c",
+          gray: "#6d6d6d",
+          lightBlue: "#abbdec",
+          white: "#ffffff",
         },
       },
     },

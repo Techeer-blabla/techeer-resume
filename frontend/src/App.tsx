@@ -1,17 +1,16 @@
-import "./App.css";
-import MainPage from "../src/pages/MainPage";
-// import Navbar from "./components/Navbar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import MainPage from "./pages/MainPage";
+import ResumeFeedbackPage from "./pages/ResumeFeedbackPage";
 
-function App() {
+export default function App() {
   return (
     <BrowserRouter>
-      {/* <Navbar /> */}
-      <Routes>
-        <Route path="/" element={<MainPage />} />
-      </Routes>
+      <div className="flex-grow">
+        <Routes>
+          <Route path="/" element={<MainPage />} />
+          <Route path="/resume-feedback" element={<ResumeFeedbackPage />} />
+        </Routes>
+      </div>
     </BrowserRouter>
   );
 }
-
-export default App;

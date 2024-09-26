@@ -6,8 +6,12 @@ import logo from "../assets/logo.svg";
 
 function Navbar() {
   const navigate = useNavigate();
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   const [searchText, setSearchText] = useState<string>("");
-  const [userName, setUserName] = useState<string>("김테커"); // 임시 사용자 이름
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  const [userName, setUserName] = useState<string>("김테커"); //임시
 
   const handlesearchBar = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(e.target.value);
@@ -24,11 +28,11 @@ function Navbar() {
   };
 
   /*
-    마이 페이지로 이동 ('/mypage/:id') - p2
-    const moveToMyPage = () => {
-      navigate(/mypage/${user.id});
+      마이 페이지로 이동 ('/mypage/:id') - p2
+      const moveToMyPage = () => {
+      navigate(`/mypage/${user.id}`);
     };
-  */
+    */
 
   return (
     <div className="w-full h-12 px-4 bg-transparent">
