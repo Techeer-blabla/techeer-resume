@@ -5,7 +5,6 @@ import ResumeFeedbackPage from "./pages/ResumeFeedbackPage";
 export default function App() {
   return (
     <BrowserRouter>
-
       <Routes>
         <Route path="/" element={<MainPage />} />
       </Routes>
@@ -17,7 +16,6 @@ export default function App() {
           </Routes>
         </div>
       </div>
-
     </BrowserRouter>
   );
 }
