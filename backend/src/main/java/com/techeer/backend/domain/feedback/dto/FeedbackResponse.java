@@ -1,4 +1,4 @@
-package com.techeer.backend.feedback.dto;
+package com.techeer.backend.domain.feedback.dto;
 
 import lombok.Builder;
 import lombok.Getter;

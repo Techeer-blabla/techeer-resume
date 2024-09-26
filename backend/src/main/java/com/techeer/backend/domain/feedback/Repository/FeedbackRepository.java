@@ -1,6 +1,6 @@
-package com.techeer.backend.feedback.Repository;
+package com.techeer.backend.domain.feedback.Repository;
 
-import com.techeer.backend.feedback.entity.Feedback;
+import com.techeer.backend.domain.feedback.entity.Feedback;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

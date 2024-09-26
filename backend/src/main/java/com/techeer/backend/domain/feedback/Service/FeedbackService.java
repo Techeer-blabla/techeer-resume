@@ -1,10 +1,13 @@
-package com.techeer.backend.feedback.Service;
+package com.techeer.backend.domain.feedback.Service;
 
-import com.techeer.backend.feedback.Repository.FeedbackRepository;
-import com.techeer.backend.feedback.Repository.ResumeRepository;
-import com.techeer.backend.feedback.dto.FeedbackResponse;
-import com.techeer.backend.feedback.entity.Feedback;
-import com.techeer.backend.feedback.entity.Resume;
+import com.techeer.backend.domain.feedback.Repository.FeedbackRepository;
+
+import com.techeer.backend.domain.feedback.dto.FeedbackResponse;
+import com.techeer.backend.domain.feedback.entity.Feedback;
+
+import com.techeer.backend.domain.resume.entity.Resume;
+import com.techeer.backend.domain.resume.repository.ResumeRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -48,7 +51,7 @@ public class FeedbackService {
 
         // 이력서가 존재하는지 먼저 확인
         Resume resume = resumeRepository.findById(resumeId)
-                .orElseThrow(() -> new IllegalArgumentException(RESUME_NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new EntityNotFoundException(RESUME_NOT_FOUND_MESSAGE));
 
         // 피드백이 존재하고, 해당 이력서와 연관되어 있는지 확인
         Feedback feedback = feedbackRepository.findById(feedbackId)

@@ -1,8 +1,8 @@
-package com.techeer.backend.feedback.controller;
+package com.techeer.backend.domain.feedback.controller;
 
-import com.techeer.backend.feedback.Service.FeedbackService;
-import com.techeer.backend.feedback.dto.FeedbackCreateRequest;
-import com.techeer.backend.feedback.dto.FeedbackResponse;
+import com.techeer.backend.domain.feedback.Service.FeedbackService;
+import com.techeer.backend.domain.feedback.dto.FeedbackCreateRequest;
+import com.techeer.backend.domain.feedback.dto.FeedbackResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

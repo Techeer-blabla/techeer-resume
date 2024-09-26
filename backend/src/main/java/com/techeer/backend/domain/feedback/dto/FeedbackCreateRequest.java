@@ -1,4 +1,4 @@
-package com.techeer.backend.feedback.dto;
+package com.techeer.backend.domain.feedback.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
