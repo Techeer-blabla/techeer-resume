@@ -1,11 +1,12 @@
-package com.techeer.backend.feedback.controller;
+package com.techeer.backend.domain.feedback.controller;
 
-import com.techeer.backend.feedback.Service.FeedbackService;
-import com.techeer.backend.feedback.dto.FeedbackCreateRequest;
-import com.techeer.backend.feedback.dto.FeedbackResponse;
+import com.techeer.backend.domain.feedback.Service.FeedbackService;
+import com.techeer.backend.domain.feedback.dto.FeedbackCreateRequest;
+import com.techeer.backend.domain.feedback.dto.FeedbackResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,14 +16,12 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Tag(name = "이력서 피드백 등록 API", description = "Feedback API")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/resumes/") // 공통 api
 public class FeedbackController {
 
     private final FeedbackService feedbackService;
 
-    public FeedbackController(FeedbackService feedbackService) {
-        this.feedbackService = feedbackService;
-    }
 
     @Operation(summary = "피드백 등록", description = "원하는 위치에 피드백을 작성합니다.")
     @PostMapping("/{resume_id}/feedbacks")

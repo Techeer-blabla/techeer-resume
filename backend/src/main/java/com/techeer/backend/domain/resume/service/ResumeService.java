@@ -2,15 +2,20 @@ package com.techeer.backend.domain.resume.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.techeer.backend.domain.resume.dto.request.CreateResumeReq;
+import com.techeer.backend.domain.resume.dto.request.CreateResumeRequest;
+import com.techeer.backend.domain.resume.dto.request.ResumeSearchRequest;
 import com.techeer.backend.domain.resume.dto.response.ResumeResponse;
 import com.techeer.backend.domain.resume.entity.Resume;
+import com.techeer.backend.domain.resume.repository.GetResumeRepository;
 import com.techeer.backend.domain.resume.repository.ResumeRepository;
-import com.techeer.backend.domain.user.entity.User;
+import com.techeer.backend.domain.resume.repository.ResumeSpecification;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -25,15 +31,16 @@ import java.util.UUID;
 public class ResumeService {
     private final AmazonS3 amazonS3;
     private final ResumeRepository resumeRepository;
+    private final GetResumeRepository getResumeRepository;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
     //todo 이력서 데이터 베이스에 저장
     //todo dto 변경
     @Transactional
-    public void createResume(User user, CreateResumeReq dto, MultipartFile resume_pdf) throws IOException {
+    public void createResume(CreateResumeRequest req, MultipartFile resume_pdf) throws IOException {
 
-        Resume resume = dto.toEntity(user, dto);
+        Resume resume = req.toEntity();
 
         String pdfName = resume_pdf.getOriginalFilename();
         // todo 중복된 이름이 걸려서 덮어 씌어질 수 있다.
@@ -50,21 +57,22 @@ public class ResumeService {
         resumeRepository.save(resume);
     }
 
+    // 유저 이름으로 이력서 찾기
     public List<ResumeResponse> searchResumesByUserName(String userName) {
-        List<Resume> resumes = resumeRepository.findByUserUsername(userName);
+        List<Resume> resumes = resumeRepository.findByUsername(userName);
         return resumes.stream()
-                .map(resume -> new ResumeResponse(resume.getId(), resume.getUser().getUsername(), resume.getResumeName(), resume.getUrl()))
+                .map(resume -> new ResumeResponse(resume.getId(), resume.getUsername(), resume.getResumeName(), resume.getUrl()))
                 .toList();
     }
-    // 태그 타입과 태그 값을 기준으로 이력서 조회
-    public List<Resume> getResumesByTag(Resume.TagType tagType, Enum<?> tag) {
-        if (tagType == Resume.TagType.POSITION) {
-            return resumeRepository.findByPosition((Resume.Position) tag);
-        } else if (tagType == Resume.TagType.TECH_STACK) {
-            return resumeRepository.findByTechStack((Resume.TechStack) tag);
-        } else {
-            throw new IllegalArgumentException("Invalid tag type");
-        }
+
+    // 태그 조회
+    @Transactional(readOnly = true)
+    public List<ResumeResponse> searchByTages(ResumeSearchRequest req, Pageable pageable) {
+        Specification<Resume> spec = ResumeSpecification.search(req);
+        Page<Resume> allActiveResumes = getResumeRepository.findAllActiveResumes(spec, pageable);
+        return allActiveResumes.stream()
+                .map(ResumeResponse::from)
+                .collect(Collectors.toList());
     }
 
 }

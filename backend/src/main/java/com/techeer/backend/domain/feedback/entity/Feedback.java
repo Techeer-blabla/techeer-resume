@@ -1,5 +1,6 @@
-package com.techeer.backend.feedback.entity;
+package com.techeer.backend.domain.feedback.entity;
 
+import com.techeer.backend.domain.resume.entity.Resume;
 import com.techeer.backend.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
