@@ -20,7 +20,7 @@ public class TechStack {
     private String name;
 
     @OneToMany(mappedBy = "techStack")
-    private List<ResumeTechStack> resumeTechStacks = new ArrayList<>(); ;
+    private List<ResumeTechStack> resumeTechStacks = new ArrayList<>();
 
     public TechStack(String name) {
         this.name = name;
