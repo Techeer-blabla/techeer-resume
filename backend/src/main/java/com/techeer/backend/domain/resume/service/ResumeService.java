@@ -3,6 +3,7 @@ package com.techeer.backend.domain.resume.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.techeer.backend.domain.resume.dto.request.CreateResumeReq;
+import com.techeer.backend.domain.resume.dto.response.ResumeResponse;
 import com.techeer.backend.domain.resume.entity.Resume;
 import com.techeer.backend.domain.resume.repository.ResumeRepository;
 import com.techeer.backend.domain.user.entity.User;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -47,4 +49,22 @@ public class ResumeService {
 
         resumeRepository.save(resume);
     }
+
+    public List<ResumeResponse> searchResumesByUserName(String userName) {
+        List<Resume> resumes = resumeRepository.findByUserUsername(userName);
+        return resumes.stream()
+                .map(resume -> new ResumeResponse(resume.getId(), resume.getUser().getUsername(), resume.getResumeName(), resume.getUrl()))
+                .toList();
+    }
+    // 태그 타입과 태그 값을 기준으로 이력서 조회
+    public List<Resume> getResumesByTag(Resume.TagType tagType, Enum<?> tag) {
+        if (tagType == Resume.TagType.POSITION) {
+            return resumeRepository.findByPosition((Resume.Position) tag);
+        } else if (tagType == Resume.TagType.TECH_STACK) {
+            return resumeRepository.findByTechStack((Resume.TechStack) tag);
+        } else {
+            throw new IllegalArgumentException("Invalid tag type");
+        }
+    }
+
 }

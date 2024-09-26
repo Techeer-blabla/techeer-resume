@@ -3,7 +3,9 @@ package com.techeer.backend.domain.user.entity;
 
 import com.techeer.backend.global.common.BaseEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(name = "User")
 public class User extends BaseEntity {
