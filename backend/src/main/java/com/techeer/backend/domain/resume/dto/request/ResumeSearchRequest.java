@@ -9,6 +9,6 @@ import java.util.List;
 public class ResumeSearchRequest {
     private List<Position> positions; // 여러 포지션을 받을 수 있도록 변경
     private Integer minCareer; // 최소 경력
-    private Integer maxCareer; // 최대 경력private Position position;
+    private Integer maxCareer; // 최대 경력
     private List<String> techStacks;
 }
