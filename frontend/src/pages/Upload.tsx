@@ -106,6 +106,44 @@ const PositionSVG = ({
   </div>
 );
 
+const DirectInputTag = ({
+  existingTags,
+  onAdd,
+}: {
+  existingTags: string[];
+  onAdd: (newTag: string) => void;
+}) => {
+  const [inputValue, setInputValue] = useState<string>("");
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (
+      e.key === "Enter" &&
+      inputValue.trim() !== "" &&
+      !existingTags.includes(inputValue.trim())
+    ) {
+      onAdd(inputValue.trim());
+      setInputValue("");
+    }
+  };
+
+  return (
+    <div className="flex justify-center cursor-pointer">
+      <input
+        type="text"
+        value={inputValue}
+        onChange={handleInputChange}
+        onKeyPress={handleKeyPress}
+        className="w-[121px] h-[33px] bg-[#F3F3F3] flex items-center justify-center rounded-lg text-black text-center outline-none"
+        placeholder="직접입력"
+      />
+    </div>
+  );
+};
+
 // 경력 슬라이더 컴포넌트
 const ExperienceSlider = () => {
   const [value, setValue] = useState<number>(0);
@@ -156,12 +194,26 @@ export default function Upload() {
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
   const [selectedStack, setSelectedStack] = useState<string | null>(null);
 
+  const [positionTags, setPositionTags] = useState<string[]>(positions);
+  const [stackTags, setStackTags] = useState<string[]>(stacks);
+  const [educationTags, setEducationTags] = useState<string[]>(educations);
+  const [companyTags, setCompanyTags] = useState<string[]>(companies);
+
   const handlePositionClick = (position: string) =>
     setSelectedPosition(position);
   const handleEducationClick = (education: string) =>
     setSelectedEducation(education);
   const handleCompanyClick = (company: string) => setSelectedCompany(company);
   const handleStackClick = (stack: string) => setSelectedStack(stack);
+
+  const handleAddPosition = (newTag: string) =>
+    setPositionTags([...positionTags, newTag]);
+  const handleAddStack = (newTag: string) =>
+    setStackTags([...stackTags, newTag]);
+  const handleAddEducation = (newTag: string) =>
+    setEducationTags([...educationTags, newTag]);
+  const handleAddCompany = (newTag: string) =>
+    setCompanyTags([...companyTags, newTag]);
 
   return (
     <div className="w-full flex mt-[2rem] ml-[4rem] space-x-4">
@@ -205,65 +257,80 @@ export default function Upload() {
       {/* 오른쪽 섹션 */}
       <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal">
         <div className="ml-[1rem]"># 포지션</div>
-        <div className="grid grid-cols-3 gap-4 mt-[1rem] ml-[1rem]">
-          {positions.map((position, index) => (
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          {positionTags.map((position) => (
             <PositionSVG
-              key={index}
+              key={position}
               text={position}
               isSelected={selectedPosition === position}
               onClick={() => handlePositionClick(position)}
             />
           ))}
+          <DirectInputTag
+            existingTags={positionTags}
+            onAdd={handleAddPosition}
+          />
         </div>
+
         {/* 스택 */}
         <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
           <div className="ml-[1rem]"># 스택</div>
-          <div className="grid grid-cols-3 gap-4 mt-[1rem] ml-[1rem]">
-            {stacks.map((stack, index) => (
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            {stackTags.map((stack) => (
               <PositionSVG
-                key={index}
+                key={stack}
                 text={stack}
                 isSelected={selectedStack === stack}
                 onClick={() => handleStackClick(stack)}
               />
             ))}
+            <DirectInputTag existingTags={stackTags} onAdd={handleAddStack} />
           </div>
-          {/* 경력 슬라이더 추가 */}
-          <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
-            <div className="ml-[1rem]"># 경력</div>
-            <div className="ml-[1rem]">
-              <ExperienceSlider />
-            </div>
-          </div>
+        </div>
 
-          {/* 학력 */}
-          <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
-            <div className="ml-[1rem]"># 학력</div>
-            <div className="grid grid-cols-3 gap-4 mt-[1rem] ml-[1rem]">
-              {educations.map((education, index) => (
-                <PositionSVG
-                  key={index}
-                  text={education}
-                  isSelected={selectedEducation === education}
-                  onClick={() => handleEducationClick(education)}
-                />
-              ))}
-            </div>
+        {/* 경력 슬라이더 */}
+        <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
+          <div className="ml-[1rem]"># 경력</div>
+          <div className="ml-[1rem]">
+            <ExperienceSlider />
           </div>
+        </div>
 
-          {/* 회사 */}
-          <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
-            <div className="ml-[1rem]"># 회사</div>
-            <div className="grid grid-cols-3 gap-4 mt-[1rem] ml-[1rem]">
-              {companies.map((company, index) => (
-                <PositionSVG
-                  key={index}
-                  text={company}
-                  isSelected={selectedCompany === company}
-                  onClick={() => handleCompanyClick(company)}
-                />
-              ))}
-            </div>
+        {/* 학력 */}
+        <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
+          <div className="ml-[1rem]"># 학력</div>
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            {educationTags.map((education) => (
+              <PositionSVG
+                key={education}
+                text={education}
+                isSelected={selectedEducation === education}
+                onClick={() => handleEducationClick(education)}
+              />
+            ))}
+            <DirectInputTag
+              existingTags={educationTags}
+              onAdd={handleAddEducation}
+            />
+          </div>
+        </div>
+
+        {/* 회사 */}
+        <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
+          <div className="ml-[1rem]"># 회사</div>
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            {companyTags.map((company) => (
+              <PositionSVG
+                key={company}
+                text={company}
+                isSelected={selectedCompany === company}
+                onClick={() => handleCompanyClick(company)}
+              />
+            ))}
+            <DirectInputTag
+              existingTags={companyTags}
+              onAdd={handleAddCompany}
+            />
           </div>
         </div>
       </div>
