@@ -2,7 +2,9 @@ package com.techeer.backend.domain.resume.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.techeer.backend.domain.resume.dto.request.CreateResumeReq;
+import com.techeer.backend.domain.resume.dto.request.CreateResumeRequest;
+import com.techeer.backend.domain.resume.dto.response.ResumePageElement;
+import com.techeer.backend.domain.resume.dto.response.ResumePageResponse;
 import com.techeer.backend.domain.resume.dto.response.ResumeResponse;
 import com.techeer.backend.domain.resume.entity.Resume;
 import com.techeer.backend.domain.resume.repository.ResumeRepository;
@@ -11,6 +13,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -31,7 +36,7 @@ public class ResumeService {
     //todo 이력서 데이터 베이스에 저장
     //todo dto 변경
     @Transactional
-    public void createResume(User user, CreateResumeReq dto, MultipartFile resume_pdf) throws IOException {
+    public void createResume(User user, CreateResumeRequest dto, MultipartFile resume_pdf) throws IOException {
 
         Resume resume = dto.toEntity(user, dto);
 
@@ -67,4 +72,14 @@ public class ResumeService {
         }
     }
 
+    public ResumePageResponse getResumePage(Pageable pageable) {
+        Page<Resume> resumes = resumeRepository.findByResumePage(pageable);
+        List<ResumePageElement> elements = resumes.getContent().stream()
+                .map(ResumePageElement::of)
+                .toList();
+
+        ResumePageResponse result = ResumePageResponse.from(elements, resumes);
+
+        return result;
+    }
 }

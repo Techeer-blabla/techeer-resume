@@ -1,6 +1,6 @@
 package com.techeer.backend.domain.resume.entity;
 
-import com.techeer.backend.domain.resume.dto.request.CreateResumeReq;
+import com.techeer.backend.domain.resume.dto.request.CreateResumeRequest;
 import com.techeer.backend.domain.user.entity.User;
 import com.techeer.backend.global.common.BaseEntity;
 import jakarta.persistence.*;
@@ -50,6 +50,7 @@ public class Resume extends BaseEntity {
         POSITION,
         TECH_STACK
     }
+
     public enum Position {
         BACKEND,
         FRONTEND,
@@ -64,7 +65,6 @@ public class Resume extends BaseEntity {
     }
 
 
-
     // 이력서 pdf file 주소 update
     public void updateUrl(String url){
         if(url.isEmpty()){
@@ -74,7 +74,7 @@ public class Resume extends BaseEntity {
     }
 
 
-    private Resume(User user, CreateResumeReq req){
+    private Resume(User user, CreateResumeRequest req){
         this.user = user;
         this.url = null;
         this.position = req.getPosition();
@@ -84,7 +84,7 @@ public class Resume extends BaseEntity {
     }
 
     // 이력서 등록시 정적 메소드
-    public static Resume fromResume(User user, CreateResumeReq req){
+    public static Resume fromResume(User user, CreateResumeRequest req){
         return new Resume(user,req);
     }
 }

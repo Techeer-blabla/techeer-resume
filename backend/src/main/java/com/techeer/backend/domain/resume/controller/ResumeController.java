@@ -1,6 +1,7 @@
 package com.techeer.backend.domain.resume.controller;
 
-import com.techeer.backend.domain.resume.dto.request.CreateResumeReq;
+import com.techeer.backend.domain.resume.dto.request.CreateResumeRequest;
+import com.techeer.backend.domain.resume.dto.response.ResumePageResponse;
 import com.techeer.backend.domain.resume.dto.response.ResumeResponse;
 import com.techeer.backend.domain.resume.entity.Resume;
 import com.techeer.backend.domain.resume.service.ResumeService;
@@ -11,6 +12,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,7 +47,7 @@ public class ResumeController {
     @Operation(summary = "이력서 등록")
     @PostMapping(value="/resumes", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SuccessResponse> resumeRegistration(
-            @RequestPart @Valid CreateResumeReq createResumeReq,
+            @RequestPart @Valid CreateResumeRequest createResumeReq,
             @RequestPart(name = "resume_file") @Valid MultipartFile resumeFile) throws IOException {
 
         // 파일 유효성 검사 -> 나중에 vaildtor로 변경해서 유효성 검사할 예정
@@ -86,6 +90,15 @@ public class ResumeController {
         return tagTypeMap.getOrDefault(tagType, t -> {
             throw new IllegalArgumentException("태그 유형이 존재하지 않습니다.");
         }).apply(tagValue);
+    }
+
+    @Operation(summary = "이력서 다수 조회")
+    @GetMapping(value="/resumes/${page}")
+    public ResponseEntity<ResumePageResponse> getResumes(@PageableDefault(size = 10) Pageable pageable) {
+        // ResumeService를 통해 페이지네이션된 이력서 목록을 가져옵니다.
+        ResumePageResponse resumes = resumeService.getResumePage(pageable);
+
+        return ResponseEntity.ok(resumes);
     }
 
 }

@@ -13,7 +13,7 @@ import java.util.List;
 //todo Getter 한번만 사용하기
 @Getter
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class CreateResumeReq {
+public class CreateResumeRequest {
     // 나중에 로그인 생기면 수정해야 된다.
 
     @NotBlank
@@ -29,7 +29,7 @@ public class CreateResumeReq {
     private List<String> techStack;
 
     // todo toEntity로 변경 함수
-    public Resume toEntity(User user, CreateResumeReq req) {
+    public Resume toEntity(User user, CreateResumeRequest req) {
         return Resume.fromResume(user, req);
     }
 
