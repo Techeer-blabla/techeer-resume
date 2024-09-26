@@ -3,7 +3,7 @@ package com.techeer.backend.domain.resume.controller;
 import com.techeer.backend.domain.resume.dto.request.CreateResumeReq;
 import com.techeer.backend.domain.resume.dto.response.ResumeResponse;
 import com.techeer.backend.domain.resume.entity.Resume;
-import com.techeer.backend.domain.resume.dto.response.FetchResumeContentRes;
+import com.techeer.backend.domain.resume.dto.response.FetchResumeContentResponse;
 import com.techeer.backend.domain.resume.service.ResumeService;
 import com.techeer.backend.domain.user.entity.User;
 import com.techeer.backend.domain.user.service.UserService;
@@ -95,9 +95,9 @@ public class ResumeController {
     //todo 피드백 완성되면 작업
     @Operation(summary = "이력서 개별 조회")
     @GetMapping("/resume/{resume_id}")
-    public ResponseEntity<SuccessResponse> fetchResumeContent(@PathVariable("resume_id") Long resumeId) {
+    public ResponseEntity<SuccessResponse> fetchResumeContent(@PathVariable("resume_id") Long resumeId) throws IOException {
 
-        FetchResumeContentRes resumeContent = resumeService.getResumeContent(resumeId);
+        FetchResumeContentResponse resumeContent = resumeService.getResumeContent(resumeId);
         SuccessResponse response = SuccessResponse.of(SuccessCode.SUCCESS, resumeContent);
 
         return ResponseEntity.ok(response);

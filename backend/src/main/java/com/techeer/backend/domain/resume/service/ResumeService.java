@@ -3,11 +3,14 @@ package com.techeer.backend.domain.resume.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.techeer.backend.domain.resume.dto.request.CreateResumeReq;
-import com.techeer.backend.domain.resume.dto.response.FetchResumeContentRes;
+import com.techeer.backend.domain.resume.dto.response.FetchResumeContentResponse;
 import com.techeer.backend.domain.resume.dto.response.ResumeResponse;
 import com.techeer.backend.domain.resume.entity.Resume;
+import com.techeer.backend.domain.resume.exception.FeedbackNotFoundException;
 import com.techeer.backend.domain.resume.repository.ResumeRepository;
 import com.techeer.backend.domain.user.entity.User;
+import com.techeer.backend.feedback.Repository.FeedbackRepository;
+import com.techeer.backend.feedback.entity.Feedback;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +30,7 @@ import java.util.UUID;
 public class ResumeService {
     private final AmazonS3 amazonS3;
     private final ResumeRepository resumeRepository;
-
+    private final FeedbackRepository feedbackRepository;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
@@ -52,10 +55,21 @@ public class ResumeService {
 
     //todo 피드백까지 생기면
     @Transactional(readOnly = true)
-    public FetchResumeContentRes getResumeContent(Long resumeId){
-        Optional<Resume> foundResume = resumeRepository.findById(resumeId);
+    public FetchResumeContentResponse getResumeContent(Long resumeId) throws IOException {
+        // 이력서 찾기
+        Resume resume = resumeRepository.findById(resumeId)
+                .orElseThrow(() -> new IllegalArgumentException("Resume not found with id: " + resumeId));
 
-        return null;
+        // 이력서의 피드백 찾기
+        List<Feedback> feedbacks = feedbackRepository.findAllByResumeId(resumeId);
+
+        // 피드백이 없을 경우 예외 처리
+        if (feedbacks.isEmpty()) {
+            throw new FeedbackNotFoundException("No feedback found for resume with id: " + resumeId);
+        }
+
+        // FetchResumeContentResponse 객체 생성 후 반환
+        return FetchResumeContentResponse.from(resume, feedbacks);
     }
 
     public List<ResumeResponse> searchResumesByUserName(String userName) {
