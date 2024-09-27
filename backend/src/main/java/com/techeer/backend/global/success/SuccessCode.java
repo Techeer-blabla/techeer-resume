@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum SuccessCode {
-
+    SUCCESS(HttpStatus.OK, "200", "요청이 성공적으로 처리되었습니다."),
     ;
     private HttpStatus status;
     private String code;
