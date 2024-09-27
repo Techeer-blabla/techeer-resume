@@ -71,11 +71,6 @@ public class ResumeService {
         // 이력서의 피드백 찾기
         List<Feedback> feedbacks = feedbackRepository.findAllByResumeId(resumeId);
 
-        // 피드백이 없을 경우 예외 처리
-        if (feedbacks.isEmpty()) {
-            throw new NotFoundException();
-        }
-
         // FetchResumeContentResponse 객체 생성 후 반환
         return FetchResumeContentResponse.from(resume, feedbacks);
     }
