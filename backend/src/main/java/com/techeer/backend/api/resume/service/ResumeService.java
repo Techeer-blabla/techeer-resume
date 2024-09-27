@@ -2,13 +2,17 @@ package com.techeer.backend.api.resume.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.techeer.backend.api.feedback.domain.Feedback;
+import com.techeer.backend.api.feedback.repository.FeedbackRepository;
 import com.techeer.backend.api.resume.dto.request.CreateResumeRequest;
 import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
+import com.techeer.backend.api.resume.dto.response.FetchResumeContentResponse;
 import com.techeer.backend.api.resume.dto.response.ResumeResponse;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.repository.GetResumeRepository;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
 import com.techeer.backend.api.resume.repository.ResumeSpecification;
+import com.techeer.backend.global.error.exception.NotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -31,33 +36,45 @@ import java.util.stream.Collectors;
 public class ResumeService {
     private final AmazonS3 amazonS3;
     private final ResumeRepository resumeRepository;
+    private final FeedbackRepository feedbackRepository;
     private final GetResumeRepository getResumeRepository;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-    //todo 이력서 데이터 베이스에 저장
-    //todo dto 변경
+
     @Transactional
-    public void createResume(CreateResumeRequest req, MultipartFile resume_pdf) throws IOException {
+    public void createResume(CreateResumeRequest req, MultipartFile resumePdf) throws IOException {
 
         Resume resume = req.toEntity();
 
-        String pdfName = resume_pdf.getOriginalFilename();
-        // todo 중복된 이름이 걸려서 덮어 씌어질 수 있다.
+        String pdfName = resumePdf.getOriginalFilename();
         String s3PdfName = UUID.randomUUID().toString().substring(0, 10) + "_" + pdfName;
 
         ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(resume_pdf.getSize());
-        metadata.setContentType(resume_pdf.getContentType());
+        metadata.setContentLength(resumePdf.getSize());
+        metadata.setContentType(resumePdf.getContentType());
 
-        amazonS3.putObject(bucket, "resume/" + s3PdfName, resume_pdf.getInputStream(), metadata);
+        amazonS3.putObject(bucket, "resume/" + s3PdfName, resumePdf.getInputStream(), metadata);
         String resumeUrl = amazonS3.getUrl(bucket, "resume/" +s3PdfName).toString();
         resume.updateUrl(resumeUrl);
 
         resumeRepository.save(resume);
     }
 
-    // 유저 이름으로 이력서 찾기
+    //todo 피드백까지 생기면
+    @Transactional(readOnly = true)
+    public FetchResumeContentResponse getResumeContent(Long resumeId) throws IOException {
+        // 이력서 찾기
+        Resume resume = resumeRepository.findById(resumeId)
+                .orElseThrow(NotFoundException::new);
+
+        // 이력서의 피드백 찾기
+        List<Feedback> feedbacks = feedbackRepository.findAllByResumeId(resumeId);
+
+        // FetchResumeContentResponse 객체 생성 후 반환
+        return FetchResumeContentResponse.from(resume, feedbacks);
+    }
+
     public List<ResumeResponse> searchResumesByUserName(String userName) {
         List<Resume> resumes = resumeRepository.findByUsername(userName);
         return resumes.stream()

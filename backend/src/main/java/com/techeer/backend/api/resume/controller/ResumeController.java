@@ -1,10 +1,13 @@
 package com.techeer.backend.api.resume.controller;
 
+import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.dto.request.CreateResumeRequest;
 import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
+import com.techeer.backend.api.resume.dto.response.FetchResumeContentResponse;
 import com.techeer.backend.api.resume.dto.response.ResumeResponse;
 import com.techeer.backend.api.resume.service.ResumeService;
 import com.techeer.backend.global.success.SuccessResponse;
+import com.techeer.backend.global.success.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -36,16 +39,13 @@ public class ResumeController {
     public ResponseEntity<SuccessResponse> resumeRegistration(
             @RequestPart @Valid CreateResumeRequest createResumeReq,
             @RequestPart(name = "resume_file") @Valid MultipartFile resumeFile) throws IOException {
-
         // 파일 유효성 검사 -> 나중에 vaildtor로 변경해서 유효성 검사할 예정
         if (resumeFile.isEmpty()) {
             throw new IllegalArgumentException("이력서 파일이 비어있습니다.");
         }
-
         if (!resumeFile.getContentType().equals("application/pdf")) {
             throw new IllegalArgumentException("이력서 파일은 PDF 형식만 허용됩니다.");
         }
-
         // todo 유저 이름으로 객체 탐색
 //        Optional<User> registrars = userService.findUserByName(createResumeReq.getUsername());
 //        User registrar = null;
@@ -53,7 +53,6 @@ public class ResumeController {
 
         // resume db에 저장
         resumeService.createResume(createResumeReq, resumeFile);
-
         return ResponseEntity.ok().build();
     }
 
@@ -70,5 +69,16 @@ public class ResumeController {
                                                                 @PageableDefault(page = 0, size = 10) Pageable pageable) {
         List<ResumeResponse> resumeResponses = resumeService.searchByTages(dto, pageable);
         return ResponseEntity.ok(resumeResponses);
+    }
+
+    //todo 피드백 완성되면 작업
+    @Operation(summary = "이력서 개별 조회")
+    @GetMapping("/resumes/{resume_id}")
+    public ResponseEntity<SuccessResponse> fetchResumeContent(@PathVariable("resume_id") Long resumeId) throws IOException {
+
+        FetchResumeContentResponse resumeContent = resumeService.getResumeContent(resumeId);
+        SuccessResponse response = SuccessResponse.of(SuccessCode.SUCCESS, resumeContent);
+
+        return ResponseEntity.ok(response);
     }
 }
