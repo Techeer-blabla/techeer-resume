@@ -4,11 +4,13 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.techeer.backend.api.feedback.domain.Feedback;
 import com.techeer.backend.api.feedback.repository.FeedbackRepository;
+import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.dto.request.CreateResumeRequest;
 import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
 import com.techeer.backend.api.resume.dto.response.FetchResumeContentResponse;
+import com.techeer.backend.api.resume.dto.response.ResumePageElement;
+import com.techeer.backend.api.resume.dto.response.ResumePageResponse;
 import com.techeer.backend.api.resume.dto.response.ResumeResponse;
-import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.repository.GetResumeRepository;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
 import com.techeer.backend.api.resume.repository.ResumeSpecification;
@@ -92,4 +94,12 @@ public class ResumeService {
                 .collect(Collectors.toList());
     }
 
+    public ResumePageResponse getResumePage(Pageable pageable) {
+        Page<Resume> resumes = resumeRepository.findAll(pageable);
+        List<ResumePageElement> elements = resumes.getContent().stream()
+                .map(ResumePageElement::of)
+                .toList();
+
+        return ResumePageResponse.from(elements, resumes);
+    }
 }

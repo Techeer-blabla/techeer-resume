@@ -4,6 +4,7 @@ import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.dto.request.CreateResumeRequest;
 import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
 import com.techeer.backend.api.resume.dto.response.FetchResumeContentResponse;
+import com.techeer.backend.api.resume.dto.response.ResumePageResponse;
 import com.techeer.backend.api.resume.dto.response.ResumeResponse;
 import com.techeer.backend.api.resume.service.ResumeService;
 import com.techeer.backend.global.success.SuccessResponse;
@@ -12,7 +13,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -80,5 +83,15 @@ public class ResumeController {
         SuccessResponse response = SuccessResponse.of(SuccessCode.SUCCESS, resumeContent);
 
         return ResponseEntity.ok(response);
+    }
+    
+    @Operation(summary = "이력서 여러 조회")
+    @GetMapping(value="/resumes")
+    public ResponseEntity<ResumePageResponse> getResumes(
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        //ResumeService를 통해 페이지네이션된 이력서 목록을 가져옵니다.
+        ResumePageResponse resumes = resumeService.getResumePage(pageable);
+
+        return ResponseEntity.ok(resumes);
     }
 }
