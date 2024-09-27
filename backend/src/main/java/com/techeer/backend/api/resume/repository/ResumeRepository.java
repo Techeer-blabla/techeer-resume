@@ -16,5 +16,4 @@ public interface ResumeRepository extends PagingAndSortingRepository<Resume, Lon
 
     List<Resume> findByUsername(String username);
     Optional<Resume> findByIdAndDeletedAtIsNull(Long resumeId);
-    Page<Resume> findByResumePage(Pageable pageable);
 }
