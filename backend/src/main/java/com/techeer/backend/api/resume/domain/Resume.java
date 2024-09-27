@@ -35,7 +35,7 @@ public class Resume extends BaseEntity {
     private Position position;
 
     @Column(name = "career")
-    private Integer career;
+    private int career;
 
 //    @ElementCollection
 //    @Column(name = "applying_company")

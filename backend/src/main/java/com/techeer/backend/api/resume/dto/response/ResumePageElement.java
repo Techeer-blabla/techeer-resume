@@ -15,10 +15,10 @@ public class ResumePageElement {
     private String userName;
     private String resumeName;
     private Position position;
-    private Integer career;
+    private int career;
     private List<ResumeTechStack> techStack;
 
-    private ResumePageElement(Long id, String username, String resumeName, Position position, Integer career,
+    private ResumePageElement(Long id, String username, String resumeName, Position position, int career,
                               List<ResumeTechStack> techStack) {
         this.resumeId = id;
         this.userName = username;
