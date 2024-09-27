@@ -12,7 +12,7 @@ import java.util.Optional;
 
 
 @Repository
-public interface ResumeRepository extends PagingAndSortingRepository<Resume, Long>, JpaRepository<Resume, Long> {
+public interface ResumeRepository extends JpaRepository<Resume, Long> {
 
     List<Resume> findByUsername(String username);
     Optional<Resume> findByIdAndDeletedAtIsNull(Long resumeId);
