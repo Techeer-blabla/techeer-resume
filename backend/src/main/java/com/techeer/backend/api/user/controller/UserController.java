@@ -25,8 +25,8 @@ public class UserController {
     @PostMapping(value= "/register")//, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> register(@RequestBody UserRegisterRequest req) {
 
-        if (userService.userExists(req.getUsername(), req.getEmail())) {
-            return new ResponseEntity<>("Username or email already exists", HttpStatus.BAD_REQUEST); // 중복 검사
+        if (userService.userExists(req.getEmail())) {
+            return new ResponseEntity<>("email already exists", HttpStatus.BAD_REQUEST); // 중복 검사
         }
 
         userService.register(req); // 사용자 등록

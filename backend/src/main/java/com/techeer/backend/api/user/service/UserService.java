@@ -26,8 +26,8 @@ public class UserService {
         return userRepository.findByUsername(userName);
     }
 
-    public boolean userExists(@NotBlank String userName, @NotBlank String email) {
-        return userRepository.findByUsername(userName).isPresent() || userRepository.findByEmail(email).isPresent();
+    public boolean userExists(@NotBlank String email) {
+        return userRepository.findByEmail(email).isPresent();
     }
 
     public void register(UserRegisterRequest req) {
