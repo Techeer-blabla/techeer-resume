@@ -19,6 +19,9 @@ spring:
   config:
     import: "optional:file:backend-secret.env[.properties]"
 
+jwt:
+  secretKey: ${SECURITY_SECRET_KEY}
+
 logging:
   level:
     org:
@@ -40,3 +43,4 @@ cloud:
       static: ${AWS_S3_REGION}
     stack:
       auto: false
+
