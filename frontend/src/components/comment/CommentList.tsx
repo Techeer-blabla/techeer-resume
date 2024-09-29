@@ -1,5 +1,6 @@
-import Comment from "./Comment.tsx";
-import { CommentType } from "../../mockApi.ts";
+import React from "react";
+import { CommentType } from "../../mockApi";
+import CommentCard from "./CommentCard";
 
 interface CommentListProps {
   comments: CommentType[];
@@ -7,21 +8,26 @@ interface CommentListProps {
   onEdit: (id: number, newText: string) => void;
 }
 
-function CommentList({ comments, onDelete, onEdit }: CommentListProps) {
+function CommentList({
+  comments,
+  onDelete,
+  onEdit,
+}: CommentListProps): React.ReactElement {
   return (
-    <div className="w-full max-w-[450px] mt-4">
+    <ul className="space-y-2">
       {comments.map((comment) => (
-        <Comment
-          key={comment.id}
-          id={comment.id}
-          text={comment.text}
-          timestamp={comment.timestamp}
-          modified={comment.modified}
-          onDelete={onDelete}
-          onEdit={onEdit}
-        />
+        <li key={comment.id}>
+          <CommentCard
+            id={comment.id}
+            text={comment.text}
+            timestamp={comment.timestamp}
+            modified={comment.modified}
+            onDelete={onDelete}
+            onEdit={onEdit}
+          />
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }
 
