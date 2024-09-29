@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import profile from "../assets/profile.svg";
 import logo from "../assets/logo.svg";
 
 function Navbar() {
   const navigate = useNavigate();
-  const [searchText, setSearchText] = useState<string>("");
-  const [userName, setUserName] = useState<string>("김테커"); // 임시 사용자 이름
+  const [searchText] = useState<string>("");
+  //이거 나중에 setSearchText 추가하기.
 
-  const handlesearchBar = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchText(e.target.value);
-  };
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  const [userName, setUserName] = useState<string>("김테커"); //임시
 
   // 메인 페이지로 이동 ('/')
   const moveToMainPage = () => {

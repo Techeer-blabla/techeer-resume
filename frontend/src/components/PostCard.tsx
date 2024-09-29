@@ -16,7 +16,7 @@ function PostCard({
   skills: string[];
 }) {
   return (
-    <div className="w-80 h-48 relative bg-[#ffffff] rounded-[7.01px] border border-[#aabdeb] p-6 ">
+    <div className="w-80 h-48 relative bg-white rounded-[7.01px] border border-[#aabdeb] p-6 ">
       {/* Name & Role Section */}
       <div className="flex items-center space-x-4">
         {/* 프로필 사진 */}
