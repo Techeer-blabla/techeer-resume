@@ -1,11 +1,11 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 
-interface AddCommentProps {
+interface CommentFormProps {
   onAdd: (comment: string) => void;
   disabled?: boolean;
 }
 
-function AddComment({ onAdd, disabled = false }: AddCommentProps) {
+function CommentForm({ onAdd, disabled = false }: CommentFormProps) {
   const [comment, setComment] = useState<string>("");
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -22,16 +22,16 @@ function AddComment({ onAdd, disabled = false }: AddCommentProps) {
   };
 
   return (
-    <div className="w-full flex flex-col justify-start items-start mt-4 ">
+    <div className="w-full flex flex-col justify-start items-start mt-4">
       <form
         onSubmit={handleSubmit}
         className="w-full border-2 border-primary-lightBlue rounded-[14px]"
       >
         <div className="w-full h-[90px] relative">
-          <div className="w-full h-full absolute rounded-[14px] "></div>
+          <div className="w-full h-full absolute rounded-[14px]"></div>
           <textarea
             placeholder="댓글 추가.."
-            className="w-full h-full px-4 pt-2 pb-1 text-[#333333] text-sm font-normal font-Pretendard bg-white rounded-[14px] focus:outline-none relative z-10 text-left placeholder-[#333333] resize-none "
+            className="w-full h-full px-4 pt-2 pb-1 text-[#333333] text-sm font-normal font-Pretendard bg-white rounded-[14px] focus:outline-none relative z-10 text-left placeholder-[#333333] resize-none"
             value={comment}
             onChange={handleChange}
             disabled={disabled}
@@ -51,4 +51,4 @@ function AddComment({ onAdd, disabled = false }: AddCommentProps) {
   );
 }
 
-export default AddComment;
+export default CommentForm;

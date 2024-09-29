@@ -1,19 +1,46 @@
 import ResumePage from "./ResumePage";
+import { CommentItem, FeedbackPoint } from "../../pages/ResumeFeedbackPage.tsx";
 
 type ResumePageGroupProps = {
-  pages: number; // Number of pages to render
+  pages: number;
+  feedbackPoints: FeedbackPoint[];
+  addFeedbackPoint: (point: Omit<FeedbackPoint, "id" | "type">) => void;
+  deleteCommentItem: (id: string) => void;
+  editCommentItem: (item: CommentItem) => void;
+  hoveredCommentId: string | null;
+  setHoveredCommentId: (id: string | null) => void;
 };
 
-function ResumePageGroup({ pages }: ResumePageGroupProps) {
-  const pageArray = Array.from({ length: pages }, (_, index) => index + 1);
+function ResumePageGroup({
+  pages,
+  feedbackPoints,
+  addFeedbackPoint,
+  deleteCommentItem,
+  editCommentItem,
+  hoveredCommentId,
+  setHoveredCommentId,
+}: ResumePageGroupProps) {
+  const pageComponents = [];
 
-  return (
-    <div className="w-full h-auto mx-auto">
-      {pageArray.map((pageNumber) => (
-        <ResumePage key={pageNumber} pageNumber={pageNumber} />
-      ))}
-    </div>
-  );
+  for (let i = 1; i <= pages; i++) {
+    const pageFeedbackPoints = feedbackPoints.filter(
+      (point) => point.pageNumber === i
+    );
+    pageComponents.push(
+      <ResumePage
+        key={i}
+        pageNumber={i}
+        feedbackPoints={pageFeedbackPoints}
+        addFeedbackPoint={addFeedbackPoint}
+        deleteCommentItem={deleteCommentItem}
+        editCommentItem={editCommentItem}
+        hoveredCommentId={hoveredCommentId}
+        setHoveredCommentId={setHoveredCommentId}
+      />
+    );
+  }
+
+  return <div>{pageComponents}</div>;
 }
 
 export default ResumePageGroup;

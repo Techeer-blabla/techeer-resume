@@ -1,21 +1,33 @@
 // src/components/Comments/CommentSection.tsx
 import React from "react";
-import AddComment from "./AddComment";
 import CommentList from "./CommentList";
-import useComments from "../../hooks/useComments";
+import CommentForm from "./CommentForm";
 import ErrorMessage from "../UI/ErrorMessage";
 import LoadingSpinner from "../UI/LoadingSpinner";
+import { CommentItem, FeedbackPoint } from "../../pages/ResumeFeedbackPage.tsx";
 
-function CommentSection(): React.ReactElement {
-  const {
-    comments,
-    loading,
-    error,
-    addNewComment,
-    deleteCommentHandler,
-    editCommentHandler,
-  } = useComments();
+interface CommentSectionProps {
+  comments: CommentItem[];
+  addComment: (text: string) => void;
+  addFeedbackPoint: (point: Omit<FeedbackPoint, "id" | "type">) => void;
+  deleteCommentItem: (id: string) => void;
+  editCommentItem: (item: CommentItem) => void;
+  hoveredCommentId: string | null;
+  setHoveredCommentId: (id: string | null) => void;
+  loading?: boolean;
+  error?: string;
+}
 
+function CommentSection({
+  comments,
+  addComment,
+  deleteCommentItem,
+  editCommentItem,
+  hoveredCommentId,
+  setHoveredCommentId,
+  loading = false,
+  error = "",
+}: CommentSectionProps): React.ReactElement {
   return (
     <div className="flex flex-col h-full">
       {/* 에러 메시지 */}
@@ -28,15 +40,17 @@ function CommentSection(): React.ReactElement {
         ) : (
           <CommentList
             comments={comments}
-            onDelete={deleteCommentHandler}
-            onEdit={editCommentHandler}
+            deleteCommentItem={deleteCommentItem}
+            editCommentItem={editCommentItem}
+            hoveredCommentId={hoveredCommentId}
+            setHoveredCommentId={setHoveredCommentId}
           />
         )}
       </div>
 
       {/* 댓글 추가 입력 */}
       <div className="mt-4">
-        <AddComment onAdd={addNewComment} disabled={loading} />
+        <CommentForm onAdd={addComment} disabled={loading} />
       </div>
     </div>
   );
