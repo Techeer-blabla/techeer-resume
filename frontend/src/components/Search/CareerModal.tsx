@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import Silder from "./Slider";
 
 interface PositionModalProps {
   isOpen: boolean;
@@ -42,6 +43,9 @@ const PositionModal = ({ isOpen, onClose }: PositionModalProps) => {
 
       {/* 경력 타이틀 */}
       <div className="text-black text-2xl font-semibold mb-6">경력</div>
+      <div className="p-3 my-3 ml-3">
+        <Silder />
+      </div>
 
       {/* 하단 버튼 */}
       <div className="flex justify-between">

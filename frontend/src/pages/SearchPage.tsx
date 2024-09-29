@@ -4,8 +4,7 @@ import PositionModal from "../components/Search/PositionModal";
 import CareerModal from "../components/Search/CareerModal";
 import down from "../assets/chevron-down.svg";
 import PostCard from "../components/PostCard";
-import { useStore } from "zustand";
-import CategoryStore from "../store/CategoryStore";
+import useCategoryStore from "../store/CategoryStore";
 
 function SearchPage() {
   const [title] = useState<string>("김테커");
@@ -13,7 +12,7 @@ function SearchPage() {
   const [isCareerOpen, setIsCareerOpen] = useState<boolean>(false);
 
   // zustand에서 positionCategory 가져오기
-  const { positionCategory } = useStore<string[]>(CategoryStore);
+  const positionCategory = useCategoryStore((state) => state.positionCategory);
 
   // 포지션 모달
   const openPositionModal = () => setIsPositionOpen(true);
@@ -25,7 +24,7 @@ function SearchPage() {
 
   return (
     <div className="bg-white">
-      <div className="p-5">
+      <div className="pt-5">
         <Navbar />
         <div className="flex flex-col justify-start p-5 ">
           <div className="w-full max-w-screen-lg mx-auto">
