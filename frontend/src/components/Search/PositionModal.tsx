@@ -57,7 +57,7 @@ const PositionModal = ({ onClose }: PositionModalProps) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [dropdownRef]);
+  }, [onClose]);
 
   // 선택된 포지션을 동기화
   useEffect(() => {

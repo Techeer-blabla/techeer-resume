@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import Silder from "./Slider";
+import Slider from "./Slider"; // 'Silder' 오타 수정
 
 interface PositionModalProps {
   isOpen: boolean;
@@ -9,7 +9,7 @@ interface PositionModalProps {
 const PositionModal = ({ isOpen, onClose }: PositionModalProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // 밖에 클릭 경우 창 닫기
+  // 모달 외부 클릭 시 모달 닫기
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -25,7 +25,7 @@ const PositionModal = ({ isOpen, onClose }: PositionModalProps) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [dropdownRef]);
+  }, [onClose]);
 
   if (!isOpen) return null;
 
@@ -44,7 +44,7 @@ const PositionModal = ({ isOpen, onClose }: PositionModalProps) => {
       {/* 경력 타이틀 */}
       <div className="text-black text-2xl font-semibold mb-6">경력</div>
       <div className="p-3 my-3 ml-3">
-        <Silder />
+        <Slider /> {/* 'Silder'가 아닌 'Slider'로 오타 수정 */}
       </div>
 
       {/* 하단 버튼 */}

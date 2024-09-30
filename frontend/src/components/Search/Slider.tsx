@@ -1,14 +1,11 @@
 import * as React from "react";
 import * as SliderPrimitive from "@radix-ui/react-slider";
-// import { cn } from "@/lib/utils";
 
 export default function ExperienceSlider() {
-  // 타입 정의 추가: number 배열
   const [value, setValue] = React.useState<number[]>([0, 10]);
 
   return (
     <div className="w-full max-w-sm space-y-4">
-      {/* <h2 className="text-lg font-semibold"># 경력</h2> */}
       <div className="flex justify-between">
         <span>신입</span>
         <span>10년</span>
