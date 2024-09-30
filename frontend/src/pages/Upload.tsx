@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Slider from "@mui/material/Slider";
+import Navbar from "../components/Navbar";
 
 type FileUploadProps = {
   id: string;
@@ -216,121 +217,124 @@ export default function Upload() {
     setCompanyTags([...companyTags, newTag]);
 
   return (
-    <div className="w-full flex mt-[2rem] ml-[4rem] space-x-4">
-      {/* 왼쪽 섹션: 파일 업로드 박스 */}
-      <div className="w-[50rem] h-[42rem] flex-shrink-0 rounded-[0.3125rem] border border-[#CEDAF9] bg-[#F8FAFF]">
-        <div className="flex-shrink-0 ml-[5rem] mt-[4rem] relative">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="7rem"
-            height="7rem"
-            viewBox="0 0 114 114"
-            className="fill-[#EFEFEF]"
-          >
-            <circle cx="57" cy="57" r="57" />
-            <path
-              d="M60.7671 22.5488V40.7682C60.7671 45.3471 56.1425 49.059 50.4378 49.059H11.0969C5.39219 49.059 0.767578 45.3471 0.767578 40.7682V13.1832C0.767578 8.60427 5.39219 4.89233 11.0969 4.89233H24.9332C28.1553 4.89233 30.7674 6.98889 30.7674 9.57513C30.8196 12.1313 33.4164 14.1815 36.6015 14.1812H50.4378C53.1939 14.1811 55.8359 15.0651 57.7758 16.6366C59.7157 18.208 60.7927 20.3366 60.7671 22.5488Z"
-              fill="#0060FF"
-              transform="translate(25, 28)"
-            />
-          </svg>
-        </div>
-        <div className="ml-[5rem] mt-[1rem]">
-          <div className="w-[15rem] h-[2rem] flex-shrink-0 text-black font-pretendard text-[1.5rem] font-bold">
-            첨부파일 업로드
-          </div>
-          <div className="text-black font-pretendard text-[1.1rem] font-normal">
-            여기에 파일을 끌어다 놓으세요
-          </div>
-        </div>
-        <FileUpload id="uploadFile1" />
-        <div className="flex justify-center mt-8 ml-[24.5rem] space-x-2">
-          <button className="w-[7.5rem] h-[3rem] flex-shrink-0 text-[#C5C5C5] font-pretendard text-[1.25rem] font-semibold bg-transparent border border-[#C5C5C5] rounded">
-            Cancel
-          </button>
-          <button className="w-[7.5rem] h-[3rem] flex-shrink-0 text-white font-pretendard text-[1.25rem] font-semibold bg-[#0060FF] rounded">
-            Upload Files
-          </button>
-        </div>
-      </div>
-
-      {/* 오른쪽 섹션 */}
-      <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal">
-        <div className="ml-[1rem]"># 포지션</div>
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          {positionTags.map((position) => (
-            <PositionSVG
-              key={position}
-              text={position}
-              isSelected={selectedPosition === position}
-              onClick={() => handlePositionClick(position)}
-            />
-          ))}
-          <DirectInputTag
-            existingTags={positionTags}
-            onAdd={handleAddPosition}
-          />
-        </div>
-
-        {/* 스택 */}
-        <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
-          <div className="ml-[1rem]"># 스택</div>
-          <div className="grid grid-cols-3 gap-2 mb-4">
-            {stackTags.map((stack) => (
-              <PositionSVG
-                key={stack}
-                text={stack}
-                isSelected={selectedStack === stack}
-                onClick={() => handleStackClick(stack)}
+    <div className="pt-5">
+      <Navbar />
+      <div className="w-full flex justify-center mt-[2rem] space-x-4">
+        {/* 왼쪽 섹션: 파일 업로드 박스 */}
+        <div className="w-[50rem] h-[42rem] flex-shrink-0 rounded-[0.3125rem] border border-[#CEDAF9] bg-[#F8FAFF]">
+          <div className="flex-shrink-0 ml-[5rem] mt-[4rem] relative">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="7rem"
+              height="7rem"
+              viewBox="0 0 114 114"
+              className="fill-[#EFEFEF]"
+            >
+              <circle cx="57" cy="57" r="57" />
+              <path
+                d="M60.7671 22.5488V40.7682C60.7671 45.3471 56.1425 49.059 50.4378 49.059H11.0969C5.39219 49.059 0.767578 45.3471 0.767578 40.7682V13.1832C0.767578 8.60427 5.39219 4.89233 11.0969 4.89233H24.9332C28.1553 4.89233 30.7674 6.98889 30.7674 9.57513C30.8196 12.1313 33.4164 14.1815 36.6015 14.1812H50.4378C53.1939 14.1811 55.8359 15.0651 57.7758 16.6366C59.7157 18.208 60.7927 20.3366 60.7671 22.5488Z"
+                fill="#0060FF"
+                transform="translate(25, 28)"
               />
-            ))}
-            <DirectInputTag existingTags={stackTags} onAdd={handleAddStack} />
+            </svg>
+          </div>
+          <div className="ml-[5rem] mt-[1rem]">
+            <div className="w-[15rem] h-[2rem] flex-shrink-0 text-black font-pretendard text-[1.5rem] font-bold">
+              첨부파일 업로드
+            </div>
+            <div className="text-black font-pretendard text-[1.1rem] font-normal">
+              여기에 파일을 끌어다 놓으세요
+            </div>
+          </div>
+          <FileUpload id="uploadFile1" />
+          <div className="flex justify-center mt-8 ml-[24.5rem] space-x-2">
+            <button className="w-[7.5rem] h-[3rem] flex-shrink-0 text-[#C5C5C5] font-pretendard text-[1.25rem] font-semibold bg-transparent border border-[#C5C5C5] rounded">
+              Cancel
+            </button>
+            <button className="w-[7.5rem] h-[3rem] flex-shrink-0 text-white font-pretendard text-[1.25rem] font-semibold bg-[#0060FF] rounded">
+              Upload Files
+            </button>
           </div>
         </div>
 
-        {/* 경력 슬라이더 */}
-        <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
-          <div className="ml-[1rem]"># 경력</div>
-          <div className="ml-[1rem]">
-            <ExperienceSlider />
-          </div>
-        </div>
-
-        {/* 학력 */}
-        <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
-          <div className="ml-[1rem]"># 학력</div>
+        {/* 오른쪽 섹션 */}
+        <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal">
+          <div className="ml-[1rem]"># 포지션</div>
           <div className="grid grid-cols-3 gap-2 mb-4">
-            {educationTags.map((education) => (
+            {positionTags.map((position) => (
               <PositionSVG
-                key={education}
-                text={education}
-                isSelected={selectedEducation === education}
-                onClick={() => handleEducationClick(education)}
+                key={position}
+                text={position}
+                isSelected={selectedPosition === position}
+                onClick={() => handlePositionClick(position)}
               />
             ))}
             <DirectInputTag
-              existingTags={educationTags}
-              onAdd={handleAddEducation}
+              existingTags={positionTags}
+              onAdd={handleAddPosition}
             />
           </div>
-        </div>
 
-        {/* 회사 */}
-        <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
-          <div className="ml-[1rem]"># 회사</div>
-          <div className="grid grid-cols-3 gap-2 mb-4">
-            {companyTags.map((company) => (
-              <PositionSVG
-                key={company}
-                text={company}
-                isSelected={selectedCompany === company}
-                onClick={() => handleCompanyClick(company)}
+          {/* 스택 */}
+          <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
+            <div className="ml-[1rem]"># 스택</div>
+            <div className="grid grid-cols-3 gap-2 mb-4">
+              {stackTags.map((stack) => (
+                <PositionSVG
+                  key={stack}
+                  text={stack}
+                  isSelected={selectedStack === stack}
+                  onClick={() => handleStackClick(stack)}
+                />
+              ))}
+              <DirectInputTag existingTags={stackTags} onAdd={handleAddStack} />
+            </div>
+          </div>
+
+          {/* 경력 슬라이더 */}
+          <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
+            <div className="ml-[1rem]"># 경력</div>
+            <div className="ml-[1rem]">
+              <ExperienceSlider />
+            </div>
+          </div>
+
+          {/* 학력 */}
+          <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
+            <div className="ml-[1rem]"># 학력</div>
+            <div className="grid grid-cols-3 gap-2 mb-4">
+              {educationTags.map((education) => (
+                <PositionSVG
+                  key={education}
+                  text={education}
+                  isSelected={selectedEducation === education}
+                  onClick={() => handleEducationClick(education)}
+                />
+              ))}
+              <DirectInputTag
+                existingTags={educationTags}
+                onAdd={handleAddEducation}
               />
-            ))}
-            <DirectInputTag
-              existingTags={companyTags}
-              onAdd={handleAddCompany}
-            />
+            </div>
+          </div>
+
+          {/* 회사 */}
+          <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
+            <div className="ml-[1rem]"># 회사</div>
+            <div className="grid grid-cols-3 gap-2 mb-4">
+              {companyTags.map((company) => (
+                <PositionSVG
+                  key={company}
+                  text={company}
+                  isSelected={selectedCompany === company}
+                  onClick={() => handleCompanyClick(company)}
+                />
+              ))}
+              <DirectInputTag
+                existingTags={companyTags}
+                onAdd={handleAddCompany}
+              />
+            </div>
           </div>
         </div>
       </div>

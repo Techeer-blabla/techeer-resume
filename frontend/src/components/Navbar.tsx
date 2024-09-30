@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import profile from "../assets/profile.svg";
 import logo from "../assets/logo.svg";
+import search from "../assets/search-normal.svg";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -24,22 +25,24 @@ function Navbar() {
   };
 
   /*
-      마이 페이지로 이동 ('/mypage/:id') - p2
-      const moveToMyPage = () => {
-      navigate(`/mypage/${user.id}`);
+    마이 페이지로 이동 ('/mypage/:id') - p2
+    const moveToMyPage = () => {
+      navigate(/mypage/${user.id});
     };
-    */
+  */
 
   return (
     <div className="w-full h-12 px-4 bg-transparent">
       <div className="flex flex-row justify-between items-center">
         {/* 로고 */}
-        <img
-          src={logo}
-          alt="logo"
-          className="w-auto h-6 hover:cursor-pointer"
-          onClick={moveToMainPage}
-        />
+        <div className="pl-10">
+          <img
+            src={logo}
+            alt="logo"
+            className="w-auto h-6 hover:cursor-pointer"
+            onClick={moveToMainPage}
+          />
+        </div>
 
         {/* 검색 바 */}
         <div className="flex-grow max-w-lg mx-4">
@@ -54,11 +57,12 @@ function Navbar() {
               value={searchText}
               onChange={moveToSearchPage}
             />
+            <img src={search} alt="search" className="mr-1 w-auto h-5" />
           </div>
         </div>
 
         {/* 프로필 */}
-        <div className="flex items-center">
+        <div className="flex items-center pr-10">
           <img src={profile} alt="profile" className="w-10 h-10 mx-2" />
           <p>{userName}</p>
         </div>
