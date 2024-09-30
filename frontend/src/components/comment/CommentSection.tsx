@@ -2,9 +2,9 @@
 import React from "react";
 import CommentList from "./CommentList";
 import CommentForm from "./CommentForm";
+import { CommentItem, FeedbackPoint } from "../../types";
 import ErrorMessage from "../UI/ErrorMessage";
 import LoadingSpinner from "../UI/LoadingSpinner";
-import { CommentItem, FeedbackPoint } from "../../pages/ResumeFeedbackPage.tsx";
 
 interface CommentSectionProps {
   comments: CommentItem[];

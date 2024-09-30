@@ -1,6 +1,4 @@
-// src/components/Comments/CommentList.tsx
-
-import { CommentItem } from "../../pages/ResumeFeedbackPage.tsx";
+import { CommentItem } from "../../types";
 
 type CommentListProps = {
   comments: CommentItem[];

@@ -1,5 +1,5 @@
 import ResumePage from "./ResumePage";
-import { CommentItem, FeedbackPoint } from "../../pages/ResumeFeedbackPage.tsx";
+import { FeedbackPoint, CommentItem } from "../../types";
 
 type ResumePageGroupProps = {
   pages: number;

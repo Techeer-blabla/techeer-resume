@@ -1,7 +1,7 @@
 // src/components/resumeoverview/ResumePage.tsx
 import React, { useRef, useState } from "react";
-import FeedbackPopup from "./FeedbackPopup";
-import { CommentItem, FeedbackPoint } from "../../pages/ResumeFeedbackPage.tsx";
+import { FeedbackPoint, CommentItem } from "../../types";
+import CommentForm from "../comment/CommentForm.tsx";
 
 type ResumePageProps = {
   pageNumber: number;
@@ -22,10 +22,14 @@ function ResumePage({
   setHoveredCommentId,
 }: ResumePageProps) {
   const pageRef = useRef<HTMLDivElement>(null);
-  const [selectedPoint, setSelectedPoint] = useState<FeedbackPoint | null>(
+  const [addingFeedback, setAddingFeedback] = useState<{
+    x: number;
+    y: number;
+    pageNumber: number;
+  } | null>(null);
+  const [editingFeedback, setEditingFeedback] = useState<FeedbackPoint | null>(
     null
   );
-  const [newComment, setNewComment] = useState<string>("");
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (!pageRef.current) return;
@@ -34,33 +38,36 @@ function ResumePage({
     const x = ((e.clientX - rect.left) / rect.width) * 100; // 백분율
     const y = ((e.clientY - rect.top) / rect.height) * 100; // 백분율
 
-    const comment = prompt("Enter your feedback:");
-    if (comment) {
-      const newPoint: Omit<FeedbackPoint, "id" | "type"> = {
-        pageNumber,
-        x,
-        y,
-        comment,
-      };
-      addFeedbackPoint(newPoint);
-    }
+    setAddingFeedback({ x, y, pageNumber });
   };
 
   const handleMarkerClick = (point: FeedbackPoint) => {
-    setSelectedPoint(point);
-    setNewComment(point.comment);
+    setEditingFeedback(point);
   };
 
-  const handlePopupSubmit = () => {
-    if (selectedPoint && newComment.trim() !== "") {
-      const updatedPoint: FeedbackPoint = {
-        ...selectedPoint,
-        comment: newComment,
-      };
-      editCommentItem(updatedPoint);
-      setSelectedPoint(null);
-      setNewComment("");
+  const handleAddSubmit = (comment: string) => {
+    if (addingFeedback) {
+      addFeedbackPoint({
+        pageNumber: addingFeedback.pageNumber,
+        x: addingFeedback.x,
+        y: addingFeedback.y,
+        comment,
+      });
+      setAddingFeedback(null);
     }
+  };
+
+  const handleEditSubmit = (comment: string) => {
+    if (editingFeedback) {
+      const updatedPoint: FeedbackPoint = { ...editingFeedback, comment };
+      editCommentItem(updatedPoint);
+      setEditingFeedback(null);
+    }
+  };
+
+  const handleCancel = () => {
+    setAddingFeedback(null);
+    setEditingFeedback(null);
   };
 
   return (
@@ -92,18 +99,26 @@ function ResumePage({
             }}
           ></div>
         ))}
-      </div>
 
-      {/* 피드백 팝업 */}
-      {selectedPoint && (
-        <FeedbackPopup
-          point={selectedPoint}
-          onClose={() => setSelectedPoint(null)}
-          newComment={newComment}
-          setNewComment={setNewComment}
-          onSubmit={handlePopupSubmit}
-        />
-      )}
+        {/* 피드백 추가 폼 */}
+        {addingFeedback && (
+          <CommentForm
+            position={{ x: addingFeedback.x, y: addingFeedback.y }}
+            onSubmit={handleAddSubmit}
+            onCancel={handleCancel}
+          />
+        )}
+
+        {/* 피드백 수정 폼 */}
+        {editingFeedback && (
+          <CommentForm
+            position={{ x: editingFeedback.x, y: editingFeedback.y }}
+            initialComment={editingFeedback.comment}
+            onSubmit={handleEditSubmit}
+            onCancel={handleCancel}
+          />
+        )}
+      </div>
     </div>
   );
 }

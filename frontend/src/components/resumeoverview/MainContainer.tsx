@@ -1,5 +1,5 @@
 import ResumePageGroup from "./ResumePageGroup";
-import { CommentItem, FeedbackPoint } from "../../pages/ResumeFeedbackPage.tsx";
+import { FeedbackPoint, CommentItem } from "../../types";
 
 type MainContainerProps = {
   comments: CommentItem[];

@@ -3,25 +3,9 @@ import React, { useState } from "react";
 import Layout from "../components/Layout/Layout";
 import MainContainer from "../components/resumeoverview/MainContainer";
 import ResumeOverview from "../components/resumeoverview/ResumeOverview";
+import { CommentItem, FeedbackPoint, Comment } from "../types";
 import { v4 as uuidv4 } from "uuid";
 import CommentSection from "../components/comment/CommentSection.tsx";
-
-export type FeedbackPoint = {
-  id: string;
-  type: "feedback";
-  pageNumber: number;
-  x: number;
-  y: number;
-  comment: string;
-};
-
-export type Comment = {
-  id: string;
-  type: "comment";
-  text: string;
-};
-
-export type CommentItem = FeedbackPoint | Comment;
 
 function ResumeFeedbackPage(): React.ReactElement {
   const [comments, setComments] = useState<CommentItem[]>([]);
