@@ -27,7 +27,6 @@ public class OpenAIService {
     private final CloseableHttpClient httpClient;
     private static final int TIMEOUT = 30000;
 
-    // ObjectMapper를 멤버 변수로 선언하여 재사용
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public OpenAIService() {
@@ -41,7 +40,7 @@ public class OpenAIService {
                 .build();
     }
 
-    public String getFeedback(String resumeText) throws IOException {
+    public String getAIFeedback(String resumeText) throws IOException {
         HttpPost httpPost = new HttpPost(apiUrl);
         httpPost.setHeader("Content-Type", "application/json");
         httpPost.setHeader("Authorization", "Bearer " + apiKey);
@@ -64,7 +63,7 @@ public class OpenAIService {
     // ObjectMapper를 사용하여 JSON 요청 본문 생성
     private String createRequestBody(String resumeText) throws IOException {
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("model", "gpt-4");
+        requestBody.put("model", "gpt-4o");
 
         Map<String, String> message = new HashMap<>();
         message.put("role", "user");

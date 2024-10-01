@@ -2,15 +2,18 @@ package com.techeer.backend.api.aifeedback.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
+import com.nimbusds.jose.shaded.gson.JsonObject;
+import com.nimbusds.jose.shaded.gson.JsonParser;
 import com.techeer.backend.api.aifeedback.domain.AIFeedback;
 import com.techeer.backend.api.aifeedback.dto.AIFeedbackResponse;
 import com.techeer.backend.api.aifeedback.repository.AIFeedbackRepository;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
+import com.techeer.backend.global.error.ErrorCode;
+import com.techeer.backend.global.error.exception.BusinessException;
 import jakarta.transaction.Transactional;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -33,10 +36,10 @@ public class AIFeedbackService {
 
     // PDF 파일을 S3에서 읽어온 뒤 텍스트로 변환하고, GPT로 피드백을 요청한 후, 결과를 저장하는 메서드
     @Transactional
-    public AIFeedbackResponse generateAIFeedbackFromS3(Long resumeId) throws Exception {
+    public AIFeedbackResponse generateAIFeedbackFromS3(Long resumeId) {
         // 1. 이력서 정보 데이터베이스에서 조회
         Resume resume = resumeRepository.findById(resumeId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 resumeId에 대한 이력서를 찾을 수 없습니다."));
+            .orElseThrow(() -> new BusinessException(ErrorCode.RESUME_NOT_FOUND));
 
         // 2. S3에서 PDF 파일 가져오기
         InputStream pdfInputStream = getPdfFileFromS3(resume.getS3BucketName(), resume.getS3Key());
@@ -45,13 +48,22 @@ public class AIFeedbackService {
         String resumeText = extractTextFromPdf(pdfInputStream);
 
         // 4. OpenAI GPT API 호출을 통한 피드백 생성
-        String feedback = openAiService.getFeedback(resumeText);
+        String fullResponse;
+        try {
+            fullResponse = openAiService.getAIFeedback(resumeText);
+        } catch (IOException e) {
+            // IOException 발생 시 처리 로직
+            throw new BusinessException(ErrorCode.OPENAI_SERVER_ERROR);
+        }
 
-        // 5. AIFeedback 엔티티 생성 및 저장
+        // 5. JSON 응답에서 content만 추출
+        String feedbackContent = extractContentFromOpenAIResponse(fullResponse);
+
+        // 6. AIFeedback 엔티티 생성 및 저장
         AIFeedback aiFeedback = AIFeedback.builder()
-                .resumeId(resumeId)
-                .feedback(feedback)
-                .build();
+            .resumeId(resumeId)
+            .feedback(feedbackContent)  // content만 저장
+            .build();
 
         AIFeedback savedFeedback = aiFeedbackRepository.save(aiFeedback);
 
@@ -60,16 +72,31 @@ public class AIFeedbackService {
 
     // S3에서 PDF 파일을 가져오는 메서드
     private InputStream getPdfFileFromS3(String bucketName, String key) {
-        S3Object s3Object = amazonS3.getObject(bucketName, key);
-        return s3Object.getObjectContent();
+        try {
+            S3Object s3Object = amazonS3.getObject(bucketName, key);
+            return s3Object.getObjectContent();
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.RESUME_UPLOAD_ERROR);
+        }
     }
 
     // PDF 파일을 텍스트로 변환하는 메서드
-    private String extractTextFromPdf(InputStream inputStream) throws IOException {
-        PDDocument document = PDDocument.load(inputStream);
-        PDFTextStripper pdfStripper = new PDFTextStripper();
-        String text = pdfStripper.getText(document);
-        document.close();
-        return text;
+    private String extractTextFromPdf(InputStream inputStream) {
+        try (PDDocument document = PDDocument.load(inputStream)) {
+            PDFTextStripper pdfStripper = new PDFTextStripper();
+            return pdfStripper.getText(document);
+        } catch (IOException e) {
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 피드백 응답에서 content만 추출
+    private String extractContentFromOpenAIResponse(String fullResponse) {
+        // Gson 또는 Jackson 등의 라이브러리로 JSON 파싱
+        JsonObject jsonResponse = JsonParser.parseString(fullResponse).getAsJsonObject();
+        return jsonResponse.getAsJsonArray("choices")
+            .get(0).getAsJsonObject()
+            .getAsJsonObject("message")
+            .get("content").getAsString();
     }
 }
