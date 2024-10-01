@@ -1,5 +1,6 @@
 package com.techeer.backend.api.feedback.service;
 
+import com.techeer.backend.api.feedback.dto.FeedbackListResponse;
 import com.techeer.backend.api.feedback.repository.FeedbackRepository;
 
 import com.techeer.backend.api.feedback.dto.FeedbackResponse;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -70,7 +72,11 @@ public class FeedbackService {
         feedbackRepository.delete(feedback);
     }
 
+    public FeedbackListResponse getFeedbackList(Long resumeId){
+        List<Feedback> feedbackList = feedbackRepository.findAllByResumeId(resumeId);
 
+        return FeedbackListResponse.from(resumeId, feedbackList);
+    }
 
     private FeedbackResponse toFeedbackResponse(Feedback feedback) {
         return FeedbackResponse.of(

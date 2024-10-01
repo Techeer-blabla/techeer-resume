@@ -63,7 +63,6 @@ public class ResumeService {
         resumeRepository.save(resume);
     }
 
-    //todo 피드백까지 생기면
     @Transactional(readOnly = true)
     public FetchResumeContentResponse getResumeContent(Long resumeId) throws IOException {
         // 이력서 찾기

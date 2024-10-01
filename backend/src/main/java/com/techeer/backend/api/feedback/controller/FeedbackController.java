@@ -1,5 +1,6 @@
 package com.techeer.backend.api.feedback.controller;
 
+import com.techeer.backend.api.feedback.dto.FeedbackListResponse;
 import com.techeer.backend.api.feedback.service.FeedbackService;
 import com.techeer.backend.api.feedback.dto.FeedbackCreateRequest;
 import com.techeer.backend.api.feedback.dto.FeedbackResponse;
@@ -22,7 +23,6 @@ public class FeedbackController {
 
     private final FeedbackService feedbackService;
 
-
     @Operation(summary = "피드백 등록", description = "원하는 위치에 피드백을 작성합니다.")
     @PostMapping("/{resume_id}/feedbacks")
     public ResponseEntity<FeedbackResponse> createFeedback(
@@ -42,6 +42,13 @@ public class FeedbackController {
         log.info("피드백 생성 완료: {}", feedbackResponse);
 
         return new ResponseEntity<>(feedbackResponse, HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "피드백 리스트 조회", description = "특정 이력서의 피드백 전체를 리스트로 전달")
+    @GetMapping("/{resume_id}/feedbacks")
+    public ResponseEntity<FeedbackListResponse> getFeedback(@PathVariable Long resume_id) {
+        FeedbackListResponse response = feedbackService.getFeedbackList(resume_id);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "피드백 삭제")

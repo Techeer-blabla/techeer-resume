@@ -15,13 +15,13 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class FetchResumeContentResponse {
 
-    private final Long resumeId;
-    private final String userName;
-    private final Position position;
-    private final int career;
-    private final List<ResumeTechStack> techStack;
-    private final String fileUrl;
-    private final List<Feedback> feedbacks;
+    private Long resumeId;
+    private String userName;
+    private Position position;
+    private int career;
+    private List<ResumeTechStack> techStack;
+    private String fileUrl;
+    private List<Feedback> feedbacks;
 
     private FetchResumeContentResponse(Long id, String username, Position position, int career,
                                        List<ResumeTechStack> techStack, String fileUrl, List<Feedback> feedbacks) {
