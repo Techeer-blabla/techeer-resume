@@ -75,18 +75,21 @@ public class FeedbackService {
 
     public FeedbackListResponse getFeedbackList(Long resumeId){
         List<Feedback> feedbacks= feedbackRepository.findAllByResumeId(resumeId);
-        List<FeedbackResponse> feedbackList= feedbacks.stream().map(FeedbackResponse::of).toList();
+        List<FeedbackResponse> feedbackList = feedbacks.stream().map(FeedbackResponse::of).toList();
 
-        return FeedbackListResponse.from(resumeId, feedbackList);
+        return FeedbackListResponse.builder()
+                .feedbacks(feedbackList)
+                .resumeId(resumeId)
+                .build();
     }
 
     private FeedbackResponse toFeedbackResponse(Feedback feedback) {
-        return FeedbackResponse.from(
-                feedback.getId(),
-                feedback.getResume().getId(),
-                feedback.getContent(),
-                feedback.getXCoordinate(),
-                feedback.getYCoordinate()
-        );
+        return FeedbackResponse.builder()
+                .feedbackId(feedback.getId())
+                .resumeId(feedback.getResume().getId())
+                .content(feedback.getContent())
+                .xCoordinate(feedback.getXCoordinate())
+                .yCoordinate(feedback.getYCoordinate())
+                .build();
     }
 }

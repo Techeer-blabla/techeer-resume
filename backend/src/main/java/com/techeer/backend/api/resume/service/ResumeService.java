@@ -74,13 +74,21 @@ public class ResumeService {
         List<Feedback> feedbacks = feedbackRepository.findAllByResumeId(resumeId);
         List<FeedbackResponse> feedbackList= feedbacks.stream().map(FeedbackResponse::of).toList();
         // FetchResumeContentResponse 객체 생성 후 반환
-        return FetchResumeContentResponse.from(resume, feedbackList);
+        return FetchResumeContentResponse.builder()
+                .resumeId(resume.getId())
+                .userName(resume.getUsername())
+                .position(resume.getPosition())
+                .career(resume.getCareer())
+                .techStack(resume.getResumeTechStacks())
+                .fileUrl(resume.getUrl())
+                .feedbacks(feedbackList)
+                .build();
     }
 
     public List<ResumeResponse> searchResumesByUserName(String userName) {
         List<Resume> resumes = resumeRepository.findByUsername(userName);
         return resumes.stream()
-                .map(resume -> new ResumeResponse(resume.getId(), resume.getUsername(), resume.getResumeName(), resume.getUrl()))
+                .map(ResumeResponse::of)
                 .toList();
     }
 
@@ -90,7 +98,7 @@ public class ResumeService {
         Specification<Resume> spec = ResumeSpecification.search(req);
         Page<Resume> allActiveResumes = getResumeRepository.findAllActiveResumes(spec, pageable);
         return allActiveResumes.stream()
-                .map(ResumeResponse::from)
+                .map(ResumeResponse::of)
                 .collect(Collectors.toList());
     }
 
@@ -100,6 +108,10 @@ public class ResumeService {
                 .map(ResumePageElement::of)
                 .toList();
 
-        return ResumePageResponse.from(elements, resumes);
+        return ResumePageResponse.builder()
+                .elementList(elements)
+                .totalPage(resumes.getTotalPages())
+                .currentPage(resumes.getNumber())
+                .build();
     }
 }

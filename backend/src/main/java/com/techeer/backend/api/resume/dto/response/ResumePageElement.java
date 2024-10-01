@@ -3,11 +3,13 @@ package com.techeer.backend.api.resume.dto.response;
 import com.techeer.backend.api.resume.domain.Position;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.domain.ResumeTechStack;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+@Builder
 @Getter
 @RequiredArgsConstructor
 public class ResumePageElement {

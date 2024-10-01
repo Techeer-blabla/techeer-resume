@@ -6,6 +6,7 @@ import com.techeer.backend.api.resume.domain.Position;
 import com.techeer.backend.api.resume.domain.Resume;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
