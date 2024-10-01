@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import Tag from "../tag/Tag.tsx";
 import ResumeOverviewSection from "./ResumeOverviewSection";
 
