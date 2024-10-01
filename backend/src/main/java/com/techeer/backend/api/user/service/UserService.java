@@ -18,22 +18,22 @@ import java.util.Optional;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserService {
 
-    private final UserRepository userRepository;
-
-    private final PasswordEncoder passwordEncoder;
-    // 다시 정해됨
-    public Optional<User> findUserByName(String userName) {
-        return userRepository.findByUsername(userName);
-    }
-
-    public boolean userExists(@NotBlank String email) {
-        return userRepository.findByEmail(email).isPresent();
-    }
-
-    public void register(UserRegisterRequest req) {
-        // 비밀번호 암호화
-        String encodePW = (passwordEncoder.encode(req.getPassword()));
-        User user = User.from(req, encodePW);
-        userRepository.save(user);
-    }
+//    private final UserRepository userRepository;
+//
+//    private final PasswordEncoder passwordEncoder;
+//    // 다시 정해됨
+//    public Optional<User> findUserByName(String userName) {
+//        return userRepository.findByUsername(userName);
+//    }
+//
+//    public boolean userExists(@NotBlank String email) {
+//        return userRepository.findByEmail(email).isPresent();
+//    }
+//
+//    public void register(UserRegisterRequest req) {
+//        // 비밀번호 암호화
+//        String encodePW = (passwordEncoder.encode(req.getPassword()));
+//        User user = User.from(req, encodePW);
+//        userRepository.save(user);
+//    }
 }
