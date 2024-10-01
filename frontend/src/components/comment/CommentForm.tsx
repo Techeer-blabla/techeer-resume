@@ -1,5 +1,11 @@
 // src/components/Comments/CommentForm.tsx
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, {
+  useState,
+  ChangeEvent,
+  FormEvent,
+  useRef,
+  useEffect,
+} from "react";
 
 interface Position {
   x: number; // 백분율
@@ -25,6 +31,9 @@ function CommentForm({
 }: CommentFormProps) {
   const [comment, setComment] = useState<string>(initialComment);
 
+  // textarea에 대한 참조 생성
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setComment(e.target.value);
   };
@@ -46,26 +55,39 @@ function CommentForm({
     setComment("");
   };
 
+  // 컴포넌트가 마운트될 때 textarea에 포커스 설정
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, []);
+
   // 폼이 메인 영역에 위치할 경우 스타일 적용
   const formStyles: React.CSSProperties = position
     ? {
         position: "absolute",
         left: `${position.x}%`,
         top: `${position.y}%`,
-        transform: "translate(0%, -100%)", // 왼쪽 아래쪽으로 이동
+        transform: "translate(0%, -100%)", // 오른쪽 위쪽으로 이동 (반대쪽 대각선)
         width: "200px",
-        zIndex: 30,
+        zIndex: 1000, // 매우 높은 z-index 설정
+        /* 추가적인 오프셋 (필요 시) */
+        marginLeft: "10px", // 오른쪽으로 10px 오프셋
+        marginTop: "-10px", // 위로 10px 오프셋
       }
-    : {};
-
+    : {
+        position: "relative",
+        zIndex: 50, // 사이드바보다 높은 z-index
+      };
   return (
     <div
-      className="bg-white border rounded shadow-lg p-2"
+      className="bg-white border rounded shadow-lg p-2 z-50 transition-transform duration-300 ease-in-out"
       style={formStyles}
       onClick={(e) => e.stopPropagation()} // 이벤트 전파 중단
     >
       <form onSubmit={handleSubmit} className="flex flex-col">
         <textarea
+          ref={textareaRef} // textarea에 ref 할당
           placeholder={
             onAdd ? "댓글을 입력하세요..." : "피드백을 입력하세요..."
           }
