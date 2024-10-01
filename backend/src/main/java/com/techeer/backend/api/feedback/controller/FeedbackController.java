@@ -1,9 +1,9 @@
 package com.techeer.backend.api.feedback.controller;
 
-import com.techeer.backend.api.feedback.dto.FeedbackListResponse;
+import com.techeer.backend.api.feedback.dto.Response.FeedbackListResponse;
 import com.techeer.backend.api.feedback.service.FeedbackService;
-import com.techeer.backend.api.feedback.dto.FeedbackCreateRequest;
-import com.techeer.backend.api.feedback.dto.FeedbackResponse;
+import com.techeer.backend.api.feedback.dto.Request.FeedbackCreateRequest;
+import com.techeer.backend.api.feedback.dto.Response.FeedbackResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

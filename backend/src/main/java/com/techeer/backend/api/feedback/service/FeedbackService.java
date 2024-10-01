@@ -1,12 +1,13 @@
 package com.techeer.backend.api.feedback.service;
 
-import com.techeer.backend.api.feedback.dto.FeedbackListResponse;
+import com.techeer.backend.api.feedback.dto.Response.FeedbackListResponse;
 import com.techeer.backend.api.feedback.repository.FeedbackRepository;
 
-import com.techeer.backend.api.feedback.dto.FeedbackResponse;
+import com.techeer.backend.api.feedback.dto.Response.FeedbackResponse;
 import com.techeer.backend.api.feedback.domain.Feedback;
 
 import com.techeer.backend.api.resume.domain.Resume;
+import com.techeer.backend.api.resume.dto.response.ResumeResponse;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -73,13 +74,14 @@ public class FeedbackService {
     }
 
     public FeedbackListResponse getFeedbackList(Long resumeId){
-        List<Feedback> feedbackList = feedbackRepository.findAllByResumeId(resumeId);
+        List<Feedback> feedbacks= feedbackRepository.findAllByResumeId(resumeId);
+        List<FeedbackResponse> feedbackList= feedbacks.stream().map(FeedbackResponse::of).toList();
 
         return FeedbackListResponse.from(resumeId, feedbackList);
     }
 
     private FeedbackResponse toFeedbackResponse(Feedback feedback) {
-        return FeedbackResponse.of(
+        return FeedbackResponse.from(
                 feedback.getId(),
                 feedback.getResume().getId(),
                 feedback.getContent(),

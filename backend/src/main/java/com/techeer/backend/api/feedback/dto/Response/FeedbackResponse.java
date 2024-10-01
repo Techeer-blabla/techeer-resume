@@ -1,5 +1,6 @@
-package com.techeer.backend.api.feedback.dto;
+package com.techeer.backend.api.feedback.dto.Response;
 
+import com.techeer.backend.api.feedback.domain.Feedback;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -23,7 +24,15 @@ public class FeedbackResponse {
         this.yCoordinate = yCoordinate;
     }
 
-    public static FeedbackResponse of(Long feedbackId, Long resumeId, String content, BigDecimal xCoordinate, BigDecimal yCoordinate) {
+    private FeedbackResponse(Feedback feedback) {
+        this.feedbackId = feedback.getId();
+        this.resumeId = feedback.getResume().getId();
+        this.content = feedback.getContent();
+        this.xCoordinate = feedback.getXCoordinate();
+        this.yCoordinate = feedback.getYCoordinate();
+    }
+
+    public static FeedbackResponse from(Long feedbackId, Long resumeId, String content, BigDecimal xCoordinate, BigDecimal yCoordinate) {
         return FeedbackResponse.builder()
                 .feedbackId(feedbackId)
                 .resumeId(resumeId)
@@ -32,4 +41,10 @@ public class FeedbackResponse {
                 .yCoordinate(yCoordinate)
                 .build();
     }
+
+    public static FeedbackResponse of(Feedback feedback){
+
+        return new FeedbackResponse(feedback);
+    }
+
 }

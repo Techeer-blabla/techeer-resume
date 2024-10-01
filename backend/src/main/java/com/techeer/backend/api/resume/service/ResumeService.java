@@ -3,6 +3,7 @@ package com.techeer.backend.api.resume.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.techeer.backend.api.feedback.domain.Feedback;
+import com.techeer.backend.api.feedback.dto.Response.FeedbackResponse;
 import com.techeer.backend.api.feedback.repository.FeedbackRepository;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.dto.request.CreateResumeRequest;
@@ -71,9 +72,9 @@ public class ResumeService {
 
         // 이력서의 피드백 찾기
         List<Feedback> feedbacks = feedbackRepository.findAllByResumeId(resumeId);
-
+        List<FeedbackResponse> feedbackList= feedbacks.stream().map(FeedbackResponse::of).toList();
         // FetchResumeContentResponse 객체 생성 후 반환
-        return FetchResumeContentResponse.from(resume, feedbacks);
+        return FetchResumeContentResponse.from(resume, feedbackList);
     }
 
     public List<ResumeResponse> searchResumesByUserName(String userName) {

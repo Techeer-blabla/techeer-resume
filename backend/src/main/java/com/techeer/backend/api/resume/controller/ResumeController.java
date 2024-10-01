@@ -77,12 +77,12 @@ public class ResumeController {
     //todo 피드백 완성되면 작업
     @Operation(summary = "이력서 개별 조회")
     @GetMapping("/resumes/{resume_id}")
-    public ResponseEntity<SuccessResponse> fetchResumeContent(@PathVariable("resume_id") Long resumeId) throws IOException {
+    public ResponseEntity<FetchResumeContentResponse> fetchResumeContent(@PathVariable("resume_id") Long resumeId) throws IOException {
 
         FetchResumeContentResponse resumeContent = resumeService.getResumeContent(resumeId);
-        SuccessResponse response = SuccessResponse.of(SuccessCode.SUCCESS, resumeContent);
+        //SuccessResponse response = SuccessResponse.of(SuccessCode.SUCCESS, resumeContent);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(resumeContent);
     }
     
     @Operation(summary = "이력서 여러 조회")
@@ -91,7 +91,6 @@ public class ResumeController {
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         //ResumeService를 통해 페이지네이션된 이력서 목록을 가져옵니다.
         ResumePageResponse resumes = resumeService.getResumePage(pageable);
-
         return ResponseEntity.ok(resumes);
     }
 }

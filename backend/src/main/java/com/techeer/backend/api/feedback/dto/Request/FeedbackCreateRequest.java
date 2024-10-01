@@ -1,4 +1,4 @@
-package com.techeer.backend.api.feedback.dto;
+package com.techeer.backend.api.feedback.dto.Request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
