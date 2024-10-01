@@ -1,43 +1,43 @@
 import { useState } from "react";
 import Slider from "@mui/material/Slider";
-import { postResumeDetails, postResumeFile } from "../api/resumeApi";
+import { postResume } from "../api/resumeApi";
 
 function Upload() {
-  const [file, setFile] = useState<File | null>(null);
-  const [position] = useState<string>("");
+  const [resume, setResume] = useState<File | null>(null);
+  const [username] = useState<string>("");
+  const [position] = useState<string>("Position.BACKEND");
   const [career, setCareer] = useState<number>(0);
   const [applyingCompany] = useState<string[]>([]);
   const [techStack] = useState<string[]>([]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
+    if (event.target.files) {
+      setResume(event.target.files[0]);
     }
   };
 
   const handleUpload = async () => {
-    if (!file) return;
-
-    // Step 1: Send resume details
-    try {
-      const resumeDetailsResponse = await postResumeDetails(
+    if (resume) {
+      const createResumeReq = {
+        username,
         position,
         career,
-        applyingCompany,
-        techStack
-      );
-      console.log("태그 전송 성공:", resumeDetailsResponse);
+        applying_company: applyingCompany,
+        tech_stack: techStack,
+      };
 
-      // Step 2: Upload the resume file
-      const resumeId = resumeDetailsResponse.id; // Assuming the response contains the resume ID
-      const fileUploadResponse = await postResumeFile(resumeId, file);
-      console.log("파일 업로드 성공:", fileUploadResponse);
-
-      // Additional success handling logic
-    } catch (error) {
-      console.error("이력서 업로드 오류 :", error);
-      // Error handling logic
+      try {
+        const response = await postResume(
+          "yourResumeId",
+          resume,
+          createResumeReq
+        );
+        console.log("업로드성공:", response);
+      } catch (error) {
+        console.error("업로드 에러:", error);
+      }
+    } else {
+      alert("이력서 파일을 선택하세요");
     }
   };
 

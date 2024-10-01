@@ -1,25 +1,32 @@
-import axios, { AxiosError } from "axios";
+import { formAxios } from "./axios.config.ts";
 
-const BASE_URL = "http://localhost:8080/api/v1/";
-
-export const postResumeFile = async (resumeId: string, resume: File) => {
+export const postResume = async (
+  resumeId: string,
+  resume: File,
+  createResumeReq: {
+    username: string;
+    position: string;
+    career: number;
+    applying_company: string[];
+    tech_stack: string[];
+  }
+) => {
   try {
     const formData = new FormData();
     formData.append("resume_file", resume);
-    formData.append("createResumeReq ");
+    formData.append("createResumeReq", JSON.stringify(createResumeReq));
 
-    const response = await axios.post(`${BASE_URL}/${resumeId}`, formData, {
+    // API 호출
+    const response = await formAxios.post(`/resumes/${resumeId}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
+
     return response.data;
-  } catch (error: unknown) {
-    const axiosError = error as AxiosError;
-    if (axiosError.response) {
-      return axiosError.response.data;
-    } else {
-      throw new Error("파일업로드 에러");
-    }
+  } catch (error) {
+    // error handling
+    console.error("이력서 업롣 오류:", error);
+    throw error;
   }
 };
