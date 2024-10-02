@@ -56,7 +56,7 @@ public class AIFeedbackService {
             throw new BusinessException(ErrorCode.OPENAI_SERVER_ERROR);
         }
 
-        // 5. JSON 응답에서 content만 추출
+        // 5. ai피드백에서 content만 추출
         String feedbackContent = extractContentFromOpenAIResponse(fullResponse);
 
         // 6. AIFeedback 엔티티 생성 및 저장

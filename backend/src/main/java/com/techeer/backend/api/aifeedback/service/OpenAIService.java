@@ -67,7 +67,7 @@ public class OpenAIService {
 
         Map<String, String> message = new HashMap<>();
         message.put("role", "user");
-        message.put("content", "이 이력서에 대한 아쉬운 점과 추가하면 좋을 내용을 자세하게 한국어로 답변해줘: \n" + resumeText);
+        message.put("content", "\"이 이력서에서 잘 작성된 부분과 개선해야 할 부분을 구체적으로 지적해 주세요. 특히, 내용의 명확성, 경험 기술의 구체성, 그리고 부족한 스킬이나 프로젝트가 있는지에 대한 피드백을 제공해 주세요.\": \n" + resumeText);
 
         requestBody.put("messages", new Object[] {message});
 
