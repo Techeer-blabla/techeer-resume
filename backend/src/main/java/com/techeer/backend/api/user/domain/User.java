@@ -1,10 +1,12 @@
 package com.techeer.backend.api.user.domain;
 
 
+import com.techeer.backend.api.user.dto.request.SignUpRequest;
 import com.techeer.backend.api.user.dto.request.UserRegisterRequest;
 import com.techeer.backend.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -24,9 +26,6 @@ public class User extends BaseEntity {
     @Column(name = "username")
     private String username;
 
-    @Column(name = "password")
-    private String password;
-
     @Column(name = "refresh_token")
     private String refreshToken;
 
@@ -37,14 +36,29 @@ public class User extends BaseEntity {
 //    @Column(name = "role")
 //    private Role role;
 
-    private User(UserRegisterRequest req, String encodePW){
-        this.email = req.getEmail();
+    @Builder
+    public User(String email, String refreshToken){
+        this.email = email;
+        this.username = null;
+        this.refreshToken = refreshToken;
+    }
+
+    public static User fromSignup(String email, String refreshToken){
+        return User.builder()
+                .email(email)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
+    public void signupOf(SignUpRequest req){
         this.username = req.getUsername();
-        this.password = encodePW;
+    }
+
+    public void onLogout() {
         this.refreshToken = null;
     }
 
-    public static User from(UserRegisterRequest req, String encodePW){
-        return new User(req, encodePW);
+    public void updateRefreshToken(String updateRefreshToken) {
+        this.refreshToken = updateRefreshToken;
     }
 }
