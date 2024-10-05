@@ -1,12 +1,25 @@
 package com.techeer.backend.api.resume.domain;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import lombok.ToString;
 
 @ToString
 public enum Position {
-    BACKEND,
-    FRONTEND,
-    ANDROID,
-    IOS,
-    DEVOPS
+	BACKEND("BACKEND"),
+	FRONTEND("FRONTEND"),
+	ANDROID("ANDROID"),
+	IOS("IOS"),
+	DEVOPS("DEVOPS");
+
+	private final String value;
+
+	Position(String value) {
+		this.value = value;
+	}
+
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 }
