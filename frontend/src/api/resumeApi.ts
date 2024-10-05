@@ -1,7 +1,6 @@
 import { formAxios } from "./axios.config.ts";
 
 export const postResume = async (
-  resumeId: string,
   resume: File,
   createResumeReq: {
     username: string;
@@ -17,7 +16,7 @@ export const postResume = async (
     formData.append("createResumeReq", JSON.stringify(createResumeReq));
 
     // API 호출
-    const response = await formAxios.post(`/resumes/${resumeId}`, formData, {});
+    const response = await formAxios.post(`/resumes`, formData, {});
 
     return response.data;
   } catch (error) {

@@ -23,11 +23,7 @@ function Upload() {
       };
 
       try {
-        const response = await postResume(
-          "yourResumeId",
-          resume,
-          createResumeReq
-        );
+        const response = await postResume(resume, createResumeReq);
         console.log("업로드성공:", response);
       } catch (error) {
         console.error("업로드 에러:", error);
@@ -75,7 +71,7 @@ function Upload() {
   // 포지션, 학력, 회사, 스택 데이터
   const positions = [
     "프론트엔드",
-    "백엔드",
+    "BACKEND",
     "풀스택",
     "DevOps",
     "게임",
@@ -222,7 +218,7 @@ function Upload() {
     );
   };
 
-  const [position, setPosition] = useState<string>("Position.BACKEND");
+  const [position, setPosition] = useState<string>("BACKEND");
   const [selectedEducation, setSelectedEducation] = useState<string | null>(
     null
   );
