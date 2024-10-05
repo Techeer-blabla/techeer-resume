@@ -10,6 +10,7 @@ import {
   editComment as apiEditComment,
 } from "../mockApi";
 import ResumeOverview from "../components/resumeoverview/ResumeOverview.tsx";
+import Navbar from "../components/Navbar.tsx";
 
 function ResumeFeedbackPage() {
   const [comments, setComments] = useState<CommentType[]>([]);
@@ -86,54 +87,57 @@ function ResumeFeedbackPage() {
   }, [error]);
 
   return (
-    <div className="flex flex-row w-full h-screen bg-gray-100">
-      {/* Left Column: MainContainer */}
-      <div className="w-2/3 h-full">
-        <MainContainer />
-      </div>
-
-      {/* Right Column: ResumeOverview and Comments */}
-      <div className="w-1/3 h-full flex flex-col p-4">
-        {/* Resume Overview */}
-        <ResumeOverview />
-
-        {/* Comments Section */}
-        <div className="flex-grow mt-4 overflow-y-auto">
-          {loading ? (
-            <div className="flex justify-center items-center">
-              <svg
-                className="animate-spin h-5 w-5 mr-3 text-blue-500"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8H4z"
-                ></path>
-              </svg>
-              Loading...
-            </div>
-          ) : (
-            <CommentList
-              comments={comments}
-              onDelete={deleteCommentHandler}
-              onEdit={editCommentHandler}
-            />
-          )}
+    <div className="pt-5">
+      <Navbar />
+      <div className="flex flex-row w-full h-screen bg-gray-100 mt-3">
+        {/* Left Column: MainContainer */}
+        <div className="w-2/3 h-full">
+          <MainContainer />
         </div>
 
-        {/* Add Comment Input */}
-        <AddComment onAdd={addNewComment} disabled={loading} />
+        {/* Right Column: ResumeOverview and Comments */}
+        <div className="w-1/3 h-full flex flex-col p-4">
+          {/* Resume Overview */}
+          <ResumeOverview />
+
+          {/* Comments Section */}
+          <div className="flex-grow mt-4 overflow-y-auto">
+            {loading ? (
+              <div className="flex justify-center items-center">
+                <svg
+                  className="animate-spin h-5 w-5 mr-3 text-blue-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8H4z"
+                  ></path>
+                </svg>
+                Loading...
+              </div>
+            ) : (
+              <CommentList
+                comments={comments}
+                onDelete={deleteCommentHandler}
+                onEdit={editCommentHandler}
+              />
+            )}
+          </div>
+
+          {/* Add Comment Input */}
+          <AddComment onAdd={addNewComment} disabled={loading} />
+        </div>
       </div>
     </div>
   );
