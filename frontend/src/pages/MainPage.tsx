@@ -8,7 +8,7 @@ import man2 from "../assets/man2.png";
 function MainPage() {
   return (
     <div className="w-full bg-[#D7E1F5]">
-      <div className="p-5">
+      <div className="pt-5">
         <Navbar />
 
         {/* 배너 */}
