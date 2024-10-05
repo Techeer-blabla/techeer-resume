@@ -82,7 +82,6 @@ public class SecurityConfig {
                 "http://localhost:3000",
                 "http://localhost:9100",
                 "http://localhost:9090",
-                "http://localhost:5173",
                 "http://jxy.me",
                 "http://apic.app",
                 "file://",
