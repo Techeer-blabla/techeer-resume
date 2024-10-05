@@ -4,11 +4,7 @@ import { postResume } from "../api/resumeApi";
 
 function Upload() {
   const [resume, setResume] = useState<File | null>(null);
-  const [username] = useState<string>("");
-  const [position] = useState<string>("Position.BACKEND");
   const [career, setCareer] = useState<number>(0);
-  const [applyingCompany] = useState<string[]>([]);
-  const [techStack] = useState<string[]>([]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -19,7 +15,7 @@ function Upload() {
   const handleUpload = async () => {
     if (resume) {
       const createResumeReq = {
-        username,
+        username: "testuser",
         position,
         career,
         applying_company: applyingCompany,
@@ -226,25 +222,26 @@ function Upload() {
     );
   };
 
-  const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
+  const [position, setPosition] = useState<string>("Position.BACKEND");
   const [selectedEducation, setSelectedEducation] = useState<string | null>(
     null
   );
-  const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
-  const [selectedStack, setSelectedStack] = useState<string | null>(null);
+  const [applyingCompany, setApplyingCompany] = useState<string[]>([]);
+  const [techStack, setTechStack] = useState<string[]>([]);
+
+  const handlePositionClick = (position: string) => setPosition(position);
+  const handleEducationClick = (education: string) =>
+    setSelectedEducation(education);
+  const handleCompanyClick = (applyingCompany: string) =>
+    setApplyingCompany((prevCompanies) => [...prevCompanies, applyingCompany]);
 
   const [positionTags, setPositionTags] = useState<string[]>(positions);
   const [stackTags, setStackTags] = useState<string[]>(stacks);
   const [educationTags, setEducationTags] = useState<string[]>(educations);
   const [companyTags, setCompanyTags] = useState<string[]>(companies);
 
-  const handlePositionClick = (position: string) =>
-    setSelectedPosition(position);
-  const handleEducationClick = (education: string) =>
-    setSelectedEducation(education);
-  const handleCompanyClick = (company: string) => setSelectedCompany(company);
-  const handleStackClick = (stack: string) => setSelectedStack(stack);
-
+  const handleStackClick = (techStack: string) =>
+    setTechStack((prevStacks) => [...prevStacks, techStack]);
   const handleAddPosition = (newTag: string) =>
     setPositionTags([...positionTags, newTag]);
   const handleAddStack = (newTag: string) =>
@@ -304,7 +301,7 @@ function Upload() {
             <PositionSVG
               key={position}
               text={position}
-              isSelected={selectedPosition === position}
+              isSelected={position === position}
               onClick={() => handlePositionClick(position)}
             />
           ))}
@@ -322,7 +319,7 @@ function Upload() {
               <PositionSVG
                 key={stack}
                 text={stack}
-                isSelected={selectedStack === stack}
+                isSelected={techStack.includes(stack)}
                 onClick={() => handleStackClick(stack)}
               />
             ))}
@@ -365,7 +362,7 @@ function Upload() {
               <PositionSVG
                 key={company}
                 text={company}
-                isSelected={selectedCompany === company}
+                isSelected={applyingCompany.includes(company)}
                 onClick={() => handleCompanyClick(company)}
               />
             ))}

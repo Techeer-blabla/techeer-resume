@@ -17,16 +17,12 @@ export const postResume = async (
     formData.append("createResumeReq", JSON.stringify(createResumeReq));
 
     // API 호출
-    const response = await formAxios.post(`/resumes/${resumeId}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await formAxios.post(`/resumes/${resumeId}`, formData, {});
 
     return response.data;
   } catch (error) {
     // error handling
-    console.error("이력서 업롣 오류:", error);
+    console.error("이력서 업로드 오류:", error);
     throw error;
   }
 };
