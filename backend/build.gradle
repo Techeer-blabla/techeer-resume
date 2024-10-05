@@ -60,6 +60,12 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testImplementation 'org.mockito:mockito-core:4.5.1'
+
+	// AWS SDK for S3 access
+	implementation 'software.amazon.awssdk:s3:2.17.89'
+
+	// Apache PDFBox for extracting text from PDF files
+	implementation 'org.apache.pdfbox:pdfbox:2.0.24'
 }
 
 tasks.named('test') {
