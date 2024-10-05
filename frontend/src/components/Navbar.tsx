@@ -4,32 +4,54 @@ import { useNavigate } from "react-router-dom";
 import profile from "../assets/profile.svg";
 import logo from "../assets/logo.svg";
 import search from "../assets/search-normal.svg";
+import api from "../baseURL/baseURL.ts";
+import useSearchStore from "../store/SearchStore.ts";
 
 function Navbar() {
   const navigate = useNavigate();
-  const [searchText] = useState<string>("");
-  //이거 나중에 setSearchText 추가하기.
+  const [searchText, setSearchText] = useState<string>(""); // 검색어 상태 관리
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   const [userName, setUserName] = useState<string>("김테커"); //임시
+  const { searchResults } = useSearchStore();
 
   // 메인 페이지로 이동 ('/')
   const moveToMainPage = () => {
     navigate("/");
   };
 
-  // 검색 결과 페이지로 이동 ('/search')
-  const moveToSearchPage = () => {
-    navigate("/search");
+  const searchName = async () => {
+    if (searchText === "") {
+      alert("검색어를 입력해주세요!");
+      return;
+    }
+
+    try {
+      const response = await api.get(`search?user_name=${searchText}`);
+      // const response = await api.get("/search", {
+      //   params: {
+      //     user_name: searchText,
+      //   },
+      // });
+
+      if (response.data.length !== 0) {
+        // useSearchStore.searchResults(response.data);
+        console.log(response.data);
+        navigate("/search");
+      }
+    } catch (error) {
+      console.log(error);
+      console.log(searchText);
+    }
   };
 
-  /*
-    마이 페이지로 이동 ('/mypage/:id') - p2
-    const moveToMyPage = () => {
-      navigate(/mypage/${user.id});
-    };
-  */
+  // 엔터 키 입력 감지하여 검색 실행
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      searchName();
+    }
+  };
 
   return (
     <div className="w-full h-12 px-4 bg-transparent">
@@ -55,9 +77,15 @@ function Navbar() {
               autoComplete="off"
               name="search"
               value={searchText}
-              onChange={moveToSearchPage}
+              onChange={(e) => setSearchText(e.target.value)}
+              onKeyPress={handleKeyPress}
             />
-            <img src={search} alt="search" className="mr-1 w-auto h-5" />
+            <img
+              src={search}
+              alt="search"
+              className="mr-1 w-auto h-5 hover:cursor-pointer"
+              onClick={searchName}
+            />
           </div>
         </div>
 
