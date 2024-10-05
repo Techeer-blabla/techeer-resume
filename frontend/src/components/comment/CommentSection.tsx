@@ -1,15 +1,13 @@
-// src/components/Comments/CommentSection.tsx
 import React from "react";
 import CommentList from "./CommentList";
 import CommentForm from "./CommentForm";
-import { CommentItem, FeedbackPoint } from "../../types";
-import ErrorMessage from "../UI/ErrorMessage";
-import LoadingSpinner from "../UI/LoadingSpinner";
+import { CommentItem } from "../../types.ts";
+import ErrorMessage from "../UI/ErrorMessage.tsx";
+import LoadingSpinner from "../UI/LoadingSpinner.tsx";
 
 interface CommentSectionProps {
   comments: CommentItem[];
   addComment: (text: string) => void;
-  addFeedbackPoint: (point: Omit<FeedbackPoint, "id" | "type">) => void;
   deleteCommentItem: (id: string) => void;
   editCommentItem: (item: CommentItem) => void;
   hoveredCommentId: string | null;
@@ -34,7 +32,7 @@ function CommentSection({
       {error && <ErrorMessage message={error} />}
 
       {/* 댓글 목록 */}
-      <div className=" mt-4 overflow-y-auto h-[33vh]">
+      <div className="mt-4 overflow-y-auto h-[33vh]">
         {loading ? (
           <LoadingSpinner />
         ) : (

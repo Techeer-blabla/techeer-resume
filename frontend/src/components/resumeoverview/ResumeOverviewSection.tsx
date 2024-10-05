@@ -1,23 +1,42 @@
-import { ReactNode } from "react";
+import { useEffect, useState } from "react";
+import { ResumeData } from "../../types.ts";
+import { getResumeApi } from "../../api/getResumeApi.ts";
 
-type ResumeOverviewSectionProps = {
-  title: string;
-  children: ReactNode;
-};
+function ResumeOverviewSection({ resumeId = 1 }: { resumeId?: number }) {
+  const [resumeData, setResumeData] = useState<ResumeData | null>(null);
 
-function ResumeOverviewSection({
-  title,
-  children,
-}: ResumeOverviewSectionProps) {
+  useEffect(() => {
+    if (resumeId === undefined) {
+      console.error("Invalid resumeId: undefined");
+      return;
+    }
+
+    const fetchResumeData = async () => {
+      try {
+        const data = await getResumeApi(resumeId);
+        setResumeData(data);
+      } catch (error) {
+        console.error("Failed to load resume data", error);
+      }
+    };
+
+    fetchResumeData();
+  }, [resumeId]);
+
+  if (!resumeData) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <section className="bg-white rounded px-4 my-2">
-      <h2 className="text-md font-semibold text-gray-900 mb-3 text-left font-Pretendard">
-        {title}
-      </h2>
-      <div className="flex flex-wrap justify-start space-y-3 sm:space-y-0 sm:space-x-3">
-        {children}
-      </div>
-    </section>
+    <div>
+      <h1>{resumeData.user_name}'s Resume Overview</h1>
+      <p>Position: {resumeData.position}</p>
+      <p>Career: {resumeData.career} years</p>
+      <p>Tech Stack: {resumeData.tech_stack.join(", ")}</p>
+      <a href={resumeData.file_url} target="_blank" rel="noopener noreferrer">
+        Download Resume
+      </a>
+    </div>
   );
 }
 
