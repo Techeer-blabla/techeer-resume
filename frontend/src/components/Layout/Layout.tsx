@@ -1,5 +1,5 @@
 import React from "react";
-import Footer from "../resumeoverview/Footer.tsx";
+import Navbar from "../Navbar.tsx";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -9,17 +9,13 @@ interface LayoutProps {
 function Layout({ children, sidebar }: LayoutProps): React.ReactElement {
   return (
     <div>
-      <div className="flex flex-row w-full h-screen">
+      <Navbar />
+      <div className="flex flex-row w-full">
         {/* Left Column: Main Content */}
-        <div className="w-full md:w-2/3 h-full overflow-y-auto">
-          {children}
-          <Footer />
-        </div>
+        <div className="w-full md:w-2/3">{children}</div>
 
         {/* Right Column: Sidebar */}
-        <div className="w-1/3 h-full flex flex-col p-4 overflow-hidden">
-          {sidebar}
-        </div>
+        <div className="w-1/3 flex flex-col p-4 overflow-hidden">{sidebar}</div>
       </div>
     </div>
   );

@@ -29,12 +29,12 @@ function CommentSection({
   error = "",
 }: CommentSectionProps): React.ReactElement {
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full justify-between ">
       {/* 에러 메시지 */}
       {error && <ErrorMessage message={error} />}
 
       {/* 댓글 목록 */}
-      <div className="flex-grow mt-4 overflow-y-auto">
+      <div className=" mt-4 overflow-y-auto h-[33vh]">
         {loading ? (
           <LoadingSpinner />
         ) : (

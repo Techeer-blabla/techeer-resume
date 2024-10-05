@@ -5,7 +5,7 @@ import ETC from "./ETC";
 
 function ResumeOverview() {
   return (
-    <div className="w-[534px] h-auto relative bg-white p-4">
+    <div className="w-[534px] h-auto  bg-white p-4 z-1">
       {/* Personal Info Section */}
       <PersonalInfo />
       {/* Tech Stack Section */}

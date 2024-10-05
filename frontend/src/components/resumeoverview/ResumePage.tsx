@@ -52,6 +52,7 @@ function ResumePage({
         x: addingFeedback.x,
         y: addingFeedback.y,
         comment,
+        timestamp: new Date(),
       });
       setAddingFeedback(null);
     }

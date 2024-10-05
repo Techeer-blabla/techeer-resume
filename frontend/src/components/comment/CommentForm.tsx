@@ -1,4 +1,3 @@
-// src/components/Comments/CommentForm.tsx
 import React, {
   useState,
   ChangeEvent,
@@ -68,20 +67,20 @@ function CommentForm({
         position: "absolute",
         left: `${position.x}%`,
         top: `${position.y}%`,
-        transform: "translate(0%, -100%)", // 오른쪽 위쪽으로 이동 (반대쪽 대각선)
-        width: "200px",
-        zIndex: 1000, // 매우 높은 z-index 설정
+        transform: "translate(0%, -100%)",
+        width: "400px",
+        zIndex: 10, // 매우 높은 z-index 설정
         /* 추가적인 오프셋 (필요 시) */
         marginLeft: "10px", // 오른쪽으로 10px 오프셋
         marginTop: "-10px", // 위로 10px 오프셋
       }
     : {
         position: "relative",
-        zIndex: 50, // 사이드바보다 높은 z-index
+        zIndex: 10, // 사이드바보다 높은 z-index
       };
   return (
     <div
-      className="bg-white border rounded shadow-lg p-2 z-50 transition-transform duration-300 ease-in-out"
+      className="bg-white border rounded shadow-lg p-2 z-10 transition-transform duration-300 ease-in-out"
       style={formStyles}
       onClick={(e) => e.stopPropagation()} // 이벤트 전파 중단
     >

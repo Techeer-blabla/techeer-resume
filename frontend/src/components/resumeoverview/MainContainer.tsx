@@ -1,5 +1,6 @@
 import ResumePageGroup from "./ResumePageGroup";
 import { FeedbackPoint, CommentItem } from "../../types";
+import Footer from "./Footer.tsx";
 
 type MainContainerProps = {
   comments: CommentItem[];
@@ -23,7 +24,7 @@ function MainContainer({
   ) as FeedbackPoint[];
 
   return (
-    <div className="w-full h-screen flex flex-col bg-white">
+    <div className="w-full flex flex-col bg-white h-[90vh] ">
       {/* Scrollable Content with space for the fixed NavBar and Footer */}
       <div className="flex-grow overflow-y-auto mt-16 mb-6 px-6">
         {/* Adjusted margin */}
@@ -36,8 +37,8 @@ function MainContainer({
           hoveredCommentId={hoveredCommentId}
           setHoveredCommentId={setHoveredCommentId}
         />
-        {/* Footer */}
       </div>
+      <Footer />
     </div>
   );
 }

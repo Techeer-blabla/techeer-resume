@@ -13,7 +13,12 @@ function ResumeFeedbackPage(): React.ReactElement {
 
   // 일반 댓글 추가
   const addComment = (text: string) => {
-    const newComment: Comment = { id: uuidv4(), type: "comment", text };
+    const newComment: Comment = {
+      id: uuidv4(),
+      type: "comment",
+      text,
+      timestamp: new Date(),
+    };
     setComments((prevComments) => [...prevComments, newComment]);
   };
 
@@ -44,15 +49,15 @@ function ResumeFeedbackPage(): React.ReactElement {
   };
 
   return (
-    <div className="flex flex-col flex-grow pt-16">
+    <div className="flex flex-col flex-grow ">
       <Layout
         sidebar={
-          <div className="flex flex-col h-full bg-white p-2">
+          <div className="flex flex-col justify-between h-full bg-white p-2 mt-10">
             {/* Resume Overview */}
             <ResumeOverview />
 
             {/* Comment Section */}
-            <div className="flex-grow overflow-y-auto mt-2">
+            <div className="overflow-y-auto h-full mt-2">
               <CommentSection
                 comments={comments}
                 addComment={addComment}
