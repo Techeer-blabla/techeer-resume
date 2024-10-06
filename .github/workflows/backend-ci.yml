@@ -21,7 +21,7 @@ jobs:
       - name: Set up JDK 17 (Amazon Corretto)
         uses: actions/setup-java@v3
         with:
-          distribution: 'amazon-corretto' # 배포판 설정
+          distribution: 'corretto'        # 올바른 배포판 이름
           java-version: '17'
 
       - name: Cache Gradle packages
