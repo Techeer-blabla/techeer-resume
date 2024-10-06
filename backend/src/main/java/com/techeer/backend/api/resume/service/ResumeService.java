@@ -60,6 +60,9 @@ public class ResumeService {
         String resumeUrl = amazonS3.getUrl(bucket, "resume/" +s3PdfName).toString();
         resume.updateUrl(resumeUrl);
 
+        // S3 정보 및 URL 업데이트 (bucketName, key, url)
+        resume.updateS3Url(resumeUrl, bucket, "resume/" + s3PdfName);
+
         resumeRepository.save(resume);
     }
 

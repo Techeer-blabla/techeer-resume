@@ -37,6 +37,7 @@ public class Resume extends BaseEntity {
     @Column(name = "career")
     private int career;
 
+
 //    @ElementCollection
 //    @Column(name = "applying_company")
 //    private List<String> applyingCompany;
@@ -46,6 +47,12 @@ public class Resume extends BaseEntity {
 
     @Column(name = "resume_name", nullable = false)
     private String resumeName;
+
+    @Column(name = "s3_bucket_name")
+    private String s3BucketName;  // S3 버킷 이름
+
+    @Column(name = "s3_key")
+    private String s3Key;  // S3 키 (경로)
 
     // 이력서 pdf file 주소 update
     public void updateUrl(String url){
@@ -73,5 +80,15 @@ public class Resume extends BaseEntity {
         ResumeTechStack resumeTechStack = new ResumeTechStack(this, techStack); // 중간 엔티티 생성
         this.resumeTechStacks.add(resumeTechStack); // 이력서에 기술 스택 추가
     }
+
+    public void updateS3Url(String url, String s3BucketName, String s3Key) {
+        if (url == null || url.isEmpty()) {
+            throw new IllegalArgumentException("URL이 null이거나 비어있습니다.");
+        }
+        this.url = url;
+        this.s3BucketName = s3BucketName;
+        this.s3Key = s3Key;
+    }
+
 
 }
