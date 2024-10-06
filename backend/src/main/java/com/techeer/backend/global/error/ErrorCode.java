@@ -10,6 +10,7 @@ public enum ErrorCode {
     // global
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "G001", "서버 오류"),
     NOT_FOUND(HttpStatus.NOT_FOUND, "G002", "오브젝트를 찾을 수 없다."),
+    INVALID_REQUEST(HttpStatus.BAD_REQUEST, "G003", "유효하지 않은 값"),
 
     // Resume
     RESUME_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "이력서를 찾을 수 없음"),
