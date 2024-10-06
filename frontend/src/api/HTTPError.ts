@@ -3,7 +3,12 @@ export class HTTPError extends Error {
   code?: number;
   data?: unknown;
 
-  constructor(statusCode: number, message?: string, code?: number, data?: any) {
+  constructor(
+    statusCode: number,
+    message?: string,
+    code?: number,
+    data?: unknown
+  ) {
     super(message);
     this.name = "HTTPError";
     this.statusCode = statusCode;
