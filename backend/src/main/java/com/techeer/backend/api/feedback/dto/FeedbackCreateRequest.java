@@ -25,9 +25,9 @@ public class FeedbackCreateRequest {
 	@JsonProperty("y_coordinate")
 	private BigDecimal yCoordinate;
 
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private BigDecimal xcoordinate = null;
 
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private BigDecimal ycoordinate = null;
 }

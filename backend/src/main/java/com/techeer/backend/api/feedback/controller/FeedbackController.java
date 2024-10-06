@@ -31,13 +31,13 @@ public class FeedbackController {
 	@Operation(summary = "피드백 등록", description = "원하는 위치에 피드백을 작성합니다.")
 	@PostMapping("/{resume_id}/feedbacks")
 	public ResponseEntity<FeedbackResponse> createFeedback(
-		@PathVariable Long resume_id,
+		@PathVariable("resume_id") Long resumeId,
 		@Valid @RequestBody FeedbackCreateRequest feedbackRequest) {
 
-		log.info("이력서 ID: {} 에 대한 피드백 생성 요청", resume_id);
+		log.info("이력서 ID: {} 에 대한 피드백 생성 요청", resumeId);
 
 		// 피드백 생성 후 응답 생성
-		FeedbackResponse feedbackResponse = feedbackService.createFeedback(resume_id, feedbackRequest);
+		FeedbackResponse feedbackResponse = feedbackService.createFeedback(resumeId, feedbackRequest);
 
 		log.info("피드백 생성 완료: {}", feedbackResponse);
 
@@ -47,12 +47,12 @@ public class FeedbackController {
 	@Operation(summary = "피드백 삭제")
 	@DeleteMapping("/{resume_id}/feedbacks/{feedback_id}")
 	public ResponseEntity<Void> deleteFeedback(
-		@PathVariable Long resume_id,
-		@PathVariable Long feedback_id) {
+		@PathVariable("resume_id") Long resumeId,
+		@PathVariable("feedback_id") Long feedbackId) {
 
-		log.info("이력서 ID: {}, 피드백 ID: {} 에 대한 삭제 요청", resume_id, feedback_id);
+		log.info("이력서 ID: {}, 피드백 ID: {} 에 대한 삭제 요청", resumeId, feedbackId);
 
-		feedbackService.deleteFeedbackById(resume_id, feedback_id);
+		feedbackService.deleteFeedbackById(resumeId, feedbackId);
 
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
