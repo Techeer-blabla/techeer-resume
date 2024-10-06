@@ -1,4 +1,4 @@
-import { FeedbackPoint } from "../../pages/ResumeFeedbackPage.tsx";
+import { FeedbackPoint } from "../../types.ts";
 
 type FeedbackPopupProps = {
   point: FeedbackPoint;

@@ -1,39 +1,36 @@
 import ResumePage from "./ResumePage";
-import { FeedbackPoint, CommentItem } from "../../types";
+import { AddFeedbackPoint, FeedbackPoint } from "../../types.ts";
 
 type ResumePageGroupProps = {
   pages: number;
   feedbackPoints: FeedbackPoint[];
-  addFeedbackPoint: (point: Omit<FeedbackPoint, "id" | "type">) => void;
-  deleteCommentItem: (id: string) => void;
-  editCommentItem: (item: CommentItem) => void;
-  hoveredCommentId: string | null;
-  setHoveredCommentId: (id: string | null) => void;
+  addFeedbackPoint: (point: Omit<AddFeedbackPoint, "id" | "type">) => void;
+  deleteFeedbackPoint: (id: number) => void;
+  editFeedbackPoint: (item: AddFeedbackPoint) => void;
+  hoveredCommentId: number | null;
+  setHoveredCommentId: (id: number | null) => void;
 };
 
 function ResumePageGroup({
   pages,
   feedbackPoints,
   addFeedbackPoint,
-  deleteCommentItem,
-  editCommentItem,
+  deleteFeedbackPoint,
+  editFeedbackPoint,
   hoveredCommentId,
   setHoveredCommentId,
 }: ResumePageGroupProps) {
   const pageComponents = [];
 
   for (let i = 1; i <= pages; i++) {
-    const pageFeedbackPoints = feedbackPoints.filter(
-      (point) => point.pageNumber === i
-    );
     pageComponents.push(
       <ResumePage
         key={i}
         pageNumber={i}
-        feedbackPoints={pageFeedbackPoints}
+        feedbackPoints={feedbackPoints}
         addFeedbackPoint={addFeedbackPoint}
-        deleteCommentItem={deleteCommentItem}
-        editCommentItem={editCommentItem}
+        deleteFeedbackPoint={deleteFeedbackPoint}
+        editFeedbackPoint={editFeedbackPoint}
         hoveredCommentId={hoveredCommentId}
         setHoveredCommentId={setHoveredCommentId}
       />

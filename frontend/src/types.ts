@@ -1,34 +1,27 @@
-// src/types/index.ts
+export type FeedbackPoint = {
+  id: number;
+  content: string;
+  xCoordinate: number;
+  yCoordinate: number;
+  pageNumber: number | 1;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+};
 
-export interface BaseCommentItem {
-  id: string;
-  type: "comment" | "feedback";
-  text?: string; // 일반 댓글의 경우
-  comment?: string; // 피드백의 경우
-  timestamp: Date;
-  modified?: boolean;
-}
-
-export interface FeedbackPoint extends BaseCommentItem {
-  type: "feedback";
-  pageNumber: number;
-  x: number;
-  y: number;
-}
-
-export interface Comment extends BaseCommentItem {
-  type: "comment";
-  // 필요한 추가 필드가 있으면 추가
-}
-
-export interface ResumeData {
-  resume_id: number;
-  user_name: string;
+export type ResumeData = {
+  resumeId: number;
+  userName: string;
   position: string;
   career: number;
-  tech_stack: string[];
-  file_url: string;
-  feedbacks: CommentItem[]; // 피드백 및 댓글을 포함
-}
+  techStack: string[];
+  fileUrl: string;
+  feedbacks: FeedbackPoint[];
+};
 
-export type CommentItem = Comment | FeedbackPoint;
+export type AddFeedbackPoint = {
+  content: string;
+  xCoordinate: number;
+  yCoordinate: number;
+  pageNumber: number;
+};

@@ -2,6 +2,8 @@
 import axios from "axios";
 import { AXIOS_BASE_URL, NETWORK } from "../constants/api.ts";
 import { handleAPIError } from "./interceptor.ts";
+import camelcaseKeys from "camelcase-keys";
+import decamelizeKeys from "decamelize-keys";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const jsonAxios = axios.create({
@@ -28,10 +30,10 @@ export const axiosInstance = axios.create({
 // 응답 인터셉터: 에러 핸들링
 axiosInstance.interceptors.response.use((response) => response, handleAPIError);
 
-// // 요청 인터셉터: 인증 토큰 자동 첨부 (옵션)
+// 요청 인터셉터: 인증 토큰 자동 첨부 (옵션)
 // axiosInstance.interceptors.request.use(
 //   (config) => {
-//     const token = localStorage.getItem('authToken');
+//     const token = localStorage.getItem("authToken");
 //     if (token && config.headers) {
 //       config.headers.Authorization = `Bearer ${token}`;
 //     }
@@ -39,3 +41,19 @@ axiosInstance.interceptors.response.use((response) => response, handleAPIError);
 //   },
 //   (error) => Promise.reject(error)
 // );
+
+// 요청 인터셉터 설정
+axiosInstance.interceptors.request.use((config) => {
+  if (config.data) {
+    config.data = decamelizeKeys(config.data);
+  }
+  return config;
+});
+
+// 응답 인터셉터 설정
+axiosInstance.interceptors.response.use((response) => {
+  if (response.data) {
+    response.data = camelcaseKeys(response.data, { deep: true });
+  }
+  return response;
+});

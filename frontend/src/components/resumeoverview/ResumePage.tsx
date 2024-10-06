@@ -1,23 +1,23 @@
 // src/components/resumeoverview/ResumePage.tsx
 import React, { useRef, useState } from "react";
-import { FeedbackPoint, CommentItem } from "../../types";
 import CommentForm from "../comment/CommentForm.tsx";
+import { AddFeedbackPoint, FeedbackPoint } from "../../types.ts";
 
 type ResumePageProps = {
   pageNumber: number;
   feedbackPoints: FeedbackPoint[];
-  addFeedbackPoint: (point: Omit<FeedbackPoint, "id" | "type">) => void;
-  deleteCommentItem: (id: string) => void;
-  editCommentItem: (item: CommentItem) => void;
-  hoveredCommentId: string | null;
-  setHoveredCommentId: (id: string | null) => void;
+  addFeedbackPoint: (point: Omit<AddFeedbackPoint, "id">) => void;
+  deleteFeedbackPoint: (id: number) => void;
+  editFeedbackPoint: (item: AddFeedbackPoint) => void;
+  hoveredCommentId: number | null;
+  setHoveredCommentId: (id: number | null) => void;
 };
 
 function ResumePage({
   pageNumber,
   feedbackPoints,
   addFeedbackPoint,
-  editCommentItem,
+  editFeedbackPoint,
   hoveredCommentId,
   setHoveredCommentId,
 }: ResumePageProps) {
@@ -30,6 +30,7 @@ function ResumePage({
   const [editingFeedback, setEditingFeedback] = useState<FeedbackPoint | null>(
     null
   );
+  console.log(feedbackPoints);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (!pageRef.current) return;
@@ -49,19 +50,18 @@ function ResumePage({
     if (addingFeedback) {
       addFeedbackPoint({
         pageNumber: addingFeedback.pageNumber,
-        x: addingFeedback.x,
-        y: addingFeedback.y,
-        comment,
-        timestamp: new Date(),
+        xCoordinate: addingFeedback.x,
+        yCoordinate: addingFeedback.y,
+        content: comment,
       });
       setAddingFeedback(null);
     }
   };
 
-  const handleEditSubmit = (comment: string) => {
+  const handleEditSubmit = () => {
     if (editingFeedback) {
-      const updatedPoint: FeedbackPoint = { ...editingFeedback, comment };
-      editCommentItem(updatedPoint);
+      const updatedPoint: AddFeedbackPoint = { ...editingFeedback };
+      editFeedbackPoint(updatedPoint);
       setEditingFeedback(null);
     }
   };
@@ -80,7 +80,6 @@ function ResumePage({
       >
         {/* Placeholder for PDF Image */}
         <p className="text-white">Resume PDF Page {pageNumber}</p>
-
         {/* 피드백 마커 렌더링 */}
         {feedbackPoints.map((point) => (
           <div
@@ -89,8 +88,8 @@ function ResumePage({
               point.id === hoveredCommentId ? "bg-sky-500" : "bg-red-500"
             }`}
             style={{
-              left: `${point.x}%`,
-              top: `${point.y}%`,
+              left: `${point.xCoordinate}%`,
+              top: `${point.yCoordinate}%`,
             }}
             onMouseEnter={() => setHoveredCommentId(point.id)}
             onMouseLeave={() => setHoveredCommentId(null)}
@@ -100,7 +99,6 @@ function ResumePage({
             }}
           ></div>
         ))}
-
         {/* 피드백 추가 폼 */}
         {addingFeedback && (
           <CommentForm
@@ -109,12 +107,14 @@ function ResumePage({
             onCancel={handleCancel}
           />
         )}
-
         {/* 피드백 수정 폼 */}
         {editingFeedback && (
           <CommentForm
-            position={{ x: editingFeedback.x, y: editingFeedback.y }}
-            initialComment={editingFeedback.comment}
+            position={{
+              x: editingFeedback.xCoordinate,
+              y: editingFeedback.yCoordinate,
+            }}
+            initialComment={editingFeedback.content}
             onSubmit={handleEditSubmit}
             onCancel={handleCancel}
           />

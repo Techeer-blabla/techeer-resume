@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ResumeData } from "../../types.ts";
-import { getResumeApi } from "../../api/getResumeApi.ts";
+import { getResumeApi } from "../../api/feedbackApi.ts";
 
 function ResumeOverviewSection({ resumeId = 1 }: { resumeId?: number }) {
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
@@ -28,15 +28,35 @@ function ResumeOverviewSection({ resumeId = 1 }: { resumeId?: number }) {
   }
 
   return (
-    <div>
-      <h1>{resumeData.user_name}'s Resume Overview</h1>
-      <p>Position: {resumeData.position}</p>
-      <p>Career: {resumeData.career} years</p>
-      <p>Tech Stack: {resumeData.tech_stack.join(", ")}</p>
-      <a href={resumeData.file_url} target="_blank" rel="noopener noreferrer">
-        Download Resume
-      </a>
-    </div>
+    <section className="bg-white rounded-lg px-6 my-4">
+      <h2 className="text-lg font-semibold text-gray-900 mb-4 text-left font-pretendard">
+        {resumeData.user_name}'s Resume Overview
+      </h2>
+      <div className="flex flex-wrap justify-start space-y-4 sm:space-y-0 sm:space-x-4">
+        <div>
+          <p className="font-medium">Position:</p>
+          <p>{resumeData.position}</p>
+        </div>
+        <div>
+          <p className="font-medium">Career:</p>
+          <p>{resumeData.career} years</p>
+        </div>
+        <div>
+          <p className="font-medium">Tech Stack:</p>
+          <p>{resumeData.tech_stack}</p>
+        </div>
+        <div>
+          <a
+            href={resumeData.file_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 underline"
+          >
+            Download Resume
+          </a>
+        </div>
+      </div>
+    </section>
   );
 }
 

@@ -1,17 +1,17 @@
-import { CommentItem } from "../../types";
+import { FeedbackPoint } from "../../types";
 
 type CommentListProps = {
-  comments: CommentItem[];
-  deleteCommentItem: (id: string) => void;
-  editCommentItem: (item: CommentItem) => void;
-  hoveredCommentId: string | null;
-  setHoveredCommentId: (id: string | null) => void;
+  comments: FeedbackPoint[];
+  deleteFeedbackPoint: (id: number) => void;
+  editFeedbackPoint: (item: FeedbackPoint) => void;
+  hoveredCommentId: number | null;
+  setHoveredCommentId: (id: number | null) => void;
 };
 
 function CommentList({
   comments,
-  deleteCommentItem,
-  editCommentItem,
+  deleteFeedbackPoint,
+  editFeedbackPoint,
   hoveredCommentId,
   setHoveredCommentId,
 }: CommentListProps) {
@@ -21,42 +21,27 @@ function CommentList({
         <li
           key={item.id}
           className={`mb-2 p-2 border rounded flex justify-between items-center ${
-            item.type === "feedback" && item.id === hoveredCommentId
-              ? "bg-blue-100"
-              : ""
+            item.id === hoveredCommentId ? "bg-blue-100" : ""
           }`}
-          onMouseEnter={() => {
-            if (item.type === "feedback") setHoveredCommentId(item.id);
-          }}
-          onMouseLeave={() => {
-            if (item.type === "feedback") setHoveredCommentId(null);
-          }}
+          onMouseEnter={() => setHoveredCommentId(item.id)}
+          onMouseLeave={() => setHoveredCommentId(null)}
         >
           <div>
-            {item.type === "comment" ? (
-              <p>{item.text}</p>
-            ) : (
-              <div>
-                <p>
-                  <strong>피드백:</strong> {item.comment}
-                </p>
-                <p className="text-sm text-gray-500">
-                  Page {item.pageNumber}, 좌표: ({item.x.toFixed(2)}%,{" "}
-                  {item.y.toFixed(2)}%)
-                </p>
-              </div>
-            )}
+            <p>
+              <strong>피드백:</strong> {item.content ?? "No feedback available"}
+            </p>
+            <p className="text-sm text-gray-500"></p>
           </div>
-          <div>
+          <div className="flex space-x-2">
             <button
-              className="mr-2 px-2 py-1 bg-yellow-500 text-white rounded"
-              onClick={() => editCommentItem(item)}
+              className="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+              onClick={() => editFeedbackPoint(item)}
             >
               Edit
             </button>
             <button
-              className="px-2 py-1 bg-red-500 text-white rounded"
-              onClick={() => deleteCommentItem(item.id)}
+              className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+              onClick={() => deleteFeedbackPoint(item.id)}
             >
               Delete
             </button>

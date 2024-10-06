@@ -5,8 +5,9 @@ import { HTTP_STATUS_CODE } from "../constants/api.ts";
 
 export interface ErrorResponseData {
   statusCode?: number;
-  message?: string;
+  errorMessage?: string;
   code?: number;
+  errors?: Record<string, string[]>;
 }
 
 export const handleAPIError = (error: AxiosError<ErrorResponseData>) => {
@@ -18,9 +19,9 @@ export const handleAPIError = (error: AxiosError<ErrorResponseData>) => {
   const { data, status } = error.response;
 
   if (status >= HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR) {
-    throw new HTTPError(status, data.message, data.code, data);
+    throw new HTTPError(status, data.errorMessage, data.code, data);
   }
 
   // 클라이언트 오류 (400~499)
-  throw new HTTPError(status, data.message, data.code, data);
+  throw new HTTPError(status, data.errorMessage, data.code, data);
 };

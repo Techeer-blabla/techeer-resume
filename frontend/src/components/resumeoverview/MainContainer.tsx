@@ -1,28 +1,24 @@
 import ResumePageGroup from "./ResumePageGroup";
-import { FeedbackPoint, CommentItem } from "../../types";
 import Footer from "./Footer.tsx";
+import { AddFeedbackPoint, FeedbackPoint } from "../../types.ts";
 
 type MainContainerProps = {
-  comments: CommentItem[];
-  addFeedbackPoint: (point: Omit<FeedbackPoint, "id" | "type">) => void;
-  deleteCommentItem: (id: string) => void;
-  editCommentItem: (item: CommentItem) => void;
-  hoveredCommentId: string | null;
-  setHoveredCommentId: (id: string | null) => void;
+  feedbackPoints: FeedbackPoint[];
+  addFeedbackPoint: (point: Omit<AddFeedbackPoint, "id">) => void;
+  deleteFeedbackPoint: (id: number) => void;
+  editFeedbackPoint: (item: AddFeedbackPoint) => void;
+  hoveredCommentId: number | null;
+  setHoveredCommentId: (id: number | null) => void;
 };
 
 function MainContainer({
-  comments,
+  feedbackPoints,
   addFeedbackPoint,
-  deleteCommentItem,
-  editCommentItem,
+  deleteFeedbackPoint,
+  editFeedbackPoint,
   hoveredCommentId,
   setHoveredCommentId,
 }: MainContainerProps) {
-  const feedbackPoints = comments.filter(
-    (item) => item.type === "feedback"
-  ) as FeedbackPoint[];
-
   return (
     <div className="w-full flex flex-col bg-white h-[90vh] ">
       {/* Scrollable Content with space for the fixed NavBar and Footer */}
@@ -32,8 +28,8 @@ function MainContainer({
           pages={3} // Adjust 'pages' to the number of resume pages
           feedbackPoints={feedbackPoints}
           addFeedbackPoint={addFeedbackPoint}
-          deleteCommentItem={deleteCommentItem}
-          editCommentItem={editCommentItem}
+          deleteFeedbackPoint={deleteFeedbackPoint}
+          editFeedbackPoint={editFeedbackPoint}
           hoveredCommentId={hoveredCommentId}
           setHoveredCommentId={setHoveredCommentId}
         />
