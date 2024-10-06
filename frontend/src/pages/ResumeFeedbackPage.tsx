@@ -10,7 +10,7 @@ import { AddFeedbackPoint, FeedbackPoint, ResumeData } from "../types.ts";
 
 function ResumeFeedbackPage() {
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
-  const [feedbackPoints, setComments] = useState<FeedbackPoint[]>([]);
+  const [feedbackPoints, setFeedbackPoints] = useState<FeedbackPoint[]>([]);
   const [hoveredCommentId, setHoveredCommentId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,8 +23,9 @@ function ResumeFeedbackPage() {
         setError(null);
         const data = await getResumeApi(resumeId);
         setResumeData(data);
-        setComments(data.feedbacks || []);
         console.log("Resume data: ", data);
+        console.log("Feedback points: ", data.feedbacks);
+        setFeedbackPoints(data.feedbacks || []);
       } catch (error) {
         console.error("Failed to fetch resume data", error);
         setError("Failed to fetch resume data. Please try again later.");
@@ -32,7 +33,6 @@ function ResumeFeedbackPage() {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [resumeId]);
 
@@ -50,12 +50,14 @@ function ResumeFeedbackPage() {
     try {
       setLoading(true);
       const newPoint: AddFeedbackPoint = {
-        ...point,
+        xCoordinate: point.xCoordinate,
+        yCoordinate: point.yCoordinate,
+        content: point.content,
+        pageNumber: 1,
       };
       await addFeedbackApi(resumeId, newPoint);
-      // Fetch updated comments after adding a new feedback point
       const updatedData = await getResumeApi(resumeId);
-      setComments(updatedData.feedbacks || []);
+      setFeedbackPoints(updatedData.feedbacks);
     } catch (error) {
       console.error("Failed to add feedback point", error);
       setError("Failed to add feedback point. Please try again later.");
@@ -67,7 +69,7 @@ function ResumeFeedbackPage() {
   // 댓글 및 피드백 점 삭제 (로그만 출력)
   const deleteFeedbackPoint = (id: number) => {
     console.log("Delete feedback point: ", id);
-    setComments((prevComments) =>
+    setFeedbackPoints((prevComments) =>
       (prevComments || []).filter((item) => item.id !== id)
     );
   };
@@ -100,7 +102,7 @@ function ResumeFeedbackPage() {
             {/* Comment Section */}
             <div className="overflow-y-auto mt-2">
               <CommentSection
-                comments={feedbackPoints}
+                feedbackPoints={feedbackPoints}
                 addFeedbackPoint={addFeedbackPoint}
                 deleteFeedbackPoint={deleteFeedbackPoint}
                 editFeedbackPoint={editFeedbackPoint}

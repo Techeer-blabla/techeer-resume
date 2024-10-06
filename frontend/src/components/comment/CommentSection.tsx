@@ -6,7 +6,7 @@ import LoadingSpinner from "../UI/LoadingSpinner.tsx";
 import { AddFeedbackPoint, FeedbackPoint } from "../../types.ts";
 
 interface CommentSectionProps {
-  comments: FeedbackPoint[];
+  feedbackPoints: FeedbackPoint[];
   addFeedbackPoint: (point: Omit<AddFeedbackPoint, "id">) => void;
   deleteFeedbackPoint: (id: number) => void;
   editFeedbackPoint: (item: FeedbackPoint) => void;
@@ -17,7 +17,7 @@ interface CommentSectionProps {
 }
 
 function CommentSection({
-  comments,
+  feedbackPoints,
   addFeedbackPoint,
   deleteFeedbackPoint,
   editFeedbackPoint,
@@ -51,7 +51,7 @@ function CommentSection({
           <LoadingSpinner />
         ) : (
           <CommentList
-            comments={comments ?? []}
+            feedbackPoints={feedbackPoints ?? []}
             deleteFeedbackPoint={deleteFeedbackPoint}
             editFeedbackPoint={editFeedbackPoint}
             hoveredCommentId={hoveredCommentId}

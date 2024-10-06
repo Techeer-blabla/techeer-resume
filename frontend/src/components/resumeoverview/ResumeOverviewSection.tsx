@@ -30,7 +30,7 @@ function ResumeOverviewSection({ resumeId = 1 }: { resumeId?: number }) {
   return (
     <section className="bg-white rounded-lg px-6 my-4">
       <h2 className="text-lg font-semibold text-gray-900 mb-4 text-left font-pretendard">
-        {resumeData.user_name}'s Resume Overview
+        {resumeData.userName}'s Resume Overview
       </h2>
       <div className="flex flex-wrap justify-start space-y-4 sm:space-y-0 sm:space-x-4">
         <div>
@@ -43,11 +43,11 @@ function ResumeOverviewSection({ resumeId = 1 }: { resumeId?: number }) {
         </div>
         <div>
           <p className="font-medium">Tech Stack:</p>
-          <p>{resumeData.tech_stack}</p>
+          <p>{resumeData.techStack}</p>
         </div>
         <div>
           <a
-            href={resumeData.file_url}
+            href={resumeData.fileUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 underline"

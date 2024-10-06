@@ -1,7 +1,7 @@
 import { FeedbackPoint } from "../../types";
 
 type CommentListProps = {
-  comments: FeedbackPoint[];
+  feedbackPoints: FeedbackPoint[];
   deleteFeedbackPoint: (id: number) => void;
   editFeedbackPoint: (item: FeedbackPoint) => void;
   hoveredCommentId: number | null;
@@ -9,7 +9,7 @@ type CommentListProps = {
 };
 
 function CommentList({
-  comments,
+  feedbackPoints,
   deleteFeedbackPoint,
   editFeedbackPoint,
   hoveredCommentId,
@@ -17,7 +17,7 @@ function CommentList({
 }: CommentListProps) {
   return (
     <ul>
-      {comments.map((item) => (
+      {feedbackPoints.map((item) => (
         <li
           key={item.id}
           className={`mb-2 p-2 border rounded flex justify-between items-center ${
