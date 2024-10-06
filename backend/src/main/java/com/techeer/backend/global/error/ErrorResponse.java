@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +15,7 @@ public class ErrorResponse {
     private HttpStatus httpStatus;
     private String code;
     private String errorMessage;
-    private List<FieldError> errors =null;
+    private List<FieldError> errors =new ArrayList<>();
 
 
     public ErrorResponse(HttpStatus status, String s) {
