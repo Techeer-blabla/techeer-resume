@@ -70,14 +70,15 @@ function Upload() {
 
   // 포지션, 학력, 회사, 스택 데이터
   const positions = [
-    "프론트엔드",
+    "FRONTEND",
     "BACKEND",
     "풀스택",
-    "DevOps",
+    "DEVOPS",
     "게임",
     "퍼블리셔",
     "머신러닝/AI",
-    "앱 (iOS, Android)",
+    "ANDROID",
+    "IOS",
     "데이터",
   ];
   const educations = ["전공자", "비전공자"];
@@ -297,7 +298,7 @@ function Upload() {
             <PositionSVG
               key={position}
               text={position}
-              isSelected={position === position}
+              isSelected={position.includes(position)}
               onClick={() => handlePositionClick(position)}
             />
           ))}
