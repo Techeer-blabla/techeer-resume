@@ -70,8 +70,6 @@ public class FeedbackService {
         feedbackRepository.delete(feedback);
     }
 
-
-
     private FeedbackResponse toFeedbackResponse(Feedback feedback) {
         return FeedbackResponse.of(
                 feedback.getId(),
@@ -81,4 +79,6 @@ public class FeedbackService {
                 feedback.getYCoordinate()
         );
     }
+
+
 }
