@@ -5,19 +5,27 @@ import { postResume } from "../api/resumeApi";
 function Upload() {
   const [resume, setResume] = useState<File | null>(null);
   const [career, setCareer] = useState<number>(0);
+  const [position, setPosition] = useState<string>("");
+  const [applyingCompany, setApplyingCompany] = useState<string[]>([]);
+  const [techStack, setTechStack] = useState<string[]>([]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       setResume(event.target.files[0]);
+      console.log("선택된 파일:", event.target.files[0].name); // 파일명 출력
     }
+  };
+
+  const handleCancel = () => {
+    setResume(null);
   };
 
   const handleUpload = async () => {
     if (resume) {
       const createResumeReq = {
         username: "testuser",
-        position,
-        career,
+        position: position,
+        career: career,
         applying_company: applyingCompany,
         tech_stack: techStack,
       };
@@ -219,12 +227,9 @@ function Upload() {
     );
   };
 
-  const [position, setPosition] = useState<string>("BACKEND");
   const [selectedEducation, setSelectedEducation] = useState<string | null>(
     null
   );
-  const [applyingCompany, setApplyingCompany] = useState<string[]>([]);
-  const [techStack, setTechStack] = useState<string[]>([]);
 
   const handlePositionClick = (position: string) => setPosition(position);
   const handleEducationClick = (education: string) =>
@@ -277,15 +282,19 @@ function Upload() {
           </div>
         </div>
         <FileUpload id="uploadFile1" />
-        <div className="flex justify-center mt-8 ml-[24.5rem] space-x-2">
-          <button className="w-[7.5rem] h-[3rem] flex-shrink-0 text-[#C5C5C5] font-pretendard text-[1rem] font-semibold bg-transparent border border-[#C5C5C5] rounded">
-            Cancel
-          </button>
+        <div className="w-[40rem] flex items-center mt-[1rem] ml-[5rem]">
+          {resume ? (
+            <div className="text-gray-600 font-medium overflow-hidden text-ellipsis whitespace-nowrap flex-1">
+              선택된 파일: {resume.name}
+            </div>
+          ) : (
+            <div className="flex-1" />
+          )}
           <button
-            className="w-[7.5rem] h-[3rem] flex-shrink-0 text-white font-pretendard text-[1rem] font-semibold bg-[#0060FF] rounded"
-            onClick={handleUpload} // 업로드 버튼 클릭 시 이벤트 핸들러 추가
+            className="w-[7.5rem] h-[2.5rem] flex-shrink-0 text-[#C5C5C5] font-pretendard text-[1rem] font-semibold bg-transparent border border-[#C5C5C5] rounded"
+            onClick={handleCancel}
           >
-            Upload Files
+            Cancel
           </button>
         </div>
       </div>
@@ -294,12 +303,12 @@ function Upload() {
       <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal">
         <div className="ml-[1rem]"># 포지션</div>
         <div className="grid grid-cols-3 gap-2 mb-4">
-          {positionTags.map((position) => (
+          {positionTags.map((positionTag) => (
             <PositionSVG
-              key={position}
-              text={position}
-              isSelected={position.includes(position)}
-              onClick={() => handlePositionClick(position)}
+              key={positionTag}
+              text={positionTag}
+              isSelected={position == positionTag}
+              onClick={() => handlePositionClick(positionTag)}
             />
           ))}
           <DirectInputTag
@@ -312,12 +321,12 @@ function Upload() {
         <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
           <div className="ml-[1rem]"># 스택</div>
           <div className="grid grid-cols-3 gap-2 mb-4">
-            {stackTags.map((stack) => (
+            {stackTags.map((stackTag) => (
               <PositionSVG
-                key={stack}
-                text={stack}
-                isSelected={techStack.includes(stack)}
-                onClick={() => handleStackClick(stack)}
+                key={stackTag}
+                text={stackTag}
+                isSelected={techStack.includes(stackTag)}
+                onClick={() => handleStackClick(stackTag)}
               />
             ))}
             <DirectInputTag existingTags={stackTags} onAdd={handleAddStack} />
@@ -369,7 +378,7 @@ function Upload() {
             />
           </div>
           {/* 최종 업로드 버튼 */}
-          <div className="flex justify-center mt-8">
+          <div className="flex justify-end mt-8">
             <button
               className="w-[10rem] h-[3rem] flex-shrink-0 text-white font-pretendard text-[1rem] font-semibold bg-[#0060FF] rounded"
               onClick={handleUpload} // 업로드 버튼 클릭 시 이벤트 핸들러 추가
