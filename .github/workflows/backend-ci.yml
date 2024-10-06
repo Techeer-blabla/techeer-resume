@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - 'be/**'  # fe/로 시작하는 모든 브랜치에 대해 푸시 이벤트 트리거
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17 (Amazon Corretto)
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'amazon-corretto' # 배포판 설정
+          java-version: '17'
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper/
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Grant execute permission for Gradle wrapper
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build --no-daemon
+
+      - name: Run tests
+        run: ./gradlew test
