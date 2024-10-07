@@ -1,25 +1,60 @@
-import { ReactNode } from "react";
+import { useEffect, useState } from "react";
+import { ResumeData } from "../../types.ts";
+import { getResumeApi } from "../../api/feedbackApi.ts";
 
-type ResumeOverviewSectionProps = {
-  title: string;
-  children: ReactNode;
-};
+function ResumeOverviewSection({ resumeId = 1 }: { resumeId?: number }) {
+  const [resumeData, setResumeData] = useState<ResumeData | null>(null);
 
-function ResumeOverviewSection({
-  title,
-  children,
-}: ResumeOverviewSectionProps) {
+  useEffect(() => {
+    if (resumeId === undefined) {
+      console.error("Invalid resumeId: undefined");
+      return;
+    }
+
+    const fetchResumeData = async () => {
+      try {
+        const data = await getResumeApi(resumeId);
+        setResumeData(data);
+      } catch (error) {
+        console.error("Failed to load resume data", error);
+      }
+    };
+
+    fetchResumeData();
+  }, [resumeId]);
+
+  if (!resumeData) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <section className="bg-white rounded-lg px-6 my-4">
-      {" "}
-      {/* Removed shadow and updated padding */}
       <h2 className="text-lg font-semibold text-gray-900 mb-4 text-left font-pretendard">
-        {/* Reduced font size and applied Pretendard font */}
-        {title}
+        {resumeData.userName}'s Resume Overview
       </h2>
       <div className="flex flex-wrap justify-start space-y-4 sm:space-y-0 sm:space-x-4">
-        {/* Updated from justify-around to justify-start */}
-        {children}
+        <div>
+          <p className="font-medium">Position:</p>
+          <p>{resumeData.position}</p>
+        </div>
+        <div>
+          <p className="font-medium">Career:</p>
+          <p>{resumeData.career} years</p>
+        </div>
+        <div>
+          <p className="font-medium">Tech Stack:</p>
+          <p>{resumeData.techStack}</p>
+        </div>
+        <div>
+          <a
+            href={resumeData.fileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 underline"
+          >
+            Download Resume
+          </a>
+        </div>
       </div>
     </section>
   );
