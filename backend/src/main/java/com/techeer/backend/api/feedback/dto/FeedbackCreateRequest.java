@@ -18,15 +18,13 @@ public class FeedbackCreateRequest {
 	private String content;
 
 	@NotNull(message = "x 좌표는 필수입니다.")
-	@JsonProperty("xCoordinate")
+	@JsonProperty("x_coordinate")
 	private BigDecimal xCoordinate;
 
 	@NotNull(message = "y 좌표는 필수입니다.")
-	@JsonProperty("yCoordinate")
+	@JsonProperty("y_coordinate")
 	private BigDecimal yCoordinate;
 
-	// Swagger UI에서 기본값을 설정할 수 있도록 하기 위해 추가
-	/*좀 후진 방법인거 같긴한데 일단 이걸로 해야할듯*/
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private BigDecimal xcoordinate = null;
 

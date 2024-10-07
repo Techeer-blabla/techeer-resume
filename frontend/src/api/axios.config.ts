@@ -1,4 +1,3 @@
-// src/axios.config.ts
 import axios from "axios";
 import { AXIOS_BASE_URL, NETWORK } from "../constants/api.ts";
 import { handleAPIError } from "./interceptor.ts";
@@ -16,8 +15,9 @@ export const jsonAxios = axios.create({
 
 export const formAxios = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true, // 필요에 따라 설정
-  // headers에서 "Content-Type" 제거
+  headers: {
+    "Content-Type": "multipart/form-data",
+  },
 });
 
 export const axiosInstance = axios.create({
