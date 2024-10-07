@@ -8,7 +8,7 @@ interface CommentProps extends CommentType {
   onEdit: (id: number, newText: string) => void;
 }
 
-function Comment({
+function CommentCard({
   id,
   text,
   timestamp,
@@ -50,10 +50,7 @@ function Comment({
   };
 
   return (
-    <div className="w-[450px] h-auto relative mt-4 p-4 bg-white rounded-[14px] shadow-md">
-      {/* Border with rounded corners */}
-      <div className="absolute inset-0 rounded-[14px] border-2 border-lightBlue"></div>
-
+    <div className=" h-auto relative mt-4 p-4 bg-white border-b border-primary-lightBlue">
       {/* Comment Text or Edit Form */}
       {isEditing ? (
         <form onSubmit={handleEditSubmit} className="mb-2 z-10">
@@ -103,4 +100,4 @@ function Comment({
   );
 }
 
-export default Comment;
+export default CommentCard;

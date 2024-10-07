@@ -1,144 +1,145 @@
-import { useState, useEffect } from "react";
-import AddComment from "../components/comment/AddComment.tsx";
-import CommentList from "../components/comment/CommentList.tsx";
-import MainContainer from "../components/resumeoverview/MainContainer.tsx";
+import { useEffect, useState } from "react";
+import Layout from "../components/Layout/Layout";
+import MainContainer from "../components/resumeoverview/MainContainer";
+import ResumeOverview from "../components/resumeoverview/ResumeOverview";
+import CommentSection from "../components/comment/CommentSection.tsx";
+import LoadingSpinner from "../components/UI/LoadingSpinner";
+import ErrorMessage from "../components/UI/ErrorMessage";
 import {
-  CommentType,
-  getComments,
-  addComment,
-  deleteComment as apiDeleteComment,
-  editComment as apiEditComment,
-} from "../mockApi";
-import ResumeOverview from "../components/resumeoverview/ResumeOverview.tsx";
-import Navbar from "../components/Navbar.tsx";
+  addFeedbackApi,
+  deleteFeedbackApi,
+  getResumeApi,
+} from "../api/feedbackApi.ts";
+import { AddFeedbackPoint, FeedbackPoint, ResumeData } from "../types.ts";
 
 function ResumeFeedbackPage() {
-  const [comments, setComments] = useState<CommentType[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const [resumeData, setResumeData] = useState<ResumeData | null>(null);
+  const [feedbackPoints, setFeedbackPoints] = useState<FeedbackPoint[]>([]);
+  const [hoveredCommentId, setHoveredCommentId] = useState<number | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const resumeId = 1;
 
-  // 초기 댓글 불러오기
   useEffect(() => {
-    setLoading(true);
-    getComments()
-      .then((data) => {
-        setComments(data);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await getResumeApi(resumeId);
+        setResumeData(data);
+        setFeedbackPoints(data.feedbacks || []);
+      } catch (error) {
+        console.error("Failed to fetch resume data", error);
+        setError("Failed to fetch resume data. Please try again later.");
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => {
-        setError("댓글을 불러오는 데 실패했습니다.");
-        setLoading(false);
-        console.error(err);
-      });
-  }, []);
+      }
+    };
+    fetchData();
+  }, [resumeId]);
 
-  function addNewComment(newCommentText: string) {
-    setLoading(true);
-    addComment(newCommentText)
-      .then((newComment) => {
-        setComments([newComment, ...comments]);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError("댓글을 추가하는 데 실패했습니다.");
-        setLoading(false);
-        console.error(err);
-      });
-  }
-
-  function deleteCommentHandler(id: number) {
-    setLoading(true);
-    apiDeleteComment(id)
-      .then(() => {
-        setComments(comments.filter((comment) => comment.id !== id));
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError("댓글을 삭제하는 데 실패했습니다.");
-        setLoading(false);
-        console.error(err);
-      });
-  }
-
-  function editCommentHandler(id: number, newText: string) {
-    setLoading(true);
-    apiEditComment(id, newText)
-      .then((updatedComment) => {
-        setComments(
-          comments.map((comment) =>
-            comment.id === id ? updatedComment : comment
-          )
-        );
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError("댓글을 수정하는 데 실패했습니다.");
-        setLoading(false);
-        console.error(err);
-      });
-  }
-
-  // 에러 메시지 자동 사라지게 설정
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => setError(""), 3000); // Auto clear error after 3 seconds
-      return () => clearTimeout(timer);
+  // 피드백 점 추가
+  const addFeedbackPoint = async (point: Omit<AddFeedbackPoint, "id">) => {
+    if (
+      !point.content ||
+      point.xCoordinate === undefined ||
+      point.yCoordinate === undefined
+    ) {
+      setError("All fields are required to add a feedback point.");
+      return;
     }
-  }, [error]);
+
+    try {
+      setLoading(true);
+      const newPoint: AddFeedbackPoint = {
+        xCoordinate: point.xCoordinate,
+        yCoordinate: point.yCoordinate,
+        content: point.content,
+        pageNumber: 1,
+      };
+      await addFeedbackApi(resumeId, newPoint);
+      const updatedData = await getResumeApi(resumeId);
+      setFeedbackPoints(updatedData.feedbacks);
+    } catch (error) {
+      console.error("Failed to add feedback point", error);
+      setError("Failed to add feedback point. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 댓글 및 피드백 점 삭제 (로그만 출력)
+  // 피드백 점 삭제
+  const deleteFeedbackPoint = async (id: number) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Call the API to delete the feedback point
+      await deleteFeedbackApi(resumeId, id);
+
+      // After successful deletion, update the local state to remove the feedback
+      setFeedbackPoints((prevComments) =>
+        (prevComments || []).filter((item) => item.id !== id)
+      );
+      console.log("Deleted feedback point: ", id);
+    } catch (error) {
+      console.error("Failed to delete feedback point", error);
+      setError("Failed to delete feedback point. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 댓글 및 피드백 점 수정 (로그만 출력)
+  const editFeedbackPoint = (updatedItem: AddFeedbackPoint) => {
+    console.log("Edit feedback point: ", updatedItem);
+  };
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return <ErrorMessage message={error} />;
+  }
+
+  if (!resumeData) {
+    return <div>No resume data available.</div>;
+  }
 
   return (
-    <div className="pt-5">
-      <Navbar />
-      <div className="flex flex-row w-full h-screen bg-gray-100 mt-3">
-        {/* Left Column: MainContainer */}
-        <div className="w-2/3 h-full">
-          <MainContainer />
-        </div>
+    <div className="flex flex-col flex-grow ">
+      <Layout
+        sidebar={
+          <div className="flex flex-col justify-between bg-white p-2 mt-10">
+            {/* Resume Overview */}
+            <ResumeOverview />
 
-        {/* Right Column: ResumeOverview and Comments */}
-        <div className="w-1/3 h-full flex flex-col p-4">
-          {/* Resume Overview */}
-          <ResumeOverview />
-
-          {/* Comments Section */}
-          <div className="flex-grow mt-4 overflow-y-auto">
-            {loading ? (
-              <div className="flex justify-center items-center">
-                <svg
-                  className="animate-spin h-5 w-5 mr-3 text-blue-500"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v8H4z"
-                  ></path>
-                </svg>
-                Loading...
-              </div>
-            ) : (
-              <CommentList
-                comments={comments}
-                onDelete={deleteCommentHandler}
-                onEdit={editCommentHandler}
+            {/* Comment Section */}
+            <div className="overflow-y-auto mt-2">
+              <CommentSection
+                feedbackPoints={feedbackPoints}
+                addFeedbackPoint={addFeedbackPoint}
+                deleteFeedbackPoint={deleteFeedbackPoint}
+                editFeedbackPoint={editFeedbackPoint}
+                hoveredCommentId={hoveredCommentId}
+                setHoveredCommentId={setHoveredCommentId}
               />
-            )}
+            </div>
           </div>
-
-          {/* Add Comment Input */}
-          <AddComment onAdd={addNewComment} disabled={loading} />
-        </div>
-      </div>
+        }
+      >
+        {/* Main Content */}
+        <MainContainer
+          feedbackPoints={feedbackPoints}
+          addFeedbackPoint={addFeedbackPoint}
+          deleteFeedbackPoint={deleteFeedbackPoint}
+          editFeedbackPoint={editFeedbackPoint}
+          hoveredCommentId={hoveredCommentId}
+          setHoveredCommentId={setHoveredCommentId}
+        />
+      </Layout>
     </div>
   );
 }
