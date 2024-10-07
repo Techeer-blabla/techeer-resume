@@ -18,5 +18,6 @@ public class FeedbackResponse {
 	private final String content;
 	private final BigDecimal xCoordinate;
 	private final BigDecimal yCoordinate;
+  private final int pageNumber;
 
 }

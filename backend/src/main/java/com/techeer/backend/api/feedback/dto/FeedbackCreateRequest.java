@@ -1,13 +1,12 @@
 package com.techeer.backend.api.feedback.dto;
 
-import java.math.BigDecimal;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.math.BigDecimal;
 
 @Getter
 @AllArgsConstructor
@@ -30,4 +29,9 @@ public class FeedbackCreateRequest {
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private BigDecimal ycoordinate = null;
+
+	@NotNull(message = "page 번호는 필수입니다.")
+	private int pageNumber;
 }
+
+

@@ -62,7 +62,6 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
     implementation 'io.github.cdimascio:dotenv-java:2.2.0'
 
-
     // AWS SDK for S3 access
     // implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.1.1")
     // implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'

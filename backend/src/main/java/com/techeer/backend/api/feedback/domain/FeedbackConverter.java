@@ -12,6 +12,7 @@ public class FeedbackConverter {
 			.content(feedback.getContent())
 			.xCoordinate(feedback.getXCoordinate())
 			.yCoordinate(feedback.getYCoordinate())
+				.pageNumber(feedback.getPageNumber())
 			.build();
 	}
 }
