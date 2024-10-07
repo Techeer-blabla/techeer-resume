@@ -30,7 +30,6 @@ function ResumePage({
   const [editingFeedback, setEditingFeedback] = useState<FeedbackPoint | null>(
     null
   );
-  console.log(feedbackPoints);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (!pageRef.current) return;

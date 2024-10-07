@@ -5,7 +5,11 @@ import ResumeOverview from "../components/resumeoverview/ResumeOverview";
 import CommentSection from "../components/comment/CommentSection.tsx";
 import LoadingSpinner from "../components/UI/LoadingSpinner";
 import ErrorMessage from "../components/UI/ErrorMessage";
-import { addFeedbackApi, getResumeApi } from "../api/feedbackApi.ts";
+import {
+  addFeedbackApi,
+  deleteFeedbackApi,
+  getResumeApi,
+} from "../api/feedbackApi.ts";
 import { AddFeedbackPoint, FeedbackPoint, ResumeData } from "../types.ts";
 
 function ResumeFeedbackPage() {
@@ -23,8 +27,6 @@ function ResumeFeedbackPage() {
         setError(null);
         const data = await getResumeApi(resumeId);
         setResumeData(data);
-        console.log("Resume data: ", data);
-        console.log("Feedback points: ", data.feedbacks);
         setFeedbackPoints(data.feedbacks || []);
       } catch (error) {
         console.error("Failed to fetch resume data", error);
@@ -67,11 +69,26 @@ function ResumeFeedbackPage() {
   };
 
   // 댓글 및 피드백 점 삭제 (로그만 출력)
-  const deleteFeedbackPoint = (id: number) => {
-    console.log("Delete feedback point: ", id);
-    setFeedbackPoints((prevComments) =>
-      (prevComments || []).filter((item) => item.id !== id)
-    );
+  // 피드백 점 삭제
+  const deleteFeedbackPoint = async (id: number) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Call the API to delete the feedback point
+      await deleteFeedbackApi(resumeId, id);
+
+      // After successful deletion, update the local state to remove the feedback
+      setFeedbackPoints((prevComments) =>
+        (prevComments || []).filter((item) => item.id !== id)
+      );
+      console.log("Deleted feedback point: ", id);
+    } catch (error) {
+      console.error("Failed to delete feedback point", error);
+      setError("Failed to delete feedback point. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // 댓글 및 피드백 점 수정 (로그만 출력)
