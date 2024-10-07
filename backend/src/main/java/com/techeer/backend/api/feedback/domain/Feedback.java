@@ -44,6 +44,9 @@ public class Feedback extends BaseEntity {
 	@Column(nullable = false, precision = 10, scale = 6)
 	private BigDecimal yCoordinate;
 
+	@Column(nullable = false)
+	private int pageNumber;
+
 	// 기본 생성자
 	protected Feedback() {
 	}
@@ -52,10 +55,11 @@ public class Feedback extends BaseEntity {
 	@Builder
 	public static Feedback of(Resume resume, FeedbackCreateRequest feedbackCreateRequest) {
 		return Feedback.builder()
-			.resume(resume)
-			.content(feedbackCreateRequest.getContent())
-			.xCoordinate(feedbackCreateRequest.getXCoordinate())
-			.yCoordinate(feedbackCreateRequest.getYCoordinate())
-			.build();
+        .resume(resume)
+        .content(feedbackCreateRequest.getContent())
+        .xCoordinate(feedbackCreateRequest.getXCoordinate())
+        .yCoordinate(feedbackCreateRequest.getYCoordinate())
+        .pageNumber(feedbackCreateRequest.getPageNumber())
+        .build();
 	}
 }
