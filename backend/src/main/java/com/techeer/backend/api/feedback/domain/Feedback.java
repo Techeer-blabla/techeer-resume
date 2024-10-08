@@ -1,20 +1,9 @@
 package com.techeer.backend.api.feedback.domain;
 
-import java.math.BigDecimal;
-
 import com.techeer.backend.api.feedback.dto.FeedbackCreateRequest;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.global.common.BaseEntity;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,11 +27,11 @@ public class Feedback extends BaseEntity {
 	@Column(nullable = false, length = 255)
 	private String content;
 
-	@Column(precision = 10, scale = 6)
-	private BigDecimal xCoordinate;
+	@Column(nullable = false)
+	private Double xCoordinate;
 
-	@Column(nullable = false, precision = 10, scale = 6)
-	private BigDecimal yCoordinate;
+	@Column(nullable = false)
+	private Double yCoordinate;
 
 	@Column(nullable = false)
 	private int pageNumber;

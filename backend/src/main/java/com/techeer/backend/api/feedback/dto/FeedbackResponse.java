@@ -1,7 +1,5 @@
 package com.techeer.backend.api.feedback.dto;
 
-import java.math.BigDecimal;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,8 +14,8 @@ public class FeedbackResponse {
 	private final Long feedbackId;
 	private final Long resumeId;
 	private final String content;
-	private final BigDecimal xCoordinate;
-	private final BigDecimal yCoordinate;
-  private final int pageNumber;
+	private final Double xCoordinate;
+	private final Double yCoordinate;
+	private final int pageNumber;
 
 }
