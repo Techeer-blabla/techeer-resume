@@ -3,6 +3,7 @@ package com.techeer.backend.api.feedback.domain;
 import com.techeer.backend.api.feedback.dto.FeedbackCreateRequest;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.global.common.BaseEntity;
+import com.techeer.backend.global.error.exception.feedback.InvalidPageNumberException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,6 +44,9 @@ public class Feedback extends BaseEntity {
 	// Builder 패턴을 사용한 생성자
 	@Builder
 	public static Feedback of(Resume resume, FeedbackCreateRequest feedbackCreateRequest) {
+		if (feedbackCreateRequest.getPageNumber() <= 0) {
+			throw new InvalidPageNumberException();
+		}
 		return Feedback.builder()
         .resume(resume)
         .content(feedbackCreateRequest.getContent())
