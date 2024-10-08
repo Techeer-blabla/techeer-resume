@@ -1,11 +1,26 @@
+import { useState } from "react";
 import Navbar from "../components/Navbar";
 import BannerCard from "../components/MainPage/BannerCard";
 import Category from "../components/MainPage/Category";
 import PostCard from "../components/PostCard";
+import PositionModal from "../components/Search/PositionModal";
+import CareerModal from "../components/Search/CareerModal";
 import man1 from "../assets/man1.png";
 import man2 from "../assets/man2.png";
 
 function MainPage() {
+  // 포지션, 경력 모달 상태 관리
+  const [isPositionOpen, setIsPositionOpen] = useState<boolean>(false);
+  const [isCareerOpen, setIsCareerOpen] = useState<boolean>(false);
+
+  // 포지션 모달 열기/닫기
+  const openPositionModal = () => setIsPositionOpen(true);
+  const closePositionModal = () => setIsPositionOpen(false);
+
+  // 경력 모달 열기/닫기
+  const openCareerModal = () => setIsCareerOpen(true);
+  const closeCareerModal = () => setIsCareerOpen(false);
+
   return (
     <div className="w-full bg-[#D7E1F5]">
       <div className="pt-5">
@@ -37,15 +52,29 @@ function MainPage() {
         <div className="p-6">
           {/* 카테고리 */}
           <div className="max-w-screen-xl mx-auto flex justify-start py-6">
-            <Category title="조회순" options={["인기순", "최신순"]} />
+            {/* <Category title="조회순" options={["인기순", "최신순"]} /> */}
 
-            <Category
-              title="포지션"
-              options={["Frontend", "Backend", "DevOps"]}
-            />
+            <Category title="포지션" onClick={openPositionModal} />
 
-            <Category title="경력" options={["인턴", "현직자"]} />
+            <Category title="경력" onClick={openCareerModal} />
           </div>
+
+          {/* 포지션 모달 */}
+          {isPositionOpen && (
+            <div className="absolute top-10 left-10 z-50">
+              <PositionModal
+                isOpen={isPositionOpen}
+                onClose={closePositionModal}
+              />
+            </div>
+          )}
+
+          {/* 경력 모달 */}
+          {isCareerOpen && (
+            <div className="absolute top-10 left-10 z-50">
+              <CareerModal isOpen={isCareerOpen} onClose={closeCareerModal} />
+            </div>
+          )}
 
           {/* 포스트 카드 */}
           <div className="flex justify-center">

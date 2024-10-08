@@ -31,16 +31,16 @@ export const axiosInstance = axios.create({
 axiosInstance.interceptors.response.use((response) => response, handleAPIError);
 
 // 요청 인터셉터: 인증 토큰 자동 첨부 (옵션)
-// axiosInstance.interceptors.request.use(
-//   (config) => {
-//     const token = localStorage.getItem("authToken");
-//     if (token && config.headers) {
-//       config.headers.Authorization = `Bearer ${token}`;
-//     }
-//     return config;
-//   },
-//   (error) => Promise.reject(error)
-// );
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("authToken");
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 // 요청 인터셉터 설정
 axiosInstance.interceptors.request.use((config) => {
