@@ -24,8 +24,7 @@ public enum ErrorCode {
     OPENAI_INVALID_RESPONSE(HttpStatus.BAD_GATEWAY, "O003", "OpenAI 응답 오류"),
 
     // Feedback
-    INVALID_FEEDBACK_PAGE_NUMBER(HttpStatus.BAD_REQUEST, "F001", "유효하지 않은 페이지 번호 입력(1이상의 정수 입력)")
-    ;
+    INVALID_FEEDBACK_PAGE_NUMBER(HttpStatus.BAD_REQUEST, "F001", "유효하지 않은 페이지 번호 입력(1이상의 정수 입력)");
 
     private HttpStatus status;
     private String code;
