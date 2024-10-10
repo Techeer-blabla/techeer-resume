@@ -78,16 +78,15 @@ function Upload() {
 
   // 포지션, 학력, 회사, 스택 데이터
   const positions = [
-    "FRONTEND",
-    "BACKEND",
-    "풀스택",
-    "DEVOPS",
-    "게임",
-    "퍼블리셔",
-    "머신러닝/AI",
-    "ANDROID",
+    "Frontend",
+    "Backend",
+    "FullStack",
+    "DevOps",
+    "Designer",
+    "AI",
+    "Android",
     "IOS",
-    "데이터",
+    "Data",
   ];
   const educations = ["전공자", "비전공자"];
   const companies = [
@@ -98,16 +97,20 @@ function Upload() {
     "금융권",
     "제조업",
     "핀테크",
+    "유니콘",
   ];
   const stacks = [
     "Java",
-    "C++",
-    "Linux",
-    "Javascript",
-    "Mysql",
+    "Go",
+    "JavaScript",
+    "Spring Boot",
+    "Flask",
+    "MySQL",
     "AWS",
     "React",
-    "Python",
+    "PostgreSQL",
+    "TypeScript",
+    "Next.js",
   ];
 
   // SVG 컴포넌트
@@ -231,27 +234,39 @@ function Upload() {
     null
   );
 
-  const handlePositionClick = (position: string) => setPosition(position);
-  const handleEducationClick = (education: string) =>
-    setSelectedEducation(education);
-  const handleCompanyClick = (applyingCompany: string) =>
-    setApplyingCompany((prevCompanies) => [...prevCompanies, applyingCompany]);
+  const handlePositionClick = (positionTag: string) => {
+    setPosition((prevPosition) =>
+      prevPosition === positionTag ? "" : positionTag
+    );
+  };
+  const handleEducationClick = (education: string) => {
+    setSelectedEducation((prevEducation) =>
+      prevEducation === education ? "" : education
+    );
+  };
+  const handleCompanyClick = (applyingCompany: string) => {
+    setApplyingCompany((prevCompanies) =>
+      prevCompanies.includes(applyingCompany)
+        ? prevCompanies.filter((company) => company !== applyingCompany)
+        : [...prevCompanies, applyingCompany]
+    );
+  };
 
-  const [positionTags, setPositionTags] = useState<string[]>(positions);
+  const [positionTags] = useState<string[]>(positions);
   const [stackTags, setStackTags] = useState<string[]>(stacks);
-  const [educationTags, setEducationTags] = useState<string[]>(educations);
-  const [companyTags, setCompanyTags] = useState<string[]>(companies);
+  const [educationTags] = useState<string[]>(educations);
+  const [companyTags] = useState<string[]>(companies);
 
-  const handleStackClick = (techStack: string) =>
-    setTechStack((prevStacks) => [...prevStacks, techStack]);
-  const handleAddPosition = (newTag: string) =>
-    setPositionTags([...positionTags, newTag]);
+  const handleStackClick = (techStack: string) => {
+    setTechStack((prevStacks) =>
+      prevStacks.includes(techStack)
+        ? prevStacks.filter((stack) => stack !== techStack)
+        : [...prevStacks, techStack]
+    );
+  };
+
   const handleAddStack = (newTag: string) =>
     setStackTags([...stackTags, newTag]);
-  const handleAddEducation = (newTag: string) =>
-    setEducationTags([...educationTags, newTag]);
-  const handleAddCompany = (newTag: string) =>
-    setCompanyTags([...companyTags, newTag]);
 
   return (
     <div className="w-full flex mt-[2rem] ml-[4rem] space-x-4">
@@ -311,10 +326,6 @@ function Upload() {
               onClick={() => handlePositionClick(positionTag)}
             />
           ))}
-          <DirectInputTag
-            existingTags={positionTags}
-            onAdd={handleAddPosition}
-          />
         </div>
 
         {/* 스택 */}
@@ -353,10 +364,6 @@ function Upload() {
                 onClick={() => handleEducationClick(education)}
               />
             ))}
-            <DirectInputTag
-              existingTags={educationTags}
-              onAdd={handleAddEducation}
-            />
           </div>
         </div>
 
@@ -372,10 +379,6 @@ function Upload() {
                 onClick={() => handleCompanyClick(company)}
               />
             ))}
-            <DirectInputTag
-              existingTags={companyTags}
-              onAdd={handleAddCompany}
-            />
           </div>
           {/* 최종 업로드 버튼 */}
           <div className="flex justify-end mt-8">
