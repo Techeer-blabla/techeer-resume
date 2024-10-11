@@ -1,16 +1,25 @@
 import { ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 
 function BannerCard({
   title,
   comment,
   btncomment,
   imgurl,
+  pageurl,
 }: {
   title: ReactNode;
   comment: string;
   btncomment: string;
   imgurl: string;
+  pageurl: string;
 }) {
+  const navigate = useNavigate();
+  // 메인 페이지로 이동 ('/')
+  const movePage = () => {
+    navigate(`/${pageurl}`);
+  };
+
   return (
     <div>
       {/* 카드 영역 */}
@@ -21,7 +30,10 @@ function BannerCard({
             {title}
           </p>
           <p className="text-white text-sm">{comment}</p>
-          <button className="bg-white text-[#4177FF] px-6 py-3 rounded-full font-bold text-lg">
+          <button
+            className="bg-white text-[#4177FF] px-6 py-3 rounded-full font-bold text-lg hover:scale-110 transition-transform duration-200"
+            onClick={movePage}
+          >
             {btncomment}
           </button>
         </div>

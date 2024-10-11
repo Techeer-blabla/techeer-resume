@@ -1,9 +1,17 @@
-// store/SearchStore.js
 import { create } from "zustand";
 
-const useSearchStore = create((set) => ({
+interface SearchStore {
+  searchResults: string[];
+  searchName: string;
+  setSearchResults: (results: string[]) => void;
+  setSearchName: (name: string) => void;
+}
+
+const useSearchStore = create<SearchStore>((set) => ({
   searchResults: [],
-  setSearchResults: (results: string[]) => set({ searchResults: results }),
+  searchName: "",
+  setSearchResults: (results) => set({ searchResults: results }),
+  setSearchName: (name) => set({ searchName: name }),
 }));
 
 export default useSearchStore;

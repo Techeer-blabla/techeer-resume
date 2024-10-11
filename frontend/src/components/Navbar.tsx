@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import profile from "../assets/profile.svg";
@@ -10,11 +9,9 @@ import useSearchStore from "../store/SearchStore.ts";
 function Navbar() {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState<string>(""); // 검색어 상태 관리
+  const { setSearchResults, setSearchName } = useSearchStore();
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  const [userName, setUserName] = useState<string>("김테커"); //임시
-  const { searchResults } = useSearchStore();
+  const [userName] = useState<string>("김테커"); //프로필 이름 - 임시
 
   // 메인 페이지로 이동 ('/')
   const moveToMainPage = () => {
@@ -29,27 +26,18 @@ function Navbar() {
 
     try {
       const response = await api.get(`search?user_name=${searchText}`);
-      // const response = await api.get("/search", {
-      //   params: {
-      //     user_name: searchText,
-      //   },
-      // });
-
-      if (response.data.length !== 0) {
-        // useSearchStore.searchResults(response.data);
-        console.log(response.data);
-        navigate("/search");
-      }
+      setSearchResults(response.data);
+      console.log(response.data);
+      navigate("/search");
     } catch (error) {
       console.log(error);
-      console.log(searchText);
     }
   };
 
-  // 엔터 키 입력 감지하여 검색 실행
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       searchName();
+      setSearchName(searchText);
     }
   };
 
@@ -92,7 +80,7 @@ function Navbar() {
         {/* 프로필 */}
         <div className="flex items-center pr-10">
           <img src={profile} alt="profile" className="w-10 h-10 mx-2" />
-          <p>{userName}</p>
+          <p className="ml-3 mb-[1px]">{userName}</p>
         </div>
       </div>
       <div className="mt-3 w-full h-[1px] bg-gray-300" />

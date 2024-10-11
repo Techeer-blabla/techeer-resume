@@ -1,8 +1,9 @@
+import { Key } from "react";
+
 export type PostCardsType = {
-  name: string;
-  role: string;
-  experience: string;
-  education: string;
-  // education: "전공자";
-  skills: string[];
+  career: number;
+  position: string;
+  userName: string;
+  resumeId: Key;
+  techStack: string[];
 };

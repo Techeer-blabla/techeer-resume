@@ -44,7 +44,7 @@ const PositionModal = ({ isOpen, onClose }: PositionModalProps) => {
       {/* 경력 타이틀 */}
       <div className="text-black text-2xl font-semibold mb-6">경력</div>
       <div className="p-3 my-3 ml-3">
-        <Slider /> {/* 'Silder'가 아닌 'Slider'로 오타 수정 */}
+        <Slider />
       </div>
 
       {/* 하단 버튼 */}

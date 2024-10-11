@@ -4,18 +4,18 @@ import PositionModal from "../components/Search/PositionModal";
 import CareerModal from "../components/Search/CareerModal";
 import down from "../assets/chevron-down.svg";
 import PostCard from "../components/PostCard";
-import useCategoryStore from "../store/CategoryStore";
-import useSearchStore from "../store/SearchStore"; // 검색 결과 상태 관리 store 가져오기
+import useCategoryStore from "../store/CategoryStore.ts";
+import useSearchStore from "../store/SearchStore.ts";
+// import { PostCardsType } from "../dataType.ts";
 
 function SearchPage() {
-  const [title] = useState<string>("김테커");
   const [isPositionOpen, setIsPositionOpen] = useState<boolean>(false);
   const [isCareerOpen, setIsCareerOpen] = useState<boolean>(false);
-  const [searchQuery, setSearchQuery] = useState<string>(title); // 검색어 상태 관리
 
   // zustand에서 검색 결과 상태 가져오기
-  const { searchResults, isLoading, error, fetchSearchResults } =
-    useSearchStore();
+  const { searchResults, searchName } = useSearchStore();
+
+  console.log("searchResults", searchResults);
 
   // zustand에서 positionCategory, careerCategory 가져오기
   const positionCategory = useCategoryStore((state) => state.positionCategory);
@@ -29,11 +29,6 @@ function SearchPage() {
   const openCareerModal = () => setIsCareerOpen(true);
   const closeCareerModal = () => setIsCareerOpen(false);
 
-  // 검색 실행
-  const handleSearch = () => {
-    fetchSearchResults(searchQuery);
-  };
-
   return (
     <div className="bg-white">
       <div className="pt-5">
@@ -42,7 +37,7 @@ function SearchPage() {
           <div className="w-full max-w-screen-lg mx-auto">
             <div className="flex flex-row justify-start items-center p-10">
               <span className="text-black text-4xl font-extrabold">
-                ‘{title}’
+                ‘{searchName}’
               </span>
               <span className="text-black text-3xl font-normal ml-8 mt-2">
                 검색 결과
@@ -119,26 +114,24 @@ function SearchPage() {
           </div>
         </div>
 
-        {/* 검색 결과 로딩 상태 */}
-        {isLoading && <p>Loading...</p>}
-        {error && <p>Error: {error}</p>}
-
         {/* 검색 결과 출력 */}
         <div className="flex justify-center bg-[#eff4ff] px-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 transform scale-90 gap-6 p-5">
-            {searchResults.length > 0 ? (
-              searchResults.map((result) => (
+            {searchResults && searchResults.length > 0 ? (
+              searchResults.map((post) => (
                 <PostCard
-                  key={result.resumeId}
-                  name={result.userName}
-                  role={result.role}
-                  experience={"신입"}
-                  education={"전공자"}
-                  skills={result.skills}
+                  key={post.resumeId}
+                  name={post.userName}
+                  role="FRONTEND"
+                  experience={0}
+                  education="전공자"
+                  skills={["React", "Next"]}
                 />
               ))
             ) : (
-              <p>No results found</p>
+              <div className="flex justify-center w-screen">
+                <p>검색 결과가 존재하지 않습니다.</p>
+              </div>
             )}
           </div>
         </div>

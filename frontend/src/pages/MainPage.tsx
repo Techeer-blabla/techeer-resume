@@ -7,7 +7,7 @@ import Category from "../components/MainPage/Category";
 import PostCard from "../components/PostCard";
 import man1 from "../assets/man1.png";
 import man2 from "../assets/man2.png";
-import PostCardsType from "../dataType.ts";
+import { PostCardsType } from "../dataType.ts";
 
 function MainPage() {
   // 포스트카드 GET API 요청 함수
@@ -31,15 +31,15 @@ function MainPage() {
     queryFn: async ({ pageParam = 0 }) => {
       return fetchPostCards(pageParam);
     },
-    getNextPageParam: (lastPage, allPages) => {
+    getNextPageParam: (lastPage) => {
       // 마지막 페이지인지 확인하고, 페이지 넘버를 반환
       if (lastPage.currentPage + 1 < lastPage.totalPage) {
         return lastPage.currentPage + 1;
       } else {
-        return undefined; // 더 이상 페이지가 없을 경우 undefined 반환
+        return undefined;
       }
     },
-    initialPageParam: 0, // 시작 페이지는 0
+    initialPageParam: 0,
   });
 
   useEffect(() => {
@@ -77,6 +77,7 @@ function MainPage() {
             comment="채용 공고를 한 번에 볼 수 있습니다."
             btncomment="지금 확인하기"
             imgurl={man1}
+            pageurl=""
           />
           <BannerCard
             title={
@@ -88,6 +89,7 @@ function MainPage() {
             comment="이력서를 등록하고 피드백을 받을 수 있습니다."
             btncomment="등록하러 가기"
             imgurl={man2}
+            pageurl="upload"
           />
         </div>
       </div>
@@ -123,7 +125,7 @@ function MainPage() {
           </div>
 
           {/* 무한스크롤 로딩 트리거 */}
-          <div ref={loadMoreRef}></div>
+          <div ref={loadMoreRef} className="w-1" />
         </div>
       </div>
     </div>
