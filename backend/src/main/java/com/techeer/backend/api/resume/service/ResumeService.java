@@ -42,7 +42,6 @@ public class ResumeService {
 	private final ResumeRepository resumeRepository;
 	private final FeedbackRepository feedbackRepository;
 	private final GetResumeRepository getResumeRepository;
-	private final ResumeConverter resumeConverter;
 
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
@@ -86,7 +85,7 @@ public class ResumeService {
 	public List<ResumeResponse> searchResumesByUserName(String userName) {
 		List<Resume> resumes = resumeRepository.findByUsername(userName);
 		return resumes.stream()
-			.map(resumeConverter::from)
+			.map(ResumeConverter::toResumeResponse)
 			.toList();
 	}
 
@@ -96,7 +95,7 @@ public class ResumeService {
 		Specification<Resume> spec = ResumeSpecification.search(req);
 		Page<Resume> allActiveResumes = getResumeRepository.findAllActiveResumes(spec, pageable);
 		return allActiveResumes.stream()
-			.map(resumeConverter::from)
+			.map(ResumeConverter::toResumeResponse)
 			.collect(Collectors.toList());
 	}
 

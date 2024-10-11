@@ -2,15 +2,12 @@ package com.techeer.backend.api.resume.converter;
 
 import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Component;
-
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.dto.response.ResumeResponse;
 
-@Component
 public class ResumeConverter {
 
-	public ResumeResponse from(Resume resume) {
+	public static ResumeResponse toResumeResponse(Resume resume) {
 		return ResumeResponse.builder()
 			.resumeId(resume.getId())
 			.userName(resume.getUsername())  // User 객체에서 username 추출
