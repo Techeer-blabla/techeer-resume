@@ -1,33 +1,25 @@
 package com.techeer.backend.api.resume.domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-@Entity
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Position {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+@ToString
+public enum Position {
+	BACKEND("BACKEND"),
+	FRONTEND("FRONTEND"),
+	ANDROID("ANDROID"),
+	IOS("IOS"),
+	DEVOPS("DEVOPS");
 
-	@Column(nullable = false)
-	private String positionName;
+	private final String value;
 
-	@OneToMany(mappedBy = "position")
-	private List<Resume> resumes = new ArrayList<>();
+	Position(String value) {
+		this.value = value;
+	}
 
-	public Position(String positionName) {
-		this.positionName = positionName;
+	@JsonValue
+	public String getValue() {
+		return value;
 	}
 }
