@@ -1,23 +1,10 @@
 package com.techeer.backend.api.resume.service;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.techeer.backend.api.feedback.domain.Feedback;
-import com.techeer.backend.api.feedback.repository.FeedbackRepository;
-import com.techeer.backend.api.resume.domain.Resume;
-import com.techeer.backend.api.resume.dto.request.CreateResumeRequest;
-import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
-import com.techeer.backend.api.resume.dto.response.FetchResumeContentResponse;
-import com.techeer.backend.api.resume.dto.response.ResumePageElement;
-import com.techeer.backend.api.resume.dto.response.ResumePageResponse;
-import com.techeer.backend.api.resume.dto.response.ResumeResponse;
-import com.techeer.backend.api.resume.repository.GetResumeRepository;
-import com.techeer.backend.api.resume.repository.ResumeRepository;
-import com.techeer.backend.api.resume.repository.ResumeSpecification;
-import com.techeer.backend.global.error.exception.NotFoundException;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,83 +13,127 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.techeer.backend.api.feedback.domain.Feedback;
+import com.techeer.backend.api.feedback.repository.FeedbackRepository;
+import com.techeer.backend.api.resume.converter.ResumeConverter;
+import com.techeer.backend.api.resume.domain.Company;
+import com.techeer.backend.api.resume.domain.Resume;
+import com.techeer.backend.api.resume.dto.request.CreateResumeRequest;
+import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
+import com.techeer.backend.api.resume.dto.response.FetchResumeContentResponse;
+import com.techeer.backend.api.resume.dto.response.ResumePageElement;
+import com.techeer.backend.api.resume.dto.response.ResumePageResponse;
+import com.techeer.backend.api.resume.dto.response.ResumeResponse;
+import com.techeer.backend.api.resume.repository.CompanyRepository;
+import com.techeer.backend.api.resume.repository.GetResumeRepository;
+import com.techeer.backend.api.resume.repository.ResumeRepository;
+import com.techeer.backend.api.resume.repository.ResumeSpecification;
+import com.techeer.backend.api.resume.repository.TechStackRepository;
+import com.techeer.backend.global.error.exception.NotFoundException;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ResumeService {
-    private final AmazonS3 amazonS3;
-    private final ResumeRepository resumeRepository;
-    private final FeedbackRepository feedbackRepository;
-    private final GetResumeRepository getResumeRepository;
+	private final AmazonS3 amazonS3;
+	private final ResumeRepository resumeRepository;
+	private final FeedbackRepository feedbackRepository;
+	private final GetResumeRepository getResumeRepository;
+	private final TechStackRepository techStackRepository;
+	private final ResumeTechStackService resumeTechStackService;
+	private final TechStackService techStackService;
+	private final CompanyRepository companyRepository;
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
+	@Value("${cloud.aws.s3.bucket}")
+	private String bucket;
 
-    @Transactional
-    public void createResume(CreateResumeRequest req, MultipartFile resumePdf) throws IOException {
+	@Transactional
+	public void createResume(CreateResumeRequest req, MultipartFile resumePdf) throws IOException {
 
-        Resume resume = req.toEntity();
+		Resume resume = ResumeConverter.toResume(req);
 
-        String pdfName = resumePdf.getOriginalFilename();
-        String s3PdfName = UUID.randomUUID().toString().substring(0, 10) + "_" + pdfName;
+		resumeRepository.save(resume);
 
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(resumePdf.getSize());
-        metadata.setContentType(resumePdf.getContentType());
+		List<String> companies = req.getApplyingCompanies();
+		companies.stream()
+			.map(companyName -> companyRepository.findByName(companyName)
+				.orElseGet(() -> companyRepository.save(Company.builder()
+					.name(companyName)
+					.build())))
+			.forEach(company -> {
+				resume.addCompany(company);
+				company.addResume(resume);  // 양방향 관계 설정 보장
+			});
 
-        amazonS3.putObject(bucket, "resume/" + s3PdfName, resumePdf.getInputStream(), metadata);
-        String resumeUrl = amazonS3.getUrl(bucket, "resume/" +s3PdfName).toString();
-        resume.updateUrl(resumeUrl);
+		// 변경 사항 저장
+		// resumeRepository.save(resume);
 
-        // S3 정보 및 URL 업데이트 (bucketName, key, url)
-        resume.updateS3Url(resumeUrl, bucket, "resume/" + s3PdfName);
+		List<String> techStackNames = req.getTechStacks();
 
-        resumeRepository.save(resume);
-    }
+		techStackNames.stream()
+			.map(techStack -> techStackRepository.findByName(techStack)
+				.orElseGet(() -> techStackService.saveTechStack(techStack)))
+			.forEach((techStack -> resumeTechStackService.saveResumeTechStack(resume, techStack)));
 
-    //todo 피드백까지 생기면
-    @Transactional(readOnly = true)
-    public FetchResumeContentResponse getResumeContent(Long resumeId) throws IOException {
-        // 이력서 찾기
-        Resume resume = resumeRepository.findById(resumeId)
-                .orElseThrow(NotFoundException::new);
+		String pdfName = resumePdf.getOriginalFilename();
+		String s3PdfName = UUID.randomUUID().toString().substring(0, 10) + "_" + pdfName;
 
-        // 이력서의 피드백 찾기
-        List<Feedback> feedbacks = feedbackRepository.findAllByResumeId(resumeId);
+		ObjectMetadata metadata = new ObjectMetadata();
+		metadata.setContentLength(resumePdf.getSize());
+		metadata.setContentType(resumePdf.getContentType());
 
-        // FetchResumeContentResponse 객체 생성 후 반환
-        return FetchResumeContentResponse.from(resume, feedbacks);
-    }
+		amazonS3.putObject(bucket, "resume/" + s3PdfName, resumePdf.getInputStream(), metadata);
+		String resumeUrl = amazonS3.getUrl(bucket, "resume/" + s3PdfName).toString();
+		resume.updateUrl(resumeUrl);
 
-    public List<ResumeResponse> searchResumesByUserName(String userName) {
-        List<Resume> resumes = resumeRepository.findByUsername(userName);
-        return resumes.stream()
-                .map(resume -> new ResumeResponse(resume.getId(), resume.getUsername(), resume.getResumeName(), resume.getUrl()))
-                .toList();
-    }
+		// S3 정보 및 URL 업데이트 (bucketName, key, url)
+		resume.updateS3Url(resumeUrl, bucket, "resume/" + s3PdfName);
 
-    // 태그 조회
-    @Transactional(readOnly = true)
-    public List<ResumeResponse> searchByTages(ResumeSearchRequest req, Pageable pageable) {
-        Specification<Resume> spec = ResumeSpecification.search(req);
-        Page<Resume> allActiveResumes = getResumeRepository.findAllActiveResumes(spec, pageable);
-        return allActiveResumes.stream()
-                .map(ResumeResponse::from)
-                .collect(Collectors.toList());
-    }
+	}
 
-    public ResumePageResponse getResumePage(Pageable pageable) {
-        Page<Resume> resumes = resumeRepository.findAll(pageable);
-        List<ResumePageElement> elements = resumes.getContent().stream()
-                .map(ResumePageElement::of)
-                .toList();
+	//todo 피드백까지 생기면
+	@Transactional(readOnly = true)
+	public FetchResumeContentResponse getResumeContent(Long resumeId) throws IOException {
+		// 이력서 찾기
+		Resume resume = resumeRepository.findById(resumeId)
+			.orElseThrow(NotFoundException::new);
 
-        return ResumePageResponse.from(elements, resumes);
-    }
+		// 이력서의 피드백 찾기
+		List<Feedback> feedbacks = feedbackRepository.findAllByResumeId(resumeId);
+
+		// FetchResumeContentResponse 객체 생성 후 반환
+		return ResumeConverter.toFetchResumeContentResponse(resume, feedbacks);
+	}
+
+	public List<ResumeResponse> searchResumesByUserName(String userName) {
+		List<Resume> resumes = resumeRepository.findByUsername(userName);
+		return resumes.stream()
+			.map(ResumeConverter::toResumeResponse)
+			.toList();
+	}
+
+	// 태그 조회
+	@Transactional(readOnly = true)
+	public List<ResumeResponse> searchByTages(ResumeSearchRequest req, Pageable pageable) {
+		Specification<Resume> spec = ResumeSpecification.search(req);
+		Page<Resume> allActiveResumes = getResumeRepository.findAllActiveResumes(spec, pageable);
+		return allActiveResumes.stream()
+			.map(ResumeConverter::toResumeResponse)
+			.collect(Collectors.toList());
+	}
+
+	public ResumePageResponse getResumePage(Pageable pageable) {
+		Page<Resume> resumes = resumeRepository.findAll(pageable);
+		List<ResumePageElement> elements = resumes.getContent().stream()
+			.map(ResumePageElement::of)
+			.toList();
+
+		return ResumePageResponse.from(elements, resumes);
+	}
 }
