@@ -34,7 +34,7 @@ spring:
             client-secret: ${GOOGLE_CLIENT_SECRET}
             scope:
               - email
-              - profile
+            redirect-uri: ${GOOGLE_REDIRECT_URI}
 
 logging:
   level:
