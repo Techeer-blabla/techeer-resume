@@ -5,7 +5,6 @@ import com.techeer.backend.api.feedback.dto.FeedbackResponse;
 import com.techeer.backend.api.resume.domain.Resume;
 
 public class FeedbackConverter {
-
 	public static FeedbackResponse toFeedbackResponse(Resume resume, Feedback feedback) {
 		return FeedbackResponse.builder()
 			.feedbackId(feedback.getId())
