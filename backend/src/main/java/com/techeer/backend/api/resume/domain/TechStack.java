@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,6 +30,7 @@ public class TechStack {
 	@OneToMany(mappedBy = "techStack")
 	private List<ResumeTechStack> resumeTechStacks = new ArrayList<>();
 
+	@Builder
 	public TechStack(String name) {
 		this.name = name;
 	}

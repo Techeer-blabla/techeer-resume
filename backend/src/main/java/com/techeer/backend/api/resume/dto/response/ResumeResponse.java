@@ -16,5 +16,5 @@ public class ResumeResponse {
 	private final String position;
 	private final Integer career;
 	private final List<String> techStackNames;
-
+	private List<String> applyingCompanies;
 }

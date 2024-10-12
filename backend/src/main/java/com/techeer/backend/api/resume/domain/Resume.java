@@ -3,9 +3,9 @@ package com.techeer.backend.api.resume.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.techeer.backend.api.resume.dto.request.CreateResumeRequest;
 import com.techeer.backend.global.common.BaseEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,6 +13,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -52,8 +55,14 @@ public class Resume extends BaseEntity {
 	@Column(name = "position")
 	private Position position;
 
-	@OneToMany(mappedBy = "resume")
+	@OneToMany(mappedBy = "resume", cascade = CascadeType.ALL)
 	private List<ResumeTechStack> resumeTechStacks = new ArrayList<>();
+
+	@ManyToMany
+	@JoinTable(name = "resume_company",
+		joinColumns = @JoinColumn(name = "resume_id"),
+		inverseJoinColumns = @JoinColumn(name = "company_id"))
+	private List<Company> companies = new ArrayList<>();
 
 	@Column(name = "s3_bucket_name")
 	private String s3BucketName;  // S3 버킷 이름
@@ -69,27 +78,10 @@ public class Resume extends BaseEntity {
 		this.url = url;
 	}
 
-	@Builder
-	public static Resume of(CreateResumeRequest createResumeRequest) {// Position 생성자는 상황에 맞게 수정 필요
-		Resume resume = Resume.builder()
-			.username(createResumeRequest.getUsername())
-			.position(createResumeRequest.getPosition())
-			.career(createResumeRequest.getCareer())
-			.name("Resume of " + createResumeRequest.getUsername())
-			.resumeTechStacks(new ArrayList<>())
-			.build();
-
-		// 필드를 추가할 때 별도의 연관 관계 설정 메서드 사용
-		if (createResumeRequest.getTechStacks() != null) {
-			createResumeRequest.getTechStacks().forEach(techStack -> resume.addTechStack(new ResumeTechStack(resume, techStack)));
-		}
-
-		return resume;
-	}
-
 	// 기술 스택 추가
 	public void addTechStack(ResumeTechStack resumeTechStack) {
 		resumeTechStacks.add(resumeTechStack);
+
 	}
 
 	public void updateS3Url(String url, String s3BucketName, String s3Key) {
@@ -101,4 +93,12 @@ public class Resume extends BaseEntity {
 		this.s3Key = s3Key;
 	}
 
+	public void addCompany(Company company) {
+		if (company == null) {
+			throw new IllegalArgumentException("Company는 null일 수 없습니다.");
+		}
+		
+		companies.add(company);
+		company.addResume(this);
+	}
 }

@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
 public class ResumeTechStack {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,8 +28,8 @@ public class ResumeTechStack {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private TechStack techStack;
 
-	public ResumeTechStack(Resume resume, String techStack) {
-		this.resume = resume;
-		this.techStack = new TechStack(techStack);
-	}
+	// @Builder
+	// public ResumeTechStack(Resume resume, TechStack techStack) {
+	//
+	// }
 }

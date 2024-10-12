@@ -93,7 +93,7 @@ public class ResumeController {
 	}
 
 	// 태그 조회 (페이지네이션)
-	@GetMapping("/resumes/search")
+	@PostMapping("/resumes/search")
 	public ResponseEntity<List<ResumeResponse>> getResumesByTag(@RequestBody ResumeSearchRequest dto,
 		@PageableDefault(page = 0, size = 10) Pageable pageable) {
 		List<ResumeResponse> resumeResponses = resumeService.searchByTages(dto, pageable);

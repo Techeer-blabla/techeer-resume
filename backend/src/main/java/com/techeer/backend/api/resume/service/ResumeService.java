@@ -18,6 +18,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.techeer.backend.api.feedback.domain.Feedback;
 import com.techeer.backend.api.feedback.repository.FeedbackRepository;
 import com.techeer.backend.api.resume.converter.ResumeConverter;
+import com.techeer.backend.api.resume.domain.Company;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.dto.request.CreateResumeRequest;
 import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
@@ -25,9 +26,11 @@ import com.techeer.backend.api.resume.dto.response.FetchResumeContentResponse;
 import com.techeer.backend.api.resume.dto.response.ResumePageElement;
 import com.techeer.backend.api.resume.dto.response.ResumePageResponse;
 import com.techeer.backend.api.resume.dto.response.ResumeResponse;
+import com.techeer.backend.api.resume.repository.CompanyRepository;
 import com.techeer.backend.api.resume.repository.GetResumeRepository;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
 import com.techeer.backend.api.resume.repository.ResumeSpecification;
+import com.techeer.backend.api.resume.repository.TechStackRepository;
 import com.techeer.backend.global.error.exception.NotFoundException;
 
 import lombok.AccessLevel;
@@ -42,6 +45,10 @@ public class ResumeService {
 	private final ResumeRepository resumeRepository;
 	private final FeedbackRepository feedbackRepository;
 	private final GetResumeRepository getResumeRepository;
+	private final TechStackRepository techStackRepository;
+	private final ResumeTechStackService resumeTechStackService;
+	private final TechStackService techStackService;
+	private final CompanyRepository companyRepository;
 
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
@@ -49,7 +56,30 @@ public class ResumeService {
 	@Transactional
 	public void createResume(CreateResumeRequest req, MultipartFile resumePdf) throws IOException {
 
-		Resume resume = Resume.of(req);
+		Resume resume = ResumeConverter.toResume(req);
+
+		resumeRepository.save(resume);
+
+		List<String> companies = req.getApplyingCompanies();
+		companies.stream()
+			.map(companyName -> companyRepository.findByName(companyName)
+				.orElseGet(() -> companyRepository.save(Company.builder()
+					.name(companyName)
+					.build())))
+			.forEach(company -> {
+				resume.addCompany(company);
+				company.addResume(resume);  // 양방향 관계 설정 보장
+			});
+
+		// 변경 사항 저장
+		// resumeRepository.save(resume);
+
+		List<String> techStackNames = req.getTechStacks();
+
+		techStackNames.stream()
+			.map(techStack -> techStackRepository.findByName(techStack)
+				.orElseGet(() -> techStackService.saveTechStack(techStack)))
+			.forEach((techStack -> resumeTechStackService.saveResumeTechStack(resume, techStack)));
 
 		String pdfName = resumePdf.getOriginalFilename();
 		String s3PdfName = UUID.randomUUID().toString().substring(0, 10) + "_" + pdfName;
@@ -65,7 +95,6 @@ public class ResumeService {
 		// S3 정보 및 URL 업데이트 (bucketName, key, url)
 		resume.updateS3Url(resumeUrl, bucket, "resume/" + s3PdfName);
 
-		resumeRepository.save(resume);
 	}
 
 	//todo 피드백까지 생기면
@@ -79,7 +108,7 @@ public class ResumeService {
 		List<Feedback> feedbacks = feedbackRepository.findAllByResumeId(resumeId);
 
 		// FetchResumeContentResponse 객체 생성 후 반환
-		return FetchResumeContentResponse.from(resume, feedbacks);
+		return ResumeConverter.toFetchResumeContentResponse(resume, feedbacks);
 	}
 
 	public List<ResumeResponse> searchResumesByUserName(String userName) {
