@@ -1,23 +1,20 @@
 package com.techeer.backend.api.resume.dto.response;
 
-import com.techeer.backend.api.resume.domain.Resume;
-import lombok.AllArgsConstructor;
+import java.util.List;
+
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
+// @AllArgsConstructor
+@Builder
 public class ResumeResponse {
-    private final Long resumeId;
-    private final String userName;
-    private final String resumeName;
-    private final String fileUrl;
-
-    public static ResumeResponse from(Resume resume) {
-        return new ResumeResponse(
-                resume.getId(),
-                resume.getUsername(),
-                resume.getResumeName(),
-                resume.getUrl()
-        );
-    }
+	private final Long resumeId;
+	private final String userName;
+	private final String resumeName;
+	private final String fileUrl;
+	private final String position;
+	private final Integer career;
+	private final List<String> techStackNames;
+	private List<String> applyingCompanies;
 }
