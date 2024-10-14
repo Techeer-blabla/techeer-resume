@@ -1,35 +1,41 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import profile from "../assets/profile.svg";
-import logo from "../assets/logo.svg";
-import search from "../assets/search-normal.svg";
+import profile from "../../assets/profile.svg";
+import logo from "../../assets/logo.svg";
+import search from "../../assets/search-normal.svg";
+import useSearchStore from "../../store/SearchStore.ts";
 
 function Navbar() {
   const navigate = useNavigate();
-  const [searchText] = useState<string>("");
-  //이거 나중에 setSearchText 추가하기.
+  const [searchText, setSearchText] = useState<string>(""); // 검색어 상태 관리
+  const { setSearchName } = useSearchStore();
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  const [userName, setUserName] = useState<string>("김테커"); //임시
+  const [userName] = useState<string>("김테커"); //프로필 이름 - 임시
 
-  // 메인 페이지로 이동 ('/')
   const moveToMainPage = () => {
     navigate("/");
   };
 
-  // 검색 결과 페이지로 이동 ('/search')
-  const moveToSearchPage = () => {
-    navigate("/search");
+  const searchName = () => {
+    if (searchText === "") {
+      alert("검색어를 입력해주세요!");
+      return;
+    }
+
+    try {
+      setSearchName(searchText);
+      navigate(`/search?user_name=${searchText}`);
+    } catch (error) {
+      alert("검색 실패 ");
+      console.log(error);
+    }
   };
 
-  /*
-    마이 페이지로 이동 ('/mypage/:id') - p2
-    const moveToMyPage = () => {
-      navigate(/mypage/${user.id});
-    };
-  */
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      searchName();
+    }
+  };
 
   return (
     <div className="w-full h-12 px-4 bg-transparent">
@@ -55,16 +61,22 @@ function Navbar() {
               autoComplete="off"
               name="search"
               value={searchText}
-              onChange={moveToSearchPage}
+              onChange={(e) => setSearchText(e.target.value)}
+              onKeyPress={handleKeyPress}
             />
-            <img src={search} alt="search" className="mr-1 w-auto h-5" />
+            <img
+              src={search}
+              alt="search"
+              className="mr-1 w-auto h-5 hover:cursor-pointer"
+              onClick={searchName}
+            />
           </div>
         </div>
 
         {/* 프로필 */}
         <div className="flex items-center pr-10">
           <img src={profile} alt="profile" className="w-10 h-10 mx-2" />
-          <p>{userName}</p>
+          <p className="ml-3 mb-[1px]">{userName}</p>
         </div>
       </div>
       <div className="mt-3 w-full h-[1px] bg-gray-300" />
