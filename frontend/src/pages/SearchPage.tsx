@@ -152,10 +152,10 @@ function SearchPage() {
                   <PostCard
                     key={post.resume_id}
                     name={post.user_name}
-                    role="FRONTEND"
-                    experience={0}
+                    role={post.position}
+                    experience={post.career}
                     education="전공자"
-                    skills={[]}
+                    skills={post.tech_stack}
                   />
                 );
               })

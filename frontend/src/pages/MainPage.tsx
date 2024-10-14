@@ -124,7 +124,9 @@ function MainPage() {
                   ))
                 )
               ) : (
-                <p>데이터 불러오는 중</p>
+                <div className="flex justify-center w-screen mt-10">
+                  <p>데이터 불러오는 중</p>
+                </div>
               )}
             </div>
           </div>
