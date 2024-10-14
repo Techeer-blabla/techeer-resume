@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import profile from "../assets/profile.svg";
-import logo from "../assets/logo.svg";
-import search from "../assets/search-normal.svg";
-import api from "../baseURL/baseURL.ts";
-import useSearchStore from "../store/SearchStore.ts";
+import profile from "../../assets/profile.svg";
+import logo from "../../assets/logo.svg";
+import search from "../../assets/search-normal.svg";
+import useSearchStore from "../../store/SearchStore.ts";
 
 function Navbar() {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState<string>(""); // 검색어 상태 관리
-  const { setSearchResults, setSearchName } = useSearchStore();
+  const { setSearchName } = useSearchStore();
 
   const [userName] = useState<string>("김테커"); //프로필 이름 - 임시
 
@@ -18,18 +17,17 @@ function Navbar() {
     navigate("/");
   };
 
-  const searchName = async () => {
+  const searchName = () => {
     if (searchText === "") {
       alert("검색어를 입력해주세요!");
       return;
     }
 
     try {
-      const response = await api.get(`search?user_name=${searchText}`);
-      setSearchResults(response.data);
-      console.log(response.data);
-      navigate("/search");
+      setSearchName(searchText);
+      navigate(`/search?user_name=${searchText}`);
     } catch (error) {
+      alert("검색 실패 ");
       console.log(error);
     }
   };
@@ -37,7 +35,6 @@ function Navbar() {
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       searchName();
-      setSearchName(searchText);
     }
   };
 

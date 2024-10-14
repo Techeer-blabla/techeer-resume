@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import api from "../baseURL/baseURL";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/common/Navbar.tsx";
 import BannerCard from "../components/MainPage/BannerCard";
 import Category from "../components/MainPage/Category";
-import PostCard from "../components/PostCard";
+import PostCard from "../components/common/PostCard.tsx";
 import man1 from "../assets/man1.png";
 import man2 from "../assets/man2.png";
 import { PostCardsType } from "../dataType.ts";
@@ -42,6 +42,7 @@ function MainPage() {
     initialPageParam: 0,
   });
 
+  console.log("data: ", data);
   useEffect(() => {
     if (!hasNextPage) return;
 
@@ -109,17 +110,21 @@ function MainPage() {
           {/* 포스트 카드 */}
           <div className="flex justify-center">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-5">
-              {data?.pages.map((page) =>
-                page.elementList.map((post: PostCardsType) => (
-                  <PostCard
-                    key={post.resumeId}
-                    name={post.userName}
-                    role={post.position}
-                    experience={post.career}
-                    education="전공자"
-                    skills={post.techStack}
-                  />
-                ))
+              {data?.pages && data.pages.length > 0 ? (
+                data.pages.map((page) =>
+                  page.element_list?.map((post: PostCardsType) => (
+                    <PostCard
+                      key={post.resume_id}
+                      name={post.user_name}
+                      role={post.position}
+                      experience={post.career}
+                      education="전공자"
+                      skills={post.tech_stack}
+                    />
+                  ))
+                )
+              ) : (
+                <p>데이터 불러오는 중</p>
               )}
             </div>
           </div>

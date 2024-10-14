@@ -1,6 +1,6 @@
-import avatar from "../assets/avatar.png";
-import baggage from "../assets/baggage3.svg";
-import pngegg from "../assets/pngegg2.svg";
+import avatar from "../../assets/avatar.png";
+import baggage from "../../assets/baggage3.svg";
+import pngegg from "../../assets/pngegg2.svg";
 
 function PostCard({
   name,

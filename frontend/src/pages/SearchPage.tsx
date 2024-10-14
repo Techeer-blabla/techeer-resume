@@ -1,21 +1,20 @@
-import { useState } from "react";
-import Navbar from "../components/Navbar";
+import { useEffect, useState } from "react";
+import Navbar from "../components/common/Navbar.tsx";
 import PositionModal from "../components/Search/PositionModal";
 import CareerModal from "../components/Search/CareerModal";
 import down from "../assets/chevron-down.svg";
-import PostCard from "../components/PostCard";
+import PostCard from "../components/common/PostCard.tsx";
 import useCategoryStore from "../store/CategoryStore.ts";
 import useSearchStore from "../store/SearchStore.ts";
-// import { PostCardsType } from "../dataType.ts";
+import { PostCardsType } from "../dataType.ts";
+import { searchResume } from "../api/resumeApi.ts";
 
 function SearchPage() {
   const [isPositionOpen, setIsPositionOpen] = useState<boolean>(false);
   const [isCareerOpen, setIsCareerOpen] = useState<boolean>(false);
 
   // zustand에서 검색 결과 상태 가져오기
-  const { searchResults, searchName } = useSearchStore();
-
-  console.log("searchResults", searchResults);
+  const { searchName } = useSearchStore();
 
   // zustand에서 positionCategory, careerCategory 가져오기
   const positionCategory = useCategoryStore((state) => state.positionCategory);
@@ -29,6 +28,31 @@ function SearchPage() {
   const openCareerModal = () => setIsCareerOpen(true);
   const closeCareerModal = () => setIsCareerOpen(false);
 
+  // 임시 수정되면 PostCardsType으로 바꾸기
+  type Resume = {
+    resume_id: number;
+    user_name: string;
+    resume_name: string;
+    file_url: string;
+  };
+
+  //검색 결과
+  const [responseData, setResponseData] = useState<Resume[] | null>(null);
+
+  useEffect(() => {
+    const SearchResults = async () => {
+      if (searchName.length > 0) {
+        try {
+          const response = await searchResume(searchName);
+          setResponseData(response);
+        } catch (error) {
+          console.error("검색 요청 실패:", error);
+        }
+      }
+    };
+    SearchResults();
+  }, [searchName]);
+
   return (
     <div className="bg-white">
       <div className="pt-5">
@@ -37,7 +61,11 @@ function SearchPage() {
           <div className="w-full max-w-screen-lg mx-auto">
             <div className="flex flex-row justify-start items-center p-10">
               <span className="text-black text-4xl font-extrabold">
-                ‘{searchName}’
+                {searchName && searchName.length > 0 ? (
+                  `‘${searchName}’`
+                ) : (
+                  <span className="ml-5">‘ ’</span>
+                )}
               </span>
               <span className="text-black text-3xl font-normal ml-8 mt-2">
                 검색 결과
@@ -117,17 +145,20 @@ function SearchPage() {
         {/* 검색 결과 출력 */}
         <div className="flex justify-center bg-[#eff4ff] px-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 transform scale-90 gap-6 p-5">
-            {searchResults && searchResults.length > 0 ? (
-              searchResults.map((post) => (
-                <PostCard
-                  key={post.resumeId}
-                  name={post.userName}
-                  role="FRONTEND"
-                  experience={0}
-                  education="전공자"
-                  skills={["React", "Next"]}
-                />
-              ))
+            {responseData && responseData.length > 0 ? (
+              responseData.map((post: PostCardsType) => {
+                console.log("PostCard Data:", post);
+                return (
+                  <PostCard
+                    key={post.resume_id}
+                    name={post.user_name}
+                    role="FRONTEND"
+                    experience={0}
+                    education="전공자"
+                    skills={[]}
+                  />
+                );
+              })
             ) : (
               <div className="flex justify-center w-screen">
                 <p>검색 결과가 존재하지 않습니다.</p>
