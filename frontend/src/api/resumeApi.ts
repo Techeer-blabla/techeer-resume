@@ -1,4 +1,4 @@
-import { formAxios } from "./axios.config.ts";
+import { formAxios, jsonAxios } from "./axios.config.ts";
 
 // 이력서 업로드 API
 export const postResume = async (
@@ -26,7 +26,6 @@ export const postResume = async (
   }
 };
 
-// 포지션 및 경력 필터링 API
 export const postFilter = async (filterData: {
   dto: {
     positions: string[];
@@ -41,8 +40,7 @@ export const postFilter = async (filterData: {
   };
 }) => {
   try {
-    // API 호출
-    const response = await formAxios.post(`/filters`, filterData);
+    const response = await jsonAxios.post(`/resumes/search`, filterData);
 
     return response.data;
   } catch (error) {
