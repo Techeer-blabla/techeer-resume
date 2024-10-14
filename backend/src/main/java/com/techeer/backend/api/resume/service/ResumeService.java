@@ -1,5 +1,7 @@
 package com.techeer.backend.api.resume.service;
 
+import static com.techeer.backend.api.resume.converter.ResumeConverter.toResumePageResponse;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -23,7 +25,6 @@ import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.dto.request.CreateResumeRequest;
 import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
 import com.techeer.backend.api.resume.dto.response.FetchResumeContentResponse;
-import com.techeer.backend.api.resume.dto.response.ResumePageElement;
 import com.techeer.backend.api.resume.dto.response.ResumePageResponse;
 import com.techeer.backend.api.resume.dto.response.ResumeResponse;
 import com.techeer.backend.api.resume.repository.CompanyRepository;
@@ -128,12 +129,24 @@ public class ResumeService {
 			.collect(Collectors.toList());
 	}
 
+	@Transactional(readOnly = true)
 	public ResumePageResponse getResumePage(Pageable pageable) {
+		// 페이지네이션을 적용하여 레포지토리에서 데이터를 가져옴
 		Page<Resume> resumes = resumeRepository.findAll(pageable);
-		List<ResumePageElement> elements = resumes.getContent().stream()
-			.map(ResumePageElement::of)
-			.toList();
 
-		return ResumePageResponse.from(elements, resumes);
+		// 첫 번째 Resume 객체를 가져옴 (예시로 첫 번째 요소를 변환)
+		// 여러 Resume 객체를 페이지로 처리하려면 추가 로직 필요
+		Resume resume = resumes.getContent().isEmpty() ? null : resumes.getContent().get(0);
+
+		// Resume가 없을 경우 빈 결과를 처리
+		if (resume == null) {
+			return ResumePageResponse.builder()
+				.totalPage(resumes.getTotalPages())
+				.currentPage(resumes.getNumber())
+				.build();
+		}
+
+		// Resume와 페이지 정보를 바탕으로 ResumePageResponse로 변환
+		return toResumePageResponse(resume, resumes);
 	}
 }
