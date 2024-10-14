@@ -7,18 +7,79 @@ import PositionModal from "../components/Search/PositionModal";
 import CareerModal from "../components/Search/CareerModal";
 import man1 from "../assets/man1.png";
 import man2 from "../assets/man2.png";
+import { postFilter } from "../api/resumeApi";
+
+interface FilterResult {
+  name: string;
+  role: string;
+  experience: string;
+  education: string;
+  skills: string[];
+}
 
 function MainPage() {
   // 포지션, 경력 모달 상태 관리
   const [isPositionOpen, setIsPositionOpen] = useState<boolean>(false);
   const [isCareerOpen, setIsCareerOpen] = useState<boolean>(false);
+  const [filterResults, setFilterResults] = useState<FilterResult[]>([]);
 
-  // 포지션 모달 열기/닫기
-  const openPositionModal = () => setIsPositionOpen(true);
+  const openPositionModal = async () => {
+    // async 추가
+    setIsPositionOpen(true);
+
+    const filterData = {
+      dto: {
+        positions: ["BACKEND"], // 예시로 BACKEND 포지션 설정
+        minCareer: 0,
+        maxCareer: 0,
+        techStacks: ["string"],
+      },
+      pageable: {
+        page: 0,
+        size: 1,
+        sort: ["string"],
+      },
+    };
+
+    try {
+      const response = await postFilter(filterData); // await 사용
+      setFilterResults(response.data); // 응답 결과 설정
+      console.log("포지션 필터링 결과:", response);
+    } catch (error) {
+      console.error("포지션 필터링 오류:", error);
+    }
+  };
+
   const closePositionModal = () => setIsPositionOpen(false);
 
-  // 경력 모달 열기/닫기
-  const openCareerModal = () => setIsCareerOpen(true);
+  // 경력 모달 열기/닫기 및 API 호출
+  const openCareerModal = async () => {
+    // async 추가
+    setIsCareerOpen(true);
+
+    const filterData = {
+      dto: {
+        positions: [], // 경력 필터이므로 positions는 빈 배열로 설정
+        minCareer: 0,
+        maxCareer: 5, // 예시로 경력 0-5년 설정
+        techStacks: ["string"],
+      },
+      pageable: {
+        page: 0,
+        size: 1,
+        sort: ["string"],
+      },
+    };
+
+    try {
+      const response = await postFilter(filterData); // await 사용
+      setFilterResults(response.data); // 응답 결과 설정
+      console.log("경력 필터링 결과:", response);
+    } catch (error) {
+      console.error("경력 필터링 오류:", error);
+    }
+  };
+
   const closeCareerModal = () => setIsCareerOpen(false);
 
   return (
@@ -48,79 +109,46 @@ function MainPage() {
         </div>
       </div>
 
-      <div className="w-full bg-white">
+      <div className="w-full bg-white relative">
         <div className="p-6">
           {/* 카테고리 */}
-          <div className="max-w-screen-xl mx-auto flex justify-start py-6">
-            {/* <Category title="조회순" options={["인기순", "최신순"]} /> */}
+          <div className="max-w-screen-xl mx-auto py-6 relative">
+            <div className="flex justify-start space-x-4">
+              <Category title="포지션" onClick={openPositionModal} />
+              <Category title="경력" onClick={openCareerModal} />
+            </div>
 
-            <Category title="포지션" onClick={openPositionModal} />
+            {/* 포지션 모달 */}
+            {isPositionOpen && (
+              <div className="absolute top-full left-0 w-full mt-2 z-50">
+                <PositionModal
+                  isOpen={isPositionOpen}
+                  onClose={closePositionModal}
+                />
+              </div>
+            )}
 
-            <Category title="경력" onClick={openCareerModal} />
+            {/* 경력 모달 */}
+            {isCareerOpen && (
+              <div className="absolute top-full left-0 w-full mt-2 z-50">
+                <CareerModal isOpen={isCareerOpen} onClose={closeCareerModal} />
+              </div>
+            )}
           </div>
-
-          {/* 포지션 모달 */}
-          {isPositionOpen && (
-            <div className="absolute top-10 left-10 z-50">
-              <PositionModal
-                isOpen={isPositionOpen}
-                onClose={closePositionModal}
-              />
-            </div>
-          )}
-
-          {/* 경력 모달 */}
-          {isCareerOpen && (
-            <div className="absolute top-10 left-10 z-50">
-              <CareerModal isOpen={isCareerOpen} onClose={closeCareerModal} />
-            </div>
-          )}
 
           {/* 포스트 카드 */}
           <div className="flex justify-center">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-5">
-              <PostCard
-                name="김테커"
-                role="프론트엔드"
-                experience="신입"
-                education="전공자"
-                skills={["React", "Next", "Vue"]}
-              />
-              <PostCard
-                name="김테커"
-                role="프론트엔드"
-                experience="신입"
-                education="전공자"
-                skills={["React", "Next", "Vue"]}
-              />
-              <PostCard
-                name="김테커"
-                role="프론트엔드"
-                experience="신입"
-                education="전공자"
-                skills={["React", "Next", "Vue"]}
-              />
-              <PostCard
-                name="김테커"
-                role="프론트엔드"
-                experience="신입"
-                education="전공자"
-                skills={["React", "Next", "Vue"]}
-              />
-              <PostCard
-                name="김테커"
-                role="프론트엔드"
-                experience="신입"
-                education="전공자"
-                skills={["React", "Next", "Vue"]}
-              />
-              <PostCard
-                name="김테커"
-                role="프론트엔드"
-                experience="신입"
-                education="전공자"
-                skills={["React", "Next", "Vue"]}
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-5 z-10">
+              {filterResults.map((result, index) => (
+                <PostCard
+                  key={index} // index를 key로 사용 (가능하다면 고유 ID 사용 권장)
+                  name={result.name}
+                  role={result.role}
+                  experience={result.experience}
+                  education={result.education}
+                  skills={result.skills}
+                />
+              ))}
             </div>
           </div>
         </div>

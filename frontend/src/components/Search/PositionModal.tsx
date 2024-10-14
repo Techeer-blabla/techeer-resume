@@ -8,16 +8,15 @@ interface PositionModalProps {
 }
 
 const positions = [
-  "개발 전체",
-  "소프트웨어 엔지니어",
-  "웹 개발자",
-  "서버 개발자",
+  "Frontend",
+  "Backend",
+  "FullStack",
   "DevOps",
-  "프론트엔드 개발자",
-  "안드로이드 개발자",
-  "IOS 개발자",
-  "임베디드 개발자",
-  "데이터 엔지니어",
+  "Designer",
+  "AI",
+  "Android",
+  "IOS",
+  "Data",
 ];
 
 const PositionModal = ({ onClose }: PositionModalProps) => {

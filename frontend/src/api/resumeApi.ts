@@ -1,5 +1,6 @@
 import { formAxios } from "./axios.config.ts";
 
+// 이력서 업로드 API
 export const postResume = async (
   resume: File,
   createResumeReq: {
@@ -20,8 +21,32 @@ export const postResume = async (
 
     return response.data;
   } catch (error) {
-    // error handling
     console.error("이력서 업로드 오류:", error);
+    throw error;
+  }
+};
+
+// 포지션 및 경력 필터링 API
+export const postFilter = async (filterData: {
+  dto: {
+    positions: string[];
+    minCareer: number;
+    maxCareer: number;
+    techStacks: string[];
+  };
+  pageable: {
+    page: number;
+    size: number;
+    sort: string[];
+  };
+}) => {
+  try {
+    // API 호출
+    const response = await formAxios.post(`/filters`, filterData);
+
+    return response.data;
+  } catch (error) {
+    console.error("포지션/경력 필터링 오류:", error);
     throw error;
   }
 };
