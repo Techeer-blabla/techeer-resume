@@ -55,4 +55,23 @@ public class CommentService {
         .map(comment -> CommentConverter.of(resume, comment))
         .collect(Collectors.toList());
   }
+
+  @Transactional
+  public void deleteComment(Long comment_id){
+    Comment comment = commentRepository.findById(comment_id)
+        .orElseThrow(CommentNotFoundException::new);
+
+    commentRepository.delete(comment);
+  }
+
+  @Transactional
+  public CommentResponse updateComment(Long comment_id, CommentCreateRequest request){
+
+    Comment comment = commentRepository.findById(comment_id)
+        .orElseThrow(CommentNotFoundException::new);
+
+    comment.updateContent(request.getContent());
+
+    return CommentConverter.of(comment.getResume(), comment);
+  }
 }

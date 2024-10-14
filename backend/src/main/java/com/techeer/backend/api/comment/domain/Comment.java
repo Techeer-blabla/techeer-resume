@@ -17,10 +17,12 @@ public class Comment extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "comment_id")
   private Long id;
 
   @Column(nullable = false, length = 255)
   private String content;
+
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "resume_id", nullable = false)
@@ -28,6 +30,11 @@ public class Comment extends BaseEntity {
 
   protected Comment() {
   }
+  // 댓글 내용 수정
+  public void updateContent(String content){
+    this.content = content;
+  }
+
   public static Comment of(Resume resume, CommentCreateRequest commentCreateRequest) {
     return Comment.builder()
         .resume(resume)

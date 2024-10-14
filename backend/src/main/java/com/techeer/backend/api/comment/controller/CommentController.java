@@ -16,11 +16,12 @@ import java.util.List;
 @Tag(name="댓글 등록 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/comments/")
+@RequestMapping("/api/v1/resumes")
 public class CommentController {
 
   private final CommentService commentService;
 
+  @Operation(summary = "댓글 등록")
   @PostMapping("/{resume_id}/comments")
   public ResponseEntity<CommentResponse> createComment(
       @PathVariable("resume_id") Long resumeId,
@@ -45,5 +46,22 @@ public class CommentController {
   public ResponseEntity<List<CommentResponse>> getCommentByResumeId(@PathVariable Long resume_id) {
     List<CommentResponse> responses = commentService.getCommentByResumeId(resume_id);
     return ResponseEntity.ok(responses);
+  }
+  // 댓글 삭제 api
+  @Operation(summary = "댓글 삭제", description = "댓글을 삭제하는 기능")
+  @DeleteMapping("/{comment_id}")
+  public ResponseEntity<Void> deleteComment(@PathVariable Long comment_id) {
+    commentService.deleteComment(comment_id);
+    return ResponseEntity.noContent().build();
+  }
+
+  // 댓글 수정 api
+  @Operation(summary = "댓글 수정", description = "댓글을 수정하는 기능")
+  @PutMapping("/{comment_id}")
+  public ResponseEntity<CommentResponse> updateComment(
+      @PathVariable Long comment_id,
+      @RequestBody CommentCreateRequest request){
+    CommentResponse response = commentService.updateComment(comment_id, request);
+    return ResponseEntity.ok(response);
   }
 }
