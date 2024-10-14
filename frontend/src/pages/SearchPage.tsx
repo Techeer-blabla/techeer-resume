@@ -34,6 +34,9 @@ function SearchPage() {
     user_name: string;
     resume_name: string;
     file_url: string;
+    career: number;
+    position: string;
+    tech_stack: string[];
   };
 
   //검색 결과
