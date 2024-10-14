@@ -26,6 +26,18 @@ export const postResume = async (
   }
 };
 
+//이력서 검색
+export const searchResume = async (searchName: string) => {
+  try {
+    const response = await jsonAxios.get(`search?user_name=${searchName}`);
+    console.log("api: ", response);
+    return response.data;
+  } catch (error) {
+    console.log("이력서 검색 오류", error);
+    throw error;
+  }
+};
+
 export const postFilter = async (filterData: {
   dto: {
     positions: string[];
