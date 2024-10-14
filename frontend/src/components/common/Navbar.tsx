@@ -12,7 +12,6 @@ function Navbar() {
 
   const [userName] = useState<string>("김테커"); //프로필 이름 - 임시
 
-  // 메인 페이지로 이동 ('/')
   const moveToMainPage = () => {
     navigate("/");
   };
