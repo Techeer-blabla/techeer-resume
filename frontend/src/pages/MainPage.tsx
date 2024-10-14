@@ -64,7 +64,7 @@ function MainPage() {
     return () => {
       if (loadMoreRef.current) observer.disconnect();
     };
-  }, [loadMoreRef.current]);
+  }, [hasNextPage, fetchNextPage, loadMoreRef.current]);
 
   return (
     <div className="w-full bg-[#D7E1F5]">
