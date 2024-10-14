@@ -3,8 +3,8 @@ package com.techeer.backend.api.feedback.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.techeer.backend.api.feedback.converter.FeedbackConverter;
 import com.techeer.backend.api.feedback.domain.Feedback;
-import com.techeer.backend.api.feedback.domain.FeedbackConverter;
 import com.techeer.backend.api.feedback.dto.FeedbackCreateRequest;
 import com.techeer.backend.api.feedback.dto.FeedbackResponse;
 import com.techeer.backend.api.feedback.repository.FeedbackRepository;
@@ -39,7 +39,7 @@ public class FeedbackService {
 		feedbackRepository.save(feedback);
 
 		log.info("피드백 생성 완료: {}", feedback);
-		return FeedbackConverter.of(resume, feedback);
+		return FeedbackConverter.toFeedbackResponse(resume, feedback);
 	}
 
 	@Transactional
