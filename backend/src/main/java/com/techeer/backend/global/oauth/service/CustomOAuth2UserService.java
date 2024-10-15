@@ -27,55 +27,28 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        log.info("CustomOAuth2UserService.loadUser() 실행 - OAuth2 로그인 요청 진입");
 
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
-        // 어떤 제공자를 사용할지 확인
-        //String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        //SocialType socialType = getSocialType(registrationId);
-
+        // OAuth2 로그인 시 키(PK)가 되는 값
         String userNameAttributeName = userRequest.getClientRegistration()
                 .getProviderDetails()
                 .getUserInfoEndpoint()
-                .getUserNameAttributeName(); // OAuth2 로그인 시 키(PK)가 되는 값
-        Map<String, Object> attributes = oAuth2User.getAttributes(); // 소셜 로그인에서 API가 제공하는 userInfo의 Json 값(유저 정보들)
+                .getUserNameAttributeName();
+
+        // 소셜 로그인에서 API가 제공하는 userInfo의 Json 값(유저 정보들)
+        Map<String, Object> attributes = oAuth2User.getAttributes();
 
         // google
         OAuthAttributes extractAttributes = OAuthAttributes.ofGoogle(userNameAttributeName, attributes);
 
-        User createdUser = getUser(extractAttributes); // getUser() 메소드로 User 객체 생성 후 반환
-
         // DefaultOAuth2User를 구현한 CustomOAuth2User 객체를 생성해서 반환
         return new CustomOAuth2User(
-                //Collections.singleton(new SimpleGrantedAuthority()),
-                Collections.emptySet(),
+                Collections.emptyList(),
                 attributes,
                 extractAttributes.getNameAttributeKey(),
-                createdUser.getEmail()
-//                createdUser.getRole(),
-//                createdUser.getSocialType()
+                extractAttributes.getOauth2UserInfo().getEmail()
         );
-    }
-
-//    private SocialType getSocialType(String registrationId) {
-//        if (NAVER.equals(registrationId)) {
-//            return SocialType.NAVER;
-//        }
-//        if (KAKAO.equals(registrationId)) {
-//            return SocialType.KAKAO;
-//        }
-//        return SocialType.GOOGLE;
-//    }
-
-    private User getUser(OAuthAttributes attributes) {
-        Optional<User> findUser = userRepository.findByEmail(attributes.getOauth2UserInfo().getEmail());
-        return findUser.orElseGet(() -> saveUser(attributes));
-    }
-
-    private User saveUser(OAuthAttributes attributes) {
-        User createdUser = attributes.toEntity(attributes.getOauth2UserInfo());
-        return userRepository.save(createdUser);
     }
 }
