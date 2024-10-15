@@ -45,8 +45,8 @@ public class SecurityConfig {
 		CorsConfiguration config = new CorsConfiguration();
 
 		config.setAllowCredentials(true);
-		config.setAllowedOrigins(List.of("*"));
-		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTION$S"));
+		config.setAllowedOrigins(List.of("http://localhost:8080"));
+		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 		config.setAllowedHeaders(List.of("*"));
 		config.setExposedHeaders(List.of("*"));
 
@@ -90,11 +90,12 @@ public class SecurityConfig {
 					.userService(customOAuth2UserService))
 				.successHandler(oAuth2LoginSuccessHandler) // 2.
 				.failureHandler(oAuth2LoginFailureHandler) // 3.
-			);
+			)
 //			.exceptionHandling(authenticationManager ->authenticationManager
 //					.authenticationEntryPoint(jwtAuthenticationEntryPoint)
 //					.accessDeniedHandler(jwtAccessDeniedHandler)
 //			)
+			.addFilterBefore(new JwtAuthenticationFilter(jwtService, userRepository), UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 
@@ -109,4 +110,6 @@ public class SecurityConfig {
 	public RedirectStrategy redirectStrategy() {
 		return new DefaultRedirectStrategy(); // 기본 리다이렉트 전략 사용
 	}
+
+
 }

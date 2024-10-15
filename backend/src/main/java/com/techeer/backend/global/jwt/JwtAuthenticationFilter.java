@@ -30,7 +30,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
         checkAccessTokenAndAuthentication(request, response, filterChain);
 
     }
@@ -48,14 +47,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         jwtService.extractAccessToken(request)
                 .filter(jwtService::isTokenValid)
                 .ifPresent(accessToken -> {
+                    log.info("유효한 Access Token이 발견되었습니다: {}", accessToken);
+
+                    // 이메일 및 소셜 타입 추출
                     Object[] emailAndSocialType = jwtService.extractEmailAndSocialType(accessToken);
-                    if (emailAndSocialType.length >= 2) {
+                    if (emailAndSocialType.length >= 1) {
                         String email = (String) emailAndSocialType[0];
-                        //SocialType socialType = (SocialType) emailAndSocialType[1];
+                        log.info("이메일이 추출되었습니다: {}", email);
+
+                        // 사용자 정보 조회
                         userRepository.findByEmail(email)
-                                .ifPresent(this::saveAuthentication);
+                                .ifPresent(user -> {
+                                    log.info("사용자 정보가 발견되었습니다: {}", user);
+                                    saveAuthentication(user);
+                                    log.info("사용자 인증 정보가 저장되었습니다: {}", user);
+                                });
+                    } else {
+                        log.warn("이메일 추출 실패. 반환된 배열 길이: {}", emailAndSocialType.length);
                     }
                 });
+
 
         filterChain.doFilter(request, response);
     }
