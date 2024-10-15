@@ -67,7 +67,7 @@ function Navbar() {
             <img
               src={search}
               alt="search"
-              className="mr-1 w-auto h-5 hover:cursor-pointer"
+              className="mr-1 w-auto h-5 hover:cursor-pointe md:mr-0 sm:mr-0 mr-4"
               onClick={searchName}
             />
           </div>
@@ -76,7 +76,9 @@ function Navbar() {
         {/* 프로필 */}
         <div className="flex items-center pr-10">
           <img src={profile} alt="profile" className="w-10 h-10 mx-2" />
-          <p className="ml-3 mb-[1px]">{userName}</p>
+          <p className="hidden sm:block ml-3 mb-[1px] text-base lg:text-lg">
+            {userName}
+          </p>
         </div>
       </div>
       <div className="mt-3 w-full h-[1px] bg-gray-300" />
