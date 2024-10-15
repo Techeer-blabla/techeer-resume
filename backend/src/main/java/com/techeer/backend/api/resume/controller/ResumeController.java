@@ -65,7 +65,8 @@ public class ResumeController {
 	}
 
 	// 회원 이름으로 게시물 조회
-	@GetMapping("/search")
+	@Operation(summary = "회원 이름으로 이력서 조회")
+	@GetMapping("/resumes/search")
 	public ResponseEntity<List<ResumeResponse>> searchResumesByUserName(@RequestParam("user_name") String userName) {
 		List<ResumeResponse> resumeResponses = resumeService.searchResumesByUserName(userName);
 		return ResponseEntity.ok(resumeResponses);
@@ -93,6 +94,7 @@ public class ResumeController {
 	}
 
 	// 태그 조회 (페이지네이션)
+	@Operation(summary = "이력서 태그 조회")
 	@PostMapping("/resumes/search")
 	public ResponseEntity<List<ResumeResponse>> getResumesByTag(@RequestBody ResumeSearchRequest dto,
 		@PageableDefault(page = 0, size = 10) Pageable pageable) {
