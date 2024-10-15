@@ -1,6 +1,6 @@
-import avatar from "../assets/avatar.png";
-import baggage from "../assets/baggage3.svg";
-import pngegg from "../assets/pngegg2.svg";
+import avatar from "../../assets/avatar.png";
+import baggage from "../../assets/baggage3.svg";
+import pngegg from "../../assets/pngegg2.svg";
 
 function PostCard({
   name,
@@ -11,7 +11,7 @@ function PostCard({
 }: {
   name: string;
   role: string;
-  experience: string;
+  experience: number | string;
   education: string;
   skills: string[];
 }) {
@@ -36,7 +36,9 @@ function PostCard({
         {/* 경력 */}
         <div className="flex items-center space-x-2">
           <img className="w-6 h-auto" src={baggage} alt="baggage" />
-          <div className="text-gray-600 text-sm font-medium">{experience}</div>
+          <div className="text-gray-600 text-sm font-medium">
+            {experience === 0 ? "신입" : `${experience}년`}
+          </div>
         </div>
 
         {/* 학력 */}
@@ -47,15 +49,21 @@ function PostCard({
       </div>
 
       {/* 기술 스택 */}
-      <div className="flex space-x-2 mt-5">
-        {skills.map((skill, index) => (
-          <div
-            key={index}
-            className="flex items-center justify-center px-4 py-1 bg-[#d6e0f5] rounded-[14.01px] text-center text-[#2446b3] text-xs font-semibold"
-          >
-            {skill}
+      <div className="flex space-x-2 mt-6">
+        {skills && skills.length > 0 ? (
+          skills.map((skill, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-center px-4 py-1 bg-[#d6e0f5] rounded-[14px] text-center text-[#2446b3] text-xs font-semibold"
+            >
+              {skill}
+            </div>
+          ))
+        ) : (
+          <div className="flex items-center justify-center px-4 py-1 bg-[#d6e0f5] rounded-[14px] text-center text-[#2446b3] text-xs font-semibold">
+            <p>NoSkill</p>
           </div>
-        ))}
+        )}
       </div>
     </div>
   );
