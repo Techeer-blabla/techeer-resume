@@ -45,7 +45,7 @@ public class SecurityConfig {
 		CorsConfiguration config = new CorsConfiguration();
 
 		config.setAllowCredentials(true);
-		config.setAllowedOrigins(List.of("http://localhost:8080"));
+		config.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:5173"));
 		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 		config.setAllowedHeaders(List.of("*"));
 		config.setExposedHeaders(List.of("*"));
@@ -65,24 +65,24 @@ public class SecurityConfig {
 			.sessionManagement(configurer -> configurer
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
-//			.authorizeHttpRequests(requests ->
-//					requests.anyRequest().permitAll() // 모든 요청을 모든 사용자에게 허용
-//			)
-			.authorizeHttpRequests(authorize -> authorize
-					.requestMatchers(
-							"/v3/api-docs/**",
-							"/oauth2/**",
-							"/oauth2/authorization/google",
-							"/index.html",
-							"/swagger/**",
-							"/swagger-ui/**",
-							"/swagger-ui/index.html/**",
-							"/api-docs/**",
-							"/signup.html",
-							"/api/v1/reissue"
-					).permitAll()
-					.anyRequest().authenticated()
+			.authorizeHttpRequests(requests ->
+					requests.anyRequest().permitAll() // 모든 요청을 모든 사용자에게 허용
 			)
+//			.authorizeHttpRequests(authorize -> authorize
+//					.requestMatchers(
+//							"/v3/api-docs/**",
+//							"/oauth2/**",
+//							"/oauth2/authorization/google",
+//							"/index.html",
+//							"/swagger/**",
+//							"/swagger-ui/**",
+//							"/swagger-ui/index.html/**",
+//							"/api-docs/**",
+//							"/signup.html",
+//							"/api/v1/reissue"
+//					).permitAll()
+//					.anyRequest().authenticated()
+//			)
 			// 로그아웃 성공 시 / 주소로 이동
 //			.logout((logoutConfig) -> logoutConfig.logoutSuccessUrl("/"))
 			.oauth2Login(oauth2Login -> oauth2Login
