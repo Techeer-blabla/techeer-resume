@@ -60,8 +60,9 @@ function SearchPage() {
     <div className="bg-white">
       <div className="pt-5">
         <Navbar />
-        <div className="flex flex-col justify-start p-5 ">
+        <div className="flex flex-col justify-start p-5">
           <div className="w-full max-w-screen-lg mx-auto">
+            {/* 검색 결과 제목 */}
             <div className="flex flex-row justify-start items-center p-10">
               <span className="text-black text-4xl font-extrabold">
                 {searchName && searchName.length > 0 ? (
@@ -117,26 +118,26 @@ function SearchPage() {
             </div>
 
             {/* 선택한 포지션 및 경력 카테고리 표시 */}
-            <div className="flex space-x-2 mt-7 mb-2 ml-10">
+            <div className="flex space-x-2 mt-7 mb-2 ml-4 sm:ml-10">
               {Array.isArray(positionCategory) &&
                 positionCategory.length > 0 &&
                 positionCategory.map((category, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-center px-4 py-1 bg-[#618EFF] rounded-xl text-center text-white text-sm font-medium"
+                    className="flex items-center justify-center px-3 sm:px-4 py-1 bg-[#618EFF] rounded-xl text-center text-white text-xs sm:text-sm font-medium"
                   >
                     {category}
                   </div>
                 ))}
             </div>
 
-            <div className="flex space-x-2 mt-3 mb-2 ml-10">
+            <div className="flex space-x-2 mt-3 mb-2 ml-4 sm:ml-10">
               {Array.isArray(careerCategory) &&
                 careerCategory.length > 0 &&
                 careerCategory.map((category, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-center px-4 py-1 bg-[#34D399] rounded-xl text-center text-white text-sm font-medium"
+                    className="flex items-center justify-center px-3 sm:px-4 py-1 bg-[#34D399] rounded-xl text-center text-white text-xs sm:text-sm font-medium"
                   >
                     {category}
                   </div>
@@ -146,11 +147,10 @@ function SearchPage() {
         </div>
 
         {/* 검색 결과 출력 */}
-        <div className="flex justify-center bg-[#eff4ff] px-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 transform scale-90 gap-6 p-5">
+        <div className="flex justify-center bg-[#eff4ff] px-5 sm:px-10">
+          <div className="grid grid-cols-1 min-[700px]:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 transform gap-6 p-5 max-w-screen-lg xl:w-full">
             {responseData && responseData.length > 0 ? (
               responseData.map((post: PostCardsType) => {
-                console.log("PostCard Data:", post);
                 return (
                   <PostCard
                     key={post.resume_id}
@@ -163,7 +163,7 @@ function SearchPage() {
                 );
               })
             ) : (
-              <div className="flex justify-center w-screen">
+              <div className="flex justify-center w-full mt-10">
                 <p>검색 결과가 존재하지 않습니다.</p>
               </div>
             )}
