@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+
 import com.techeer.backend.api.feedback.domain.Feedback;
 import com.techeer.backend.api.resume.domain.Company;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.dto.request.CreateResumeRequest;
 import com.techeer.backend.api.resume.dto.response.FetchResumeContentResponse;
+import com.techeer.backend.api.resume.dto.response.ResumePageResponse;
 import com.techeer.backend.api.resume.dto.response.ResumeResponse;
 
 public class ResumeConverter {
@@ -30,7 +33,7 @@ public class ResumeConverter {
 			.userName(resume.getUsername())  // User 객체에서 username 추출
 			.resumeName(resume.getName())
 			.fileUrl(resume.getUrl())
-			.position(String.valueOf(resume.getPosition()))
+			.position(resume.getPosition())
 			.career(resume.getCareer())
 			.applyingCompanies(resume.getCompanies().stream()
 				.map(Company::getName)  // Map each Company to its name
@@ -52,6 +55,21 @@ public class ResumeConverter {
 				.collect(Collectors.toList()))
 			.fileUrl(resume.getUrl())
 			.feedbacks(feedbacks)
+			.build();
+	}
+
+	public static ResumePageResponse toResumePageResponse(Resume resume, Page page) {
+		return ResumePageResponse.builder()
+			.resumeId(resume.getId())
+			.userName(resume.getUsername())
+			.resumeName(resume.getName())
+			.position(resume.getPosition())
+			.career(resume.getCareer())
+			.techStackNames(resume.getResumeTechStacks().stream()
+				.map(resumeTechStack -> resumeTechStack.getTechStack().getName())
+				.collect(Collectors.toList()))
+			.totalPage(page.getTotalPages())
+			.currentPage(page.getNumber())
 			.build();
 	}
 
