@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import api from "../baseURL/baseURL";
 import Navbar from "../components/common/Navbar.tsx";
@@ -7,19 +7,20 @@ import Category from "../components/MainPage/Category";
 import PostCard from "../components/common/PostCard.tsx";
 import man1 from "../assets/man1.png";
 import man2 from "../assets/man2.png";
+import PositionModal from "../components/Search/PositionModal"; // 수정된 import
+import CareerModal from "../components/Search/CareerModal";
 import { PostCardsType } from "../dataType.ts";
 import { postFilter } from "../api/resumeApi";
 
-interface FilterResult {
-  name: string;
-  role: string;
-  experience: string;
-  education: string;
-  skills: string[];
-}
-
 function MainPage() {
-  // 포스트카드 GET API 요청 함수
+  const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
+  const [minCareer] = useState(0); // 최소 경력
+  const [maxCareer] = useState(5); // 최대 경력
+  const [, setFilterResults] = useState<any>(null); // 필터링된 데이터
+
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  // 포스트 카드 GET API 요청 함수
   const fetchPostCards = async (pageParam: number) => {
     try {
       const response = await api.get(
@@ -33,15 +34,13 @@ function MainPage() {
   };
 
   // useInfiniteQuery 사용하여 데이터 가져오기
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
-
   const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ["postCards"],
+    queryKey: ["postCards", selectedPositions, minCareer, maxCareer], // 필터 값도 의존성 배열에 추가
     queryFn: async ({ pageParam = 0 }) => {
+      // 필터된 데이터와 함께 요청 보내기
       return fetchPostCards(pageParam);
     },
     getNextPageParam: (lastPage) => {
-      // 마지막 페이지인지 확인하고, 페이지 넘버를 반환
       if (lastPage.currentPage + 1 < lastPage.totalPage) {
         return lastPage.currentPage + 1;
       } else {
@@ -51,14 +50,13 @@ function MainPage() {
     initialPageParam: 0,
   });
 
-  console.log("data: ", data);
   useEffect(() => {
     if (!hasNextPage) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          fetchNextPage(); // 마지막 요소에 닿으면 다음 페이지 데이터 가져오기
+          fetchNextPage();
         }
       },
       {
@@ -73,68 +71,39 @@ function MainPage() {
     return () => {
       if (loadMoreRef.current) observer.disconnect();
     };
-  }, [hasNextPage, fetchNextPage, loadMoreRef.current]);
+  }, [hasNextPage, fetchNextPage]);
 
   // 포지션, 경력 모달 상태 관리
-  const [isPositionOpen, setIsPositionOpen] = useState<boolean>(false);
-  const [isCareerOpen, setIsCareerOpen] = useState<boolean>(false);
-  const [filterResults, setFilterResults] = useState<FilterResult[]>([]);
+  const [isPositionOpen, setIsPositionOpen] = useState(false);
+  const [isCareerOpen, setIsCareerOpen] = useState(false);
 
-  const openPositionModal = async () => {
-    // async 추가
-    setIsPositionOpen(true);
-
-    const filterData = {
-      dto: {
-        positions: ["BACKEND"], // 예시로 BACKEND 포지션 설정
-        minCareer: 0,
-        maxCareer: 0,
-        techStacks: ["string"],
-      },
-      pageable: {
-        page: 0,
-        size: 1,
-        sort: ["string"],
-      },
-    };
-
-    try {
-      const response = await postFilter(filterData); // await 사용
-      setFilterResults(response.data); // 응답 결과 설정
-      console.log("포지션 필터링 결과:", response);
-    } catch (error) {
-      console.error("포지션 필터링 오류:", error);
-    }
-  };
-
+  const openPositionModal = () => setIsPositionOpen(true);
   const closePositionModal = () => setIsPositionOpen(false);
 
-  // 경력 모달 열기/닫기 및 API 호출
-  const openCareerModal = async () => {
-    // async 추가
+  const openCareerModal = () => {
     setIsCareerOpen(true);
-
+    // 경력 필터링 API 호출
     const filterData = {
       dto: {
-        positions: [], // 경력 필터이므로 positions는 빈 배열로 설정
-        minCareer: 0,
-        maxCareer: 5, // 예시로 경력 0-5년 설정
-        techStacks: ["string"],
+        positions: selectedPositions,
+        minCareer: minCareer,
+        maxCareer: maxCareer,
+        techStacks: ["string"], // 기술 스택 필터링 필요 시 추가
       },
       pageable: {
         page: 0,
         size: 1,
-        sort: ["string"],
+        sort: ["string"], // 정렬 기준 필요 시 추가
       },
     };
 
-    try {
-      const response = await postFilter(filterData); // await 사용
-      setFilterResults(response.data); // 응답 결과 설정
-      console.log("경력 필터링 결과:", response);
-    } catch (error) {
-      console.error("경력 필터링 오류:", error);
-    }
+    postFilter(filterData)
+      .then((response) => {
+        setFilterResults(response.data); // 필터링된 결과 설정
+      })
+      .catch((error) => {
+        console.error("경력 필터링 오류:", error);
+      });
   };
 
   const closeCareerModal = () => setIsCareerOpen(false);
@@ -170,10 +139,10 @@ function MainPage() {
 
       <div className="w-full bg-white relative">
         <div className="p-6">
-          {/* 카테고리 */}
+          {/* 카테고리: 조회순, 포지션, 경력 */}
           <div className="max-w-screen-xl mx-auto py-6 relative">
-            <Category title="조회순" options={["인기순", "최신순"]} />
-            <div className="flex justify-start space-x-4">
+            <div className="flex space-x-4">
+              <Category title="조회순" options={["인기순", "최신순"]} />
               <Category title="포지션" onClick={openPositionModal} />
               <Category title="경력" onClick={openCareerModal} />
             </div>
@@ -184,6 +153,7 @@ function MainPage() {
                 <PositionModal
                   isOpen={isPositionOpen}
                   onClose={closePositionModal}
+                  setSelectedPositions={setSelectedPositions} // 포지션 선택 후 상태 업데이트
                 />
               </div>
             )}
@@ -214,7 +184,7 @@ function MainPage() {
                 )
               ) : (
                 <div className="flex justify-center w-screen mt-10">
-                  <p>데이터 불러오는 중</p>
+                  <p>데이터 불러오는 중...</p>
                 </div>
               )}
             </div>
