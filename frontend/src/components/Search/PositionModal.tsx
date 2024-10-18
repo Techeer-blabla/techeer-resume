@@ -14,7 +14,7 @@ const PositionModal = ({
   const [localSelectedPosition, setLocalSelectedPosition] = useState<
     string | null
   >(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   // 사전 정의된 포지션 목록
   const positions = [
@@ -57,11 +57,17 @@ const PositionModal = ({
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [onClose]);
+  }, [onClose, isOpen]);
+
+  // 모달이 열려있을 때만 렌더링
+  if (!isOpen) return null;
 
   return (
     <div
