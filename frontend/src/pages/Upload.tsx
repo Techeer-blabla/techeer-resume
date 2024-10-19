@@ -269,16 +269,14 @@ function Upload() {
     setStackTags([...stackTags, newTag]);
 
   return (
-    <div className="w-full flex mt-[2rem] ml-[4rem] space-x-4">
+    <div className="w-full flex flex-col md:flex-row mt-[2rem] ml-0 md:ml-[4rem] space-y-4 md:space-y-0 md:space-x-4">
       {/* 왼쪽 섹션: 파일 업로드 박스 */}
-      <div className="w-[50rem] h-[42rem] flex-shrink-0 rounded-[0.3125rem] border border-[#CEDAF9] bg-[#F8FAFF]">
-        <div className="flex-shrink-0 ml-[5rem] mt-[4rem] relative">
+      <div className="w-full md:w-[50rem] h-[42rem] flex-shrink-0 rounded-[0.3125rem] border border-[#CEDAF9] bg-[#F8FAFF]">
+        <div className="flex-shrink-0 ml-[2rem] md:ml-[5rem] mt-[4rem] relative">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="7rem"
-            height="7rem"
+            className="w-[5rem] h-[5rem] md:w-[7rem] md:h-[7rem] fill-[#EFEFEF]"
             viewBox="0 0 114 114"
-            className="fill-[#EFEFEF]"
           >
             <circle cx="57" cy="57" r="57" />
             <path
@@ -288,16 +286,16 @@ function Upload() {
             />
           </svg>
         </div>
-        <div className="ml-[5rem] mt-[1rem]">
-          <div className="w-[15rem] h-[2rem] flex-shrink-0 text-black font-pretendard text-[1.5rem] font-bold">
+        <div className="ml-[2rem] md:ml-[5rem] mt-[1rem]">
+          <div className="w-[12rem] md:w-[15rem] h-[2rem] flex-shrink-0 text-black font-pretendard text-[1.2rem] md:text-[1.5rem] font-bold">
             첨부파일 업로드
           </div>
-          <div className="text-black font-pretendard text-[1.1rem] font-normal">
+          <div className="text-black font-pretendard text-[0.9rem] md:text-[1.1rem] font-normal">
             여기에 파일을 끌어다 놓으세요
           </div>
         </div>
         <FileUpload id="uploadFile1" />
-        <div className="w-[40rem] flex items-center mt-[1rem] ml-[5rem]">
+        <div className="w-[90%] md:w-[40rem] flex items-center mt-[1rem] ml-[2rem] md:ml-[5rem]">
           {resume ? (
             <div className="text-gray-600 font-medium overflow-hidden text-ellipsis whitespace-nowrap flex-1">
               선택된 파일: {resume.name}
@@ -306,7 +304,7 @@ function Upload() {
             <div className="flex-1" />
           )}
           <button
-            className="w-[7.5rem] h-[2.5rem] flex-shrink-0 text-[#C5C5C5] font-pretendard text-[1rem] font-semibold bg-transparent border border-[#C5C5C5] rounded"
+            className="w-[6rem] md:w-[7.5rem] h-[2.5rem] flex-shrink-0 text-[#C5C5C5] font-pretendard text-[0.8rem] md:text-[1rem] font-semibold bg-transparent border border-[#C5C5C5] rounded"
             onClick={handleCancel}
           >
             Cancel
@@ -315,9 +313,9 @@ function Upload() {
       </div>
 
       {/* 오른쪽 섹션 */}
-      <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal">
-        <div className="ml-[1rem]"># 포지션</div>
-        <div className="grid grid-cols-3 gap-2 mb-4">
+      <div className="flex flex-col justify-start text-black font-pretendard text-[0.9rem] md:text-[1rem] font-normal">
+        <div className="ml-[0.5rem] md:ml-[1rem]"># 포지션</div>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
           {positionTags.map((positionTag) => (
             <PositionSVG
               key={positionTag}
@@ -329,9 +327,9 @@ function Upload() {
         </div>
 
         {/* 스택 */}
-        <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
-          <div className="ml-[1rem]"># 스택</div>
-          <div className="grid grid-cols-3 gap-2 mb-4">
+        <div className="flex flex-col justify-start text-black font-pretendard text-[0.9rem] md:text-[1rem] font-normal mt-[1rem]">
+          <div className="ml-[0.5rem] md:ml-[1rem]"># 스택</div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
             {stackTags.map((stackTag) => (
               <PositionSVG
                 key={stackTag}
@@ -345,17 +343,17 @@ function Upload() {
         </div>
 
         {/* 경력 슬라이더 */}
-        <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
-          <div className="ml-[1rem]"># 경력</div>
-          <div className="ml-[1rem]">
+        <div className="flex flex-col justify-start text-black font-pretendard text-[0.9rem] md:text-[1rem] font-normal mt-[1rem]">
+          <div className="ml-[0.5rem] md:ml-[1rem]"># 경력</div>
+          <div className="ml-[0.5rem] md:ml-[1rem]">
             <ExperienceSlider value={career} onChange={setCareer} />
           </div>
         </div>
 
         {/* 학력 */}
-        <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
-          <div className="ml-[1rem]"># 학력</div>
-          <div className="grid grid-cols-3 gap-2 mb-4">
+        <div className="flex flex-col justify-start text-black font-pretendard text-[0.9rem] md:text-[1rem] font-normal mt-[1rem]">
+          <div className="ml-[0.5rem] md:ml-[1rem]"># 학력</div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
             {educationTags.map((education) => (
               <PositionSVG
                 key={education}
@@ -368,9 +366,9 @@ function Upload() {
         </div>
 
         {/* 회사 */}
-        <div className="flex flex-col justify-start text-black font-pretendard text-[1rem] font-normal mt-[1rem]">
-          <div className="ml-[1rem]"># 회사</div>
-          <div className="grid grid-cols-3 gap-2 mb-4">
+        <div className="flex flex-col justify-start text-black font-pretendard text-[0.9rem] md:text-[1rem] font-normal mt-[1rem]">
+          <div className="ml-[0.5rem] md:ml-[1rem]"># 회사</div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
             {companyTags.map((company) => (
               <PositionSVG
                 key={company}
@@ -383,7 +381,7 @@ function Upload() {
           {/* 최종 업로드 버튼 */}
           <div className="flex justify-end mt-8">
             <button
-              className="w-[10rem] h-[3rem] flex-shrink-0 text-white font-pretendard text-[1rem] font-semibold bg-[#0060FF] rounded"
+              className="w-[8rem] md:w-[10rem] h-[3rem] flex-shrink-0 text-white font-pretendard text-[1rem] font-semibold bg-[#0060FF] rounded"
               onClick={handleUpload} // 업로드 버튼 클릭 시 이벤트 핸들러 추가
             >
               Submit Resume

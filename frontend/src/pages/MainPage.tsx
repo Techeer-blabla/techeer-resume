@@ -16,7 +16,7 @@ function MainPage() {
   const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
   const [minCareer] = useState(0); // 최소 경력
   const [maxCareer] = useState(5); // 최대 경력
-  const [, setFilterResults] = useState<any>(null); // 필터링된 데이터
+  const [, setFilterResults] = useState<unknown>(null); // 필터링된 데이터
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
