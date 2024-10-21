@@ -85,11 +85,15 @@ public class ResumeController {
 
 	@Operation(summary = "이력서 여러 조회")
 	@GetMapping(value = "/resumes")
-	public ResponseEntity<ResumePageResponse> getResumes(
+	public ResponseEntity<List<ResumePageResponse>> getResumes(
 		@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 		//ResumeService를 통해 페이지네이션된 이력서 목록을 가져옵니다.
-		ResumePageResponse resumes = resumeService.getResumePage(pageable);
+		List<ResumePageResponse> resumes = resumeService.getResumePage(pageable);
 
+		if (resumes == null) {
+			// 404 Not Found
+			return ResponseEntity.notFound().build();
+		}
 		return ResponseEntity.ok(resumes);
 	}
 
