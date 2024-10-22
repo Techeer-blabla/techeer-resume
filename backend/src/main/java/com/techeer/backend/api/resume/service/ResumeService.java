@@ -130,7 +130,7 @@ public class ResumeService {
 	}
 
 	@Transactional(readOnly = true)
-	public ResumePageResponse getResumePage(Pageable pageable) {
+	public List<ResumePageResponse> getResumePage(Pageable pageable) {
 		// 페이지네이션을 적용하여 레포지토리에서 데이터를 가져옴
 		Page<Resume> resumes = resumeRepository.findAll(pageable);
 
@@ -139,14 +139,12 @@ public class ResumeService {
 		Resume resume = resumes.getContent().isEmpty() ? null : resumes.getContent().get(0);
 
 		// Resume가 없을 경우 빈 결과를 처리
-		if (resume == null) {
-			return ResumePageResponse.builder()
-				.totalPage(resumes.getTotalPages())
-				.currentPage(resumes.getNumber())
-				.build();
-		}
+		if (resume == null) return null;
 
+		List<ResumePageResponse> resumePageResponses = resumes.stream()
+			.map(res -> toResumePageResponse(res, resumes))
+			.collect(Collectors.toList());
 		// Resume와 페이지 정보를 바탕으로 ResumePageResponse로 변환
-		return toResumePageResponse(resume, resumes);
+		return resumePageResponses;
 	}
 }
