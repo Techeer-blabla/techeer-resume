@@ -22,6 +22,10 @@ public enum ErrorCode {
     OPENAI_CLIENT_ERROR(HttpStatus.BAD_REQUEST, "O001", "OpenAI 클라이언트 오류"),
     OPENAI_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "O002", "OpenAI 서버 오류"),
     OPENAI_INVALID_RESPONSE(HttpStatus.BAD_GATEWAY, "O003", "OpenAI 응답 오류"),
+
+    // Comment
+    COMMENT_NOT_FOUND_MESSAGE(HttpStatus.NOT_FOUND, "C001", "댓글이 존재하지 않음"),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "C002", "이력서 관련 댓글이 존재하지 않음"),
     ;
 
     private HttpStatus status;
