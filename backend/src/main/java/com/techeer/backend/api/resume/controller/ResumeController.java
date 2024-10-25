@@ -3,6 +3,7 @@ package com.techeer.backend.api.resume.controller;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -85,10 +86,10 @@ public class ResumeController {
 
 	@Operation(summary = "이력서 여러 조회")
 	@GetMapping(value = "/resumes")
-	public ResponseEntity<List<ResumePageResponse>> getResumes(
-		@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+	public ResponseEntity<List<ResumePageResponse>> getResumes( @RequestParam int page,@RequestParam int size) {
 		//ResumeService를 통해 페이지네이션된 이력서 목록을 가져옵니다.
-		List<ResumePageResponse> resumes = resumeService.getResumePage(pageable);
+		final Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
+		final List<ResumePageResponse> resumes = resumeService.getResumePage(pageable);
 
 		if (resumes == null) {
 			// 404 Not Found
@@ -100,9 +101,10 @@ public class ResumeController {
 	// 태그 조회 (페이지네이션)
 	@Operation(summary = "이력서 태그 조회")
 	@PostMapping("/resumes/search")
-	public ResponseEntity<List<ResumeResponse>> getResumesByTag(@RequestBody ResumeSearchRequest dto,
-		@PageableDefault(page = 0, size = 10) Pageable pageable) {
-		List<ResumeResponse> resumeResponses = resumeService.searchByTages(dto, pageable);
+	public ResponseEntity<List<ResumeResponse>> getResumesByTag(@RequestParam int page,@RequestParam int size,
+																@RequestBody ResumeSearchRequest dto) {
+		final Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
+		final List<ResumeResponse> resumeResponses = resumeService.searchByTages(dto, pageable);
 		return ResponseEntity.ok(resumeResponses);
 	}
 }
