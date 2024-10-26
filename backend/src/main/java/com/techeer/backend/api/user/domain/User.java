@@ -32,26 +32,29 @@ public class User extends BaseEntity {
 //    @Column(name = "profile_image")
 //    private String profileImage;
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "role")
-//    private Role role;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private Role role;
 
     @Builder
-    public User(String email, String refreshToken){
+    public User(String email, String refreshToken, Role role) {
         this.email = email;
         this.username = null;
         this.refreshToken = refreshToken;
+        this.role = role;
     }
 
-    public static User fromSignup(String email, String refreshToken){
-        return User.builder()
-                .email(email)
-                .refreshToken(refreshToken)
-                .build();
-    }
+//    public static User fromSignup(String email, String refreshToken){
+//        return User.builder()
+//                .email(email)
+//                .refreshToken(refreshToken)
+//                .build();
+//    }
 
-    public void signupOf(SignUpRequest req){
+
+    public void updateUser(SignUpRequest req){
         this.username = req.getUsername();
+        this.role = req.getRole();
     }
 
     public void onLogout() {

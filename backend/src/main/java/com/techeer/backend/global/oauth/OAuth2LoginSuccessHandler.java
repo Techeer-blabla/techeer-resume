@@ -1,5 +1,6 @@
 package com.techeer.backend.global.oauth;
 
+import com.techeer.backend.api.user.converter.UserConverter;
 import com.techeer.backend.api.user.domain.Role;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.repository.UserRepository;
@@ -53,8 +54,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                         }
                     }, () -> {
                         // 사용자가 존재하지 않을 경우 (GUEST)
-
-                        User newUser = User.fromSignup(oAuth2User.getEmail(),refreshToken);// 초기 RefreshToken 설정
+                        // todo: 지금은 바로 REGULAR 저장 하지만 나중에 수정
+                        User newUser = UserConverter.fromSignUp(oAuth2User.getEmail(),refreshToken,Role.REGULAR);// 초기 RefreshToken 설정
                         userRepository.save(newUser); // 새로운 사용자 저장
 
                         response.setContentType("application/json");
