@@ -62,14 +62,16 @@ function MainPage() {
       {
         root: null,
         rootMargin: "0px",
-        threshold: 0.1, // 10% 보였을 때 트리거
+        threshold: 0.1, // 10% visible trigger
       }
     );
 
-    if (loadMoreRef.current) observer.observe(loadMoreRef.current);
+    const currentRef = loadMoreRef.current; // Store the current ref value
+
+    if (currentRef) observer.observe(currentRef); // Observe the current ref
 
     return () => {
-      if (loadMoreRef.current) observer.disconnect();
+      if (currentRef) observer.disconnect(); // Use the stored value for cleanup
     };
   }, [hasNextPage, fetchNextPage]);
 
