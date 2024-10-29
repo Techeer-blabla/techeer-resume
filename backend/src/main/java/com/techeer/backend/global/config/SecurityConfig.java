@@ -65,6 +65,11 @@ public class SecurityConfig {
 			.sessionManagement(configurer -> configurer
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
+//			.authorizeHttpRequests(requests -> requests
+//					.requestMatchers("/api/v1/resumes/search").hasRole("ADMIN") // resume
+//					.requestMatchers("/api/v1/resumes/**").hasAnyRole("ADMIN","REGULAR") // resume
+//					.anyRequest().permitAll()
+//			)
 			.authorizeHttpRequests(requests ->
 					requests.anyRequest().permitAll() // 모든 요청을 모든 사용자에게 허용
 			)

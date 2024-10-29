@@ -26,8 +26,8 @@ public class UserController {
 
     @Operation(summary = "추가정보 입력")
     @PostMapping("/users")
-    public ResponseEntity<SuccessResponse> signupUser(@RequestBody @Valid SignUpRequest signUpReq) {
-        userService.signup(signUpReq);
+    public ResponseEntity<SuccessResponse> signupUser(@RequestBody @Valid SignUpRequest req) {
+        userService.signup(req);
         return ResponseEntity.ok().build();
     }
 

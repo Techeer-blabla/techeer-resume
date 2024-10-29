@@ -30,8 +30,8 @@ public class UserService {
 
     public void signup(SignUpRequest signUpReq) {
         User user = this.getLoginUser();
-        if (userRepository.findByEmail(user.getEmail()).isEmpty()) {
-            user.signupOf(signUpReq);
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            user.updateUser(signUpReq);
             userRepository.save(user);
         }
     }
