@@ -28,19 +28,10 @@ function SearchPage() {
   const openCareerModal = () => setIsCareerOpen(true);
   const closeCareerModal = () => setIsCareerOpen(false);
 
-  // 임시 수정되면 PostCardsType으로 바꾸기
-  type Resume = {
-    resume_id: number;
-    user_name: string;
-    resume_name: string;
-    file_url: string;
-    career: number;
-    position: string;
-    tech_stack: string[];
-  };
-
   //검색 결과
-  const [responseData, setResponseData] = useState<Resume[] | null>(null);
+  const [responseData, setResponseData] = useState<PostCardsType[] | null>(
+    null
+  );
 
   useEffect(() => {
     const SearchResults = async () => {
