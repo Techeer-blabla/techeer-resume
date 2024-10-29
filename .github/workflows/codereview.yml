@@ -9,76 +9,25 @@ on:
     types: [opened, reopened, synchronize]
 
 jobs:
-  backend_review:
+  test:
+    # if: ${{ contains(github.event.*.labels.*.name, 'gpt review') }} # Optional; to run only when a label is attached
     defaults:
-        run:
-          working-directory: backend
-
+      run:
+        working-directory: backend
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
       - uses: anc95/ChatGPT-CodeReview@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          LANGUAGE: Korean
+          # Optional
+          LANGUAGE: Korean # default: English
           OPENAI_API_ENDPOINT: https://api.openai.com/v1
-          MODEL: "gpt-4o-mini"
-          PROMPT: |
-            Please review the backend code based on the following criteria: 
-            1) Avoidance of 'else' statements,
-            2) No classes with more than 3 instance variables,
-            3) Implementation without setters,
-            4) Limitation of method arguments (no more than 4, preferably fewer),
-            5) Only one dot per line,
-            6) Methods should perform a single responsibility,
-            7) Effort to keep classes small,
-            8) Active use of Java functions,
-            9) Usage of collections over arrays,
-            10) Class order (constants, member variables, constructor, methods),
-            11) Avoidance of hard-coded values,
-            12) Adherence to object-oriented principles.
-
-            Please check for adherence to these principles and suggest improvements where necessary.
-          top_p: 1
-          temperature: 0.7
+          MODEL: "gpt-4o-mini" # https://platform.openai.com/docs/models
+          PROMPT: "code review please" # https://platform.openai.com/docs/api-reference/chat/create#chat/create-prompt
+          top_p: 1 # https://platform.openai.com/docs/api-reference/chat/create#chat/create-top_p
+          temperature: 1 # https://platform.openai.com/docs/api-reference/chat/create#chat/create-temperature
           max_tokens: 10000
-          MAX_PATCH_LENGTH: 10000
-
-  frontend_review:
-    defaults:
-        run:
-          working-directory: frontend
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: anc95/ChatGPT-CodeReview@main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          LANGUAGE: Korean
-          OPENAI_API_ENDPOINT: https://api.openai.com/v1
-          MODEL: "gpt-4o-mini"
-          PROMPT: "Please review the code only for parts that are incorrect, need modification, or could be refactored. You should also suggest how the code can be improved."
-          top_p: 1
-          temperature: 0.7
-          max_tokens: 10000
-          MAX_PATCH_LENGTH: 10000
-
-  root_files_review:
-    if: github.event.pull_request.head.repo.full_name == 'techeer_resume'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: anc95/ChatGPT-CodeReview@main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          LANGUAGE: Korean
-          OPENAI_API_ENDPOINT: https://api.openai.com/v1
-          MODEL: "gpt-4o-mini"
-          PROMPT:  "Please review configuration files in the root directory for issues in setup, optimization, and compatibility."
-          top_p: 1
-          temperature: 0.7
-          max_tokens: 10000
-          MAX_PATCH_LENGTH: 10000
+          MAX_PATCH_LENGTH: 10000 # if the patch/diff length is large than MAX_PATCH_LENGTH, will be ignored and won't review. By default, with no MAX_PATCH_LENGTH set, there is also no limit for the patch/diff length.
