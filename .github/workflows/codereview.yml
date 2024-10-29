@@ -16,6 +16,7 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - uses: anc95/ChatGPT-CodeReview@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -50,6 +51,7 @@ jobs:
           working-directory: frontend
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - uses: anc95/ChatGPT-CodeReview@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -67,6 +69,7 @@ jobs:
     if: github.event.pull_request.head.repo.full_name == 'techeer_resume'
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - uses: anc95/ChatGPT-CodeReview@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
