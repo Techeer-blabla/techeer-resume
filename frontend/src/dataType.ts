@@ -5,5 +5,5 @@ export type PostCardsType = {
   position: string;
   user_name: string;
   resume_id: Key;
-  tech_stack: string[];
+  tech_stack_names: string[];
 };

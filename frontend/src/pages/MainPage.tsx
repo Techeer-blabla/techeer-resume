@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import api from "../baseURL/baseURL";
+import { getResumeList } from "../api/resumeApi.ts";
 import Navbar from "../components/common/Navbar.tsx";
 import BannerCard from "../components/MainPage/BannerCard";
 import Category from "../components/MainPage/Category";
@@ -11,60 +11,66 @@ import { PostCardsType } from "../dataType.ts";
 
 function MainPage() {
   // 포스트카드 GET API 요청 함수
-  const fetchPostCards = async (pageParam: number) => {
+  const fetchPostCards = async (page: number, size = 8) => {
     try {
-      const response = await api.get(
-        `/resumes?page=${pageParam}&size=10&sort=`
-      );
-      return response.data;
-    } catch (e) {
-      alert(e);
-      throw e;
+      const resumeList = await getResumeList(page, size);
+      return resumeList;
+    } catch (error) {
+      console.error("포스트카드 조회 오류:", error);
+      throw error;
     }
   };
 
   // useInfiniteQuery 사용하여 데이터 가져오기
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ["postCards"],
-    queryFn: async ({ pageParam = 0 }) => {
-      return fetchPostCards(pageParam);
-    },
-    getNextPageParam: (lastPage) => {
-      // 마지막 페이지인지 확인하고, 페이지 넘버를 반환
-      if (lastPage.currentPage + 1 < lastPage.totalPage) {
-        return lastPage.currentPage + 1;
-      } else {
-        return undefined;
-      }
-    },
-    initialPageParam: 0,
-  });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["postCards"],
+      queryFn: async ({ pageParam = 0 }) => {
+        return fetchPostCards(pageParam);
+      },
+      getNextPageParam: (lastPage) => {
+        console.log(
+          "Current page and total pages:",
+          lastPage[0].current_page,
+          lastPage[0].total_page
+        );
+        if (lastPage[0].current_page + 1 < lastPage[0].total_page) {
+          return lastPage[0].current_page + 1;
+        } else {
+          return undefined;
+        }
+      },
+      initialPageParam: 0,
+    });
 
-  console.log("data: ", data);
+  console.log("resumeList: ", data);
+
   useEffect(() => {
-    if (!hasNextPage) return;
+    if (!hasNextPage || isFetchingNextPage) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          fetchNextPage(); // 마지막 요소에 닿으면 다음 페이지 데이터 가져오기
+          console.log("Observer triggered, fetching next page...");
+          fetchNextPage();
         }
       },
       {
         root: null,
         rootMargin: "0px",
-        threshold: 0.1, // 10% 보였을 때 트리거
+        threshold: 0.1,
       }
     );
 
-    if (loadMoreRef.current) observer.observe(loadMoreRef.current);
+    const loadMoreCurrent = loadMoreRef.current;
+    if (loadMoreCurrent) observer.observe(loadMoreCurrent);
 
     return () => {
-      if (loadMoreRef.current) observer.disconnect();
+      if (loadMoreCurrent) observer.unobserve(loadMoreCurrent);
     };
-  }, [hasNextPage, fetchNextPage, loadMoreRef.current]);
+  }, [hasNextPage, fetchNextPage, isFetchingNextPage]);
 
   return (
     <div className="w-full bg-[#D7E1F5]">
@@ -72,7 +78,7 @@ function MainPage() {
         <Navbar />
 
         {/* 배너 */}
-        <div className="flex justify-between items-center p-5 space-x-4 max-w-screen-xl mx-auto">
+        <div className="flex justify-center p-5 space-x-4 max-w-screen-xl mx-auto">
           <BannerCard
             title="내가 지원할 기업은?"
             comment="채용 공고를 한 번에 볼 수 있습니다."
@@ -98,7 +104,7 @@ function MainPage() {
       <div className="w-full bg-white">
         <div className="p-6">
           {/* 카테고리 */}
-          <div className="max-w-screen-xl mx-auto flex justify-start py-6">
+          <div className=" max-w-screen-xl mx-auto flex justify-start py-6">
             <Category title="조회순" options={["인기순", "최신순"]} />
             <Category
               title="포지션"
@@ -109,17 +115,17 @@ function MainPage() {
 
           {/* 포스트 카드 */}
           <div className="flex justify-center">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-5">
+            <div className="grid grid-cols-1 min-[700px]:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 p-5">
               {data?.pages && data.pages.length > 0 ? (
                 data.pages.map((page) =>
-                  page.element_list?.map((post: PostCardsType) => (
+                  page?.map((post: PostCardsType) => (
                     <PostCard
                       key={post.resume_id}
                       name={post.user_name}
                       role={post.position}
                       experience={post.career}
                       education="전공자"
-                      skills={post.tech_stack}
+                      skills={post.tech_stack_names}
                     />
                   ))
                 )
@@ -132,7 +138,7 @@ function MainPage() {
           </div>
 
           {/* 무한스크롤 로딩 트리거 */}
-          <div ref={loadMoreRef} className="w-1" />
+          <div ref={loadMoreRef} className="h-1" />
         </div>
       </div>
     </div>
