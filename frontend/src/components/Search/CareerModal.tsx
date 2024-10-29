@@ -10,7 +10,7 @@ interface PositionModalProps {
 const PositionModal = ({ isOpen, onClose }: PositionModalProps) => {
   const [minCareer, setMinCareer] = useState(0); // 최소 경력
   const [maxCareer, setMaxCareer] = useState(10); // 최대 경력
-  const [, setFilterResults] = useState<any>(null); // 필터링된 결과를 저장할 상태
+  const [, setFilterResults] = useState<unknown>(null); // 필터링된 결과를 저장할 상태
   const [, setIsCareerOpen] = useState(false); // 경력 모달 열기/닫기 상태
   const dropdownRef = useRef<HTMLDivElement>(null);
 
