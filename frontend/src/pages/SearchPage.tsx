@@ -56,6 +56,8 @@ function SearchPage() {
     SearchResults();
   }, [searchName]);
 
+  console.log("Data: ", responseData);
+
   return (
     <div className="bg-white">
       <div className="pt-5">
@@ -158,12 +160,12 @@ function SearchPage() {
                     role={post.position}
                     experience={post.career}
                     education="전공자"
-                    skills={post.tech_stack}
+                    skills={post.tech_stack_names}
                   />
                 );
               })
             ) : (
-              <div className="flex justify-center w-full mt-10">
+              <div className="flex justify-center w-full my-10">
                 <p>검색 결과가 존재하지 않습니다.</p>
               </div>
             )}
