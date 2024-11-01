@@ -20,6 +20,13 @@ export const formAxios = axios.create({
   },
 });
 
+export const formAxiosjson = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
 export const axiosInstance = axios.create({
   baseURL: AXIOS_BASE_URL,
   timeout: NETWORK.TIMEOUT,

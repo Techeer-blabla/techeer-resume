@@ -1,4 +1,4 @@
-import { formAxios, jsonAxios } from "./axios.config.ts";
+import { formAxios, jsonAxios, formAxiosjson } from "./axios.config.ts";
 
 // 이력서 업로드 API
 export const postResume = async (
@@ -26,14 +26,33 @@ export const postResume = async (
   }
 };
 
-//이력서 검색
+// 이력서 검색
 export const searchResume = async (searchName: string) => {
   try {
-    const response = await jsonAxios.get(`search?user_name=${searchName}`);
+    const response = await jsonAxios.get(
+      `/resumes/search?user_name=${searchName}`
+    );
     console.log("api: ", response);
     return response.data;
   } catch (error) {
     console.log("이력서 검색 오류", error);
+    throw error;
+  }
+};
+
+// 여러 이력서 조회
+export const getResumeList = async (page: number, size: number) => {
+  try {
+    const formData = new FormData();
+    formData.append("page", page.toString());
+    formData.append("size", size.toString());
+
+    const response = await formAxiosjson.get(
+      `/resumes?page=${page}&size=${size}`
+    );
+    return response.data;
+  } catch (error) {
+    console.log("이력서 조회 오류", error);
     throw error;
   }
 };

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import api from "../baseURL/baseURL";
+import { getResumeList } from "../api/resumeApi.ts";
 import Navbar from "../components/common/Navbar.tsx";
 import BannerCard from "../components/MainPage/BannerCard";
 import Category from "../components/MainPage/Category";
@@ -23,92 +23,64 @@ function MainPage() {
   // 포스트 카드 GET API 요청 함수
   const fetchPostCards = async (pageParam: number) => {
     try {
-      const response = await api.get(
-        `/resumes?page=${pageParam}&size=10&sort=`
-      );
-      return response.data;
-    } catch (e) {
-      alert(e);
-      throw e;
+      const resumeList = await getResumeList(page, size);
+      return resumeList;
+    } catch (error) {
+      console.error("포스트카드 조회 오류:", error);
+      throw error;
     }
   };
 
   // useInfiniteQuery 사용하여 데이터 가져오기
-  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ["postCards", selectedPositions, minCareer, maxCareer], // 필터 값도 의존성 배열에 추가
-    queryFn: async ({ pageParam = 0 }) => {
-      // 필터된 데이터와 함께 요청 보내기
-      return fetchPostCards(pageParam);
-    },
-    getNextPageParam: (lastPage) => {
-      if (lastPage.currentPage + 1 < lastPage.totalPage) {
-        return lastPage.currentPage + 1;
-      } else {
-        return undefined;
-      }
-    },
-    initialPageParam: 0,
-  });
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["postCards"],
+      queryFn: async ({ pageParam = 0 }) => {
+        return fetchPostCards(pageParam);
+      },
+      getNextPageParam: (lastPage) => {
+        console.log(
+          "Current page and total pages:",
+          lastPage[0].current_page,
+          lastPage[0].total_page
+        );
+        if (lastPage[0].current_page + 1 < lastPage[0].total_page) {
+          return lastPage[0].current_page + 1;
+        } else {
+          return undefined;
+        }
+      },
+      initialPageParam: 0,
+    });
+
+  console.log("resumeList: ", data);
 
   useEffect(() => {
-    if (!hasNextPage) return;
+    if (!hasNextPage || isFetchingNextPage) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
+          console.log("Observer triggered, fetching next page...");
           fetchNextPage();
         }
       },
       {
         root: null,
         rootMargin: "0px",
-        threshold: 0.1, // 10% visible trigger
+        threshold: 0.1,
       }
     );
 
-    const currentRef = loadMoreRef.current; // Store the current ref value
-
-    if (currentRef) observer.observe(currentRef); // Observe the current ref
+    const loadMoreCurrent = loadMoreRef.current;
+    if (loadMoreCurrent) observer.observe(loadMoreCurrent);
 
     return () => {
-      if (currentRef) observer.disconnect(); // Use the stored value for cleanup
+      if (loadMoreCurrent) observer.unobserve(loadMoreCurrent);
     };
-  }, [hasNextPage, fetchNextPage]);
-
-  // 포지션, 경력 모달 상태 관리
-  const [isPositionOpen, setIsPositionOpen] = useState(false);
-  const [isCareerOpen, setIsCareerOpen] = useState(false);
-
-  const openPositionModal = () => setIsPositionOpen(true);
-  const closePositionModal = () => setIsPositionOpen(false);
-
-  const openCareerModal = () => {
-    setIsCareerOpen(true);
-    // 경력 필터링 API 호출
-    const filterData = {
-      dto: {
-        positions: selectedPositions,
-        minCareer: minCareer,
-        maxCareer: maxCareer,
-        techStacks: ["string"], // 기술 스택 필터링 필요 시 추가
-      },
-      pageable: {
-        page: 0,
-        size: 1,
-        sort: ["string"], // 정렬 기준 필요 시 추가
-      },
-    };
-
-    postFilter(filterData)
-      .then((response) => {
-        setFilterResults(response.data); // 필터링된 결과 설정
-      })
-      .catch((error) => {
-        console.error("경력 필터링 오류:", error);
-      });
-  };
-
-  const closeCareerModal = () => setIsCareerOpen(false);
+  }, [hasNextPage, fetchNextPage, isFetchingNextPage]);
 
   return (
     <div className="w-full bg-[#D7E1F5]">
@@ -116,7 +88,7 @@ function MainPage() {
         <Navbar />
 
         {/* 배너 */}
-        <div className="flex justify-between items-center p-5 space-x-4 max-w-screen-xl mx-auto">
+        <div className="flex justify-center p-5 space-x-4 max-w-screen-xl mx-auto">
           <BannerCard
             title="내가 지원할 기업은?"
             comment="채용 공고를 한 번에 볼 수 있습니다."
@@ -170,17 +142,17 @@ function MainPage() {
 
           {/* 포스트 카드 */}
           <div className="flex justify-center">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-5">
+            <div className="grid grid-cols-1 min-[700px]:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 p-5">
               {data?.pages && data.pages.length > 0 ? (
                 data.pages.map((page) =>
-                  page.element_list?.map((post: PostCardsType) => (
+                  page?.map((post: PostCardsType) => (
                     <PostCard
                       key={post.resume_id}
                       name={post.user_name}
                       role={post.position}
                       experience={post.career}
                       education="전공자"
-                      skills={post.tech_stack}
+                      skills={post.tech_stack_names}
                     />
                   ))
                 )
@@ -193,7 +165,7 @@ function MainPage() {
           </div>
 
           {/* 무한스크롤 로딩 트리거 */}
-          <div ref={loadMoreRef} className="w-1" />
+          <div ref={loadMoreRef} className="h-1" />
         </div>
       </div>
     </div>
