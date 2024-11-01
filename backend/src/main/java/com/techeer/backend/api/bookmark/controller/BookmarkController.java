@@ -1,6 +1,7 @@
 package com.techeer.backend.api.bookmark.controller;
 
-import com.techeer.backend.api.bookmark.dto.BookmarkRequest;
+import com.techeer.backend.api.bookmark.dto.BookmarkAddRequest;
+import com.techeer.backend.api.bookmark.dto.BookmarkRemoveRequest;
 import com.techeer.backend.api.bookmark.dto.BookmarkResponse;
 import com.techeer.backend.api.bookmark.service.BookmarkService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,14 +28,14 @@ public class BookmarkController {
 
     @Operation(summary = "북마크 등록", description = "관심있는 이력서를 북마크로 등록합니다.")
     @PostMapping("/add")
-    public ResponseEntity<BookmarkResponse> addBookmark(@RequestBody BookmarkRequest bookmarkRequest) {
+    public ResponseEntity<BookmarkResponse> addBookmark(@RequestBody BookmarkAddRequest bookmarkRequest) {
         BookmarkResponse bookmarkResponse = bookmarkService.addBookmark(bookmarkRequest);
         return new ResponseEntity<>(bookmarkResponse, HttpStatus.CREATED);
     }
 
     @Operation(summary = "북마크 삭제", description = "북마크를 해제합니다.")
     @DeleteMapping("/remove")
-    public ResponseEntity<BookmarkResponse> removeBookmark(@RequestBody BookmarkRequest bookmarkRequest) {
+    public ResponseEntity<BookmarkResponse> removeBookmark(@RequestBody BookmarkRemoveRequest bookmarkRequest) {
         BookmarkResponse bookmarkResponse = bookmarkService.removeBookmark(bookmarkRequest);
         return new ResponseEntity<>(bookmarkResponse, HttpStatus.OK);
     }

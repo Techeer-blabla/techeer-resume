@@ -5,8 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class BookmarkRequest {
+public class BookmarkAddRequest {
     private Long userId;
     private Long resumeId;
-    private Long bookmarkId;
 }
