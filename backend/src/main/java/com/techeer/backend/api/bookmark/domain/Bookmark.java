@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @AllArgsConstructor
 @Table(name = "BOOKMARK")
@@ -21,6 +23,7 @@ public class Bookmark extends BaseEntity {
 
   @ManyToOne
   @JoinColumn(name = "resume_id")
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private Resume resume;
 
   @ManyToOne

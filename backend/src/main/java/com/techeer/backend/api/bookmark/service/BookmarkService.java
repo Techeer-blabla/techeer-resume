@@ -34,4 +34,17 @@ public class BookmarkService {
 
     return BookmarkConverter.toBookmarkResponse(bookmark);
   }
+
+  @Transactional
+  public BookmarkResponse removeBookmark(BookmarkRequest bookmarkRequest){
+    // 북마크 조회
+    Bookmark bookmark = bookmarkRepository.findByUserIdAndResumeId(bookmarkRequest.getUserId(), bookmarkRequest.getResumeId())
+        .orElseThrow(() -> new IllegalArgumentException("Bookmark not found"));
+
+    // 북마크 삭제
+    bookmarkRepository.delete(bookmark);
+
+    return BookmarkConverter.toBookmarkResponse(bookmark);
+  }
 }
+
