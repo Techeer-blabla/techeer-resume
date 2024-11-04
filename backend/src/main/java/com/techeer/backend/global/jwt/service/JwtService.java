@@ -44,7 +44,6 @@ public class JwtService {
     private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
     private static final String EMAIL_CLAIM = "email";
-    private static final String SOCIAL_TYPE_CLAIM = "socialType";
     private static final String BEARER = "Bearer ";
 
 
