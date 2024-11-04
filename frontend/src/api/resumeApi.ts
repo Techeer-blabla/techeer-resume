@@ -1,4 +1,4 @@
-import { formAxios, jsonAxios, formAxiosjson } from "./axios.config.ts";
+import { formAxios, jsonAxios, jsonFormAxios } from "./axios.config.ts";
 
 export const postResume = async (
   resume: File,
@@ -47,7 +47,7 @@ export const getResumeList = async (page: number, size: number) => {
     formData.append("page", page.toString());
     formData.append("size", size.toString());
 
-    const response = await formAxiosjson.get(
+    const response = await jsonFormAxios.get(
       `/resumes?page=${page}&size=${size}`
     );
     return response.data;

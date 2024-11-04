@@ -10,8 +10,10 @@ import {
   deleteFeedbackApi,
   getResumeApi,
 } from "../api/feedbackApi.ts";
+import { viewResume } from "../api/resumeApi.ts";
 import { AddFeedbackPoint, FeedbackPoint, ResumeData } from "../types.ts";
 import { useParams } from "react-router-dom";
+import useResumeStore from "../store/ResumeStore.ts";
 
 function ResumeFeedbackPage() {
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
@@ -19,7 +21,8 @@ function ResumeFeedbackPage() {
   const [hoveredCommentId, setHoveredCommentId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const { resumeId } = useParams<{ resumeId: string }>();
+  const { resumeId } = useResumeStore();
+  console.log("받는 아이디는: ", resumeId);
 
   useEffect(() => {
     const fetchData = async () => {

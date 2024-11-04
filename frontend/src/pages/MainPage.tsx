@@ -9,13 +9,17 @@ import PostCard from "../components/common/PostCard.tsx";
 import man1 from "../assets/man1.png";
 import man2 from "../assets/man2.png";
 import { PostCardsType } from "../dataType.ts";
+import useResumeStore from "../store/ResumeStore.ts";
 
 function MainPage() {
   const navigate = useNavigate();
+  const { setResumeId } = useResumeStore();
   const moveToResume = async (resumeId: number) => {
     try {
       const response = await viewResume(resumeId);
-      navigate(`/feedback/${response.data.resume_id}`);
+      setResumeId(response.data.resume_id);
+      // navigate(`/feedback?${response.data.resume_id}`);
+      navigate(`/feedback`);
       return response;
     } catch (error) {
       console.error("이력서 조회 오류:", error);
