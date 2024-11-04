@@ -57,7 +57,7 @@ function PostCard({
       {/* 기술 스택 */}
       <div className="flex space-x-2 mt-6">
         {skills && skills.length > 0 ? (
-          skills.map((skill, index) => (
+          skills.slice(0, 3).map((skill, index) => (
             <div
               key={index}
               className="flex items-center justify-center px-4 py-1 bg-[#d6e0f5] rounded-[14px] text-center text-[#2446b3] text-xs font-semibold"
