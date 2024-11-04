@@ -48,7 +48,7 @@ public class JwtService {
 
 
     private final UserRepository userRepository;
-    private final JwtService jwtService;
+
     private Key key;
 
     @PostConstruct
@@ -69,7 +69,7 @@ public class JwtService {
     }
 
     private String reIssueRefreshToken(User user) {
-        String reIssuedRefreshToken = jwtService.createRefreshToken();
+        String reIssuedRefreshToken = this.createRefreshToken();
         user.updateRefreshToken(reIssuedRefreshToken);
         userRepository.saveAndFlush(user);
         return reIssuedRefreshToken;
