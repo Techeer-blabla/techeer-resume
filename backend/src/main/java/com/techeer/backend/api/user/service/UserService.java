@@ -6,6 +6,7 @@ import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.dto.request.SignUpRequest;
 import com.techeer.backend.api.user.dto.request.UserRegisterRequest;
 import com.techeer.backend.api.user.dto.request.UserTokenRequest;
+import com.techeer.backend.api.user.dto.response.UserInfoResponse;
 import com.techeer.backend.api.user.repository.UserRepository;
 import com.techeer.backend.global.jwt.JwtToken;
 import com.techeer.backend.global.jwt.service.JwtService;
@@ -81,5 +82,10 @@ public class UserService {
     }
 
 
+    public UserInfoResponse getUserInfo() {
+
+        User user = this.getLoginUser();
+        return UserInfoResponse.of(user);
+    }
 
 }

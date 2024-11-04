@@ -44,11 +44,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                         response.setCharacterEncoding("UTF-8");
 
                         // 로그인 성공 처리
-                        String jsonResponse = String.format(
-                                "{\"message\": \"login successful\", \"accessToken\": \"%s\", \"refreshToken\": \"%s\"}",
-                                accessToken, refreshToken);
+                        String redirectUrl = "http://localhost:5173";
                         try {
-                            response.getWriter().write(jsonResponse);
+                            response.sendRedirect(redirectUrl);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
@@ -63,8 +61,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
                         // 회원가입 필요 메시지와 함께 토큰 반환
                         String jsonResponse = String.format(
-                                "{\"message\": \"additional signup required\", \"accessToken\": \"%s\", \"refreshToken\": \"%s\"}",
-                                jwtService.createAccessToken(newUser.getEmail()), refreshToken);
+                                "{\"message\": \"login successful\", \"accessToken\": \"%s\", \"refreshToken\": \"%s\"}",
+                                accessToken, refreshToken);
                         try {
                             response.getWriter().write(jsonResponse);
                         } catch (IOException e) {

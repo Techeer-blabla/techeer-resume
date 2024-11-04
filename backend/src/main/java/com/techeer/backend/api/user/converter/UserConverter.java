@@ -11,4 +11,12 @@ public class UserConverter {
                 .role(role)
                 .build();
     }
+
+    public static User fromRegister(String email, String refreshToken, Role role){
+        return User.builder()
+                .email(email)
+                .refreshToken(refreshToken)
+                .role(role)
+                .build();
+    }
 }
