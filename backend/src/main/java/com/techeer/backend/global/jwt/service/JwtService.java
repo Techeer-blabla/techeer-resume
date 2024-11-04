@@ -1,4 +1,5 @@
 package com.techeer.backend.global.jwt.service;
+import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;
@@ -48,6 +49,7 @@ public class JwtService {
 
 
     private final UserRepository userRepository;
+    private final JwtService jwtService;
     private Key key;
 
     @PostConstruct
@@ -65,6 +67,13 @@ public class JwtService {
                 .claim(EMAIL_CLAIM, email)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    private String reIssueRefreshToken(User user) {
+        String reIssuedRefreshToken = jwtService.createRefreshToken();
+        user.updateRefreshToken(reIssuedRefreshToken);
+        userRepository.saveAndFlush(user);
+        return reIssuedRefreshToken;
     }
 
     public String createRefreshToken() {
