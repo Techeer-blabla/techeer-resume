@@ -16,7 +16,10 @@ export default function App() {
           <div className="flex-grow">
             <Routes>
               <Route path="/" element={<MainPage />} />
-              <Route path="/feedback" element={<ResumeFeedbackPage />} />
+              <Route
+                path="/feedback:resumeId"
+                element={<ResumeFeedbackPage />}
+              />
               <Route path="/search" element={<SearchPage />} />
               <Route path="/upload" element={<Upload />} />
             </Routes>

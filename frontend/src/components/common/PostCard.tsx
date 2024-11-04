@@ -1,3 +1,4 @@
+import { MouseEventHandler } from "react";
 import avatar from "../../assets/avatar.png";
 import baggage from "../../assets/baggage3.svg";
 import pngegg from "../../assets/pngegg2.svg";
@@ -8,15 +9,20 @@ function PostCard({
   experience,
   education,
   skills,
+  onClick,
 }: {
   name: string;
   role: string;
   experience: number | string;
   education: string;
   skills: string[];
+  onClick?: MouseEventHandler<HTMLDivElement>;
 }) {
   return (
-    <div className="w-80 h-48 relative bg-white rounded-[7.01px] border border-[#aabdeb] p-6 ">
+    <div
+      onClick={onClick}
+      className="w-80 h-48 relative bg-white rounded-[7.01px] border border-[#aabdeb] p-6 "
+    >
       {/* Name & Role Section */}
       <div className="flex items-center space-x-4">
         {/* 프로필 사진 */}

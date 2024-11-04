@@ -11,6 +11,7 @@ import {
   getResumeApi,
 } from "../api/feedbackApi.ts";
 import { AddFeedbackPoint, FeedbackPoint, ResumeData } from "../types.ts";
+import { useParams } from "react-router-dom";
 
 function ResumeFeedbackPage() {
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
@@ -18,14 +19,14 @@ function ResumeFeedbackPage() {
   const [hoveredCommentId, setHoveredCommentId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const resumeId = 1;
+  const { resumeId } = useParams<{ resumeId: string }>();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await getResumeApi(resumeId);
+        const data = await getResumeApi(Number(resumeId));
         setResumeData(data);
         setFeedbackPoints(data.feedbacks || []);
       } catch (error) {
@@ -57,8 +58,8 @@ function ResumeFeedbackPage() {
         content: point.content,
         pageNumber: 1,
       };
-      await addFeedbackApi(resumeId, newPoint);
-      const updatedData = await getResumeApi(resumeId);
+      await addFeedbackApi(Number(resumeId), newPoint);
+      const updatedData = await getResumeApi(Number(resumeId));
       setFeedbackPoints(updatedData.feedbacks);
     } catch (error) {
       console.error("Failed to add feedback point", error);
@@ -76,7 +77,7 @@ function ResumeFeedbackPage() {
       setError(null);
 
       // Call the API to delete the feedback point
-      await deleteFeedbackApi(resumeId, id);
+      await deleteFeedbackApi(Number(resumeId), id);
 
       // After successful deletion, update the local state to remove the feedback
       setFeedbackPoints((prevComments) =>
