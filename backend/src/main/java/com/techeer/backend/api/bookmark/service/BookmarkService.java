@@ -3,7 +3,6 @@ package com.techeer.backend.api.bookmark.service;
 import com.techeer.backend.api.bookmark.converter.BookmarkConverter;
 import com.techeer.backend.api.bookmark.domain.Bookmark;
 import com.techeer.backend.api.bookmark.dto.BookmarkAddRequest;
-import com.techeer.backend.api.bookmark.dto.BookmarkRemoveRequest;
 import com.techeer.backend.api.bookmark.dto.BookmarkResponse;
 import com.techeer.backend.api.bookmark.repository.BookmarkRepository;
 import com.techeer.backend.api.resume.domain.Resume;
@@ -39,9 +38,9 @@ public class BookmarkService {
     }
 
     @Transactional
-    public BookmarkResponse removeBookmark(BookmarkRemoveRequest bookmarkRequest) {
+    public BookmarkResponse removeBookmark(Long bookmarkId) {
         // bookmark_id로 북마크 조회
-        Bookmark bookmark = bookmarkRepository.findById(bookmarkRequest.getBookmarkId())
+        Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
                 .orElseThrow(() -> new IllegalArgumentException("Bookmark not found"));
 
         // 북마크 삭제
