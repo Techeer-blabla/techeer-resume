@@ -8,11 +8,12 @@ public class FeedbackConverter {
 
 	public static FeedbackResponse toFeedbackResponse(Resume resume, Feedback feedback) {
 		return FeedbackResponse.builder()
-			.feedbackId(feedback.getId())
-			.resumeId(resume.getId())
-			.content(feedback.getContent())
-			.xCoordinate(feedback.getXCoordinate())
-			.yCoordinate(feedback.getYCoordinate())
-			.build();
+				.feedbackId(feedback.getId())
+				.resumeId(resume.getId())
+				.content(feedback.getContent())
+				.xCoordinate(feedback.getXCoordinate())
+				.yCoordinate(feedback.getYCoordinate())
+				.pageNumber(feedback.getPageNumber())
+				.build();
 	}
 }

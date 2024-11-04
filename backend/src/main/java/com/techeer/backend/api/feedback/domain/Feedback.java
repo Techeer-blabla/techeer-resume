@@ -1,20 +1,9 @@
 package com.techeer.backend.api.feedback.domain;
 
-import java.math.BigDecimal;
-
 import com.techeer.backend.api.feedback.dto.FeedbackCreateRequest;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.global.common.BaseEntity;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,11 +27,14 @@ public class Feedback extends BaseEntity {
 	@Column(nullable = false, length = 255)
 	private String content;
 
-	@Column(precision = 10, scale = 6)
-	private BigDecimal xCoordinate;
+	@Column(nullable = false)
+	private Double xCoordinate;
 
-	@Column(nullable = false, precision = 10, scale = 6)
-	private BigDecimal yCoordinate;
+	@Column(nullable = false)
+	private Double yCoordinate;
+
+	@Column(nullable = false)
+	private int pageNumber;
 
 	// 기본 생성자
 	protected Feedback() {
@@ -51,11 +43,15 @@ public class Feedback extends BaseEntity {
 	// Builder 패턴을 사용한 생성자
 	@Builder
 	public static Feedback of(Resume resume, FeedbackCreateRequest feedbackCreateRequest) {
-		return Feedback.builder()
-			.resume(resume)
-			.content(feedbackCreateRequest.getContent())
-			.xCoordinate(feedbackCreateRequest.getXCoordinate())
-			.yCoordinate(feedbackCreateRequest.getYCoordinate())
-			.build();
-	}
+		if (feedbackCreateRequest.getPageNumber() <= 0) {
+			throw new IllegalArgumentException("페이지번호는 양수입니다.");
+		}
+    return Feedback.builder()
+        .resume(resume)
+        .content(feedbackCreateRequest.getContent())
+        .xCoordinate(feedbackCreateRequest.getXCoordinate())
+        .yCoordinate(feedbackCreateRequest.getYCoordinate())
+        .pageNumber(feedbackCreateRequest.getPageNumber())
+        .build();
+  }
 }
