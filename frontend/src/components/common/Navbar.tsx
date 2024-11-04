@@ -9,11 +9,19 @@ function Navbar() {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState<string>(""); // 검색어 상태 관리
   const { setSearchName } = useSearchStore();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   const [userName] = useState<string>("김테커"); //프로필 이름 - 임시
+  const googleAuthUrl = import.meta.env.VITE_GOOGLE_REDIRECT_URI || "";
 
   const moveToMainPage = () => {
     navigate("/");
+  };
+
+  const moveLogin = () => {
+    window.location.href = googleAuthUrl;
+    // console.log(googleAuthUrl);
+    // setIsLoggedIn(true);
   };
 
   const searchName = () => {
@@ -75,10 +83,22 @@ function Navbar() {
 
         {/* 프로필 */}
         <div className="flex items-center pr-10">
-          <img src={profile} alt="profile" className="w-10 h-10 mx-2" />
-          <p className="hidden sm:block ml-3 mb-[1px] text-base lg:text-lg">
-            {userName}
-          </p>
+          {isLoggedIn ? (
+            <>
+              <img src={profile} alt="profile" className="w-10 h-10 mx-2" />
+              <p className="hidden sm:block ml-3 mb-[1px] text-base lg:text-lg">
+                {userName}
+              </p>
+            </>
+          ) : (
+            <a
+              className="px-4 bg-biue-500 text-white rounded-lg"
+              // onClick={() => moveLogin()}
+              href={googleAuthUrl}
+            >
+              로그인
+            </a>
+          )}
         </div>
       </div>
       <div className="mt-3 w-full h-[1px] bg-gray-300" />
