@@ -1,12 +1,13 @@
 package com.techeer.backend.api.resume.controller;
 
+import com.techeer.backend.global.common.response.CommonResponse;
+
 import java.io.IOException;
 import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,10 +43,9 @@ public class ResumeController {
 	private final ResumeService resumeService;
 
 	// 이력서 등록
-	// todo
 	@Operation(summary = "이력서 등록")
 	@PostMapping(value = "/resumes", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<SuccessResponse> resumeRegistration(
+	public CommonResponse<String> resumeRegistration(
 		@RequestPart @Valid CreateResumeRequest createResumeReq,
 		@RequestPart(name = "resume_file") @Valid MultipartFile resumeFile) throws IOException {
 		// 파일 유효성 검사 -> 나중에 vaildtor로 변경해서 유효성 검사할 예정
@@ -55,22 +55,19 @@ public class ResumeController {
 		if (!resumeFile.getContentType().equals("application/pdf")) {
 			throw new IllegalArgumentException("이력서 파일은 PDF 형식만 허용됩니다.");
 		}
-		// todo 유저 이름으로 객체 탐색
-		//        Optional<User> registrars = userService.findUserByName(createResumeReq.getUsername());
-		//        User registrar = null;
-		//        if (registrars.isPresent()) {registrar = registrars.get();}
 
 		// resume db에 저장
 		resumeService.createResume(createResumeReq, resumeFile);
-		return ResponseEntity.ok().build();
+		return CommonResponse.onSuccess("이력서 등록 성공");
 	}
 
 	// 회원 이름으로 게시물 조회
 	@Operation(summary = "회원 이름으로 이력서 조회")
 	@GetMapping("/resumes/search")
-	public ResponseEntity<List<ResumeResponse>> searchResumesByUserName(@RequestParam("user_name") String userName) {
+	public CommonResponse<List<ResumeResponse>> searchResumesByUserName(@RequestParam("user_name") String userName) {
 		List<ResumeResponse> resumeResponses = resumeService.searchResumesByUserName(userName);
-		return ResponseEntity.ok(resumeResponses);
+
+		return null;
 	}
 
 	//todo 피드백 완성되면 작업

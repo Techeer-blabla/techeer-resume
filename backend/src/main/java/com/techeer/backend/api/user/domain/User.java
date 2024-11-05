@@ -2,7 +2,6 @@ package com.techeer.backend.api.user.domain;
 
 
 import com.techeer.backend.api.user.dto.request.SignUpRequest;
-import com.techeer.backend.api.user.dto.request.UserRegisterRequest;
 import com.techeer.backend.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -44,14 +43,6 @@ public class User extends BaseEntity {
         this.role = role;
     }
 
-//    public static User fromSignup(String email, String refreshToken){
-//        return User.builder()
-//                .email(email)
-//                .refreshToken(refreshToken)
-//                .build();
-//    }
-
-
     public void updateUser(SignUpRequest req){
         this.username = req.getUsername();
         this.role = req.getRole();
@@ -61,7 +52,5 @@ public class User extends BaseEntity {
         this.refreshToken = null;
     }
 
-    public void updateRefreshToken(String updateRefreshToken) {
-        this.refreshToken = updateRefreshToken;
-    }
+    public void updateRefreshToken(String updateRefreshToken) { this.refreshToken = updateRefreshToken; }
 }

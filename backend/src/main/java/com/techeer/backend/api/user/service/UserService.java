@@ -1,21 +1,17 @@
 package com.techeer.backend.api.user.service;
 
 
-import com.techeer.backend.api.user.domain.Role;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.dto.request.SignUpRequest;
-import com.techeer.backend.api.user.dto.request.UserRegisterRequest;
 import com.techeer.backend.api.user.dto.request.UserTokenRequest;
 import com.techeer.backend.api.user.repository.UserRepository;
 import com.techeer.backend.global.jwt.JwtToken;
 import com.techeer.backend.global.jwt.service.JwtService;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -57,7 +53,7 @@ public class UserService {
         Object[] emailAndSocialType = jwtService.extractEmailAndSocialType(userTokenReq.getAccessToken());
         if (emailAndSocialType.length >= 1) {
             String email = (String) emailAndSocialType[0];
-            //SocialType socialType = (SocialType) emailAndSocialType[1];
+
             User user = userRepository.findByEmail(email)
                     .orElseThrow();
             String refreshToken = user.getRefreshToken();
@@ -68,12 +64,11 @@ public class UserService {
             }
 
             String reissueAccessToken = jwtService.createAccessToken(email);
-            String reissueRefreshToken = jwtService.createRefreshToken();
-            user.updateRefreshToken(reissueRefreshToken);
+            String reIssueRefreshToken = jwtService.reIssueRefreshToken(user);
 
             return JwtToken.builder()
                     .accessToken(reissueAccessToken)
-                    .refreshToken(reissueRefreshToken)
+                    .refreshToken(reIssueRefreshToken)
                     .build();
         }
 

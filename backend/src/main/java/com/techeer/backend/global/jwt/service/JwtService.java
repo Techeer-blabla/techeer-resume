@@ -1,4 +1,5 @@
 package com.techeer.backend.global.jwt.service;
+import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;
@@ -43,7 +44,6 @@ public class JwtService {
     private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
     private static final String EMAIL_CLAIM = "email";
-    private static final String SOCIAL_TYPE_CLAIM = "socialType";
     private static final String BEARER = "Bearer ";
 
 
@@ -65,6 +65,13 @@ public class JwtService {
                 .claim(EMAIL_CLAIM, email)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String reIssueRefreshToken(User user) {
+        String reIssuedRefreshToken = createRefreshToken();
+        user.updateRefreshToken(reIssuedRefreshToken);
+        userRepository.saveAndFlush(user);
+        return reIssuedRefreshToken;
     }
 
     public String createRefreshToken() {
@@ -104,7 +111,6 @@ public class JwtService {
             Claims claims = decodeAccessToken(accessToken);
             if (claims != null) {
                 String email = claims.get("email", String.class);
-                //SocialType socialType = deserializeSocialType(claims.get("socialType", String.class));
                 return new Object[]{email};
             }
         } catch (Exception e) {
@@ -114,11 +120,6 @@ public class JwtService {
         return null;
     }
 
-    // Claims에서 추출할 때 문자열을 SocialType으로 변환
-//    private SocialType deserializeSocialType(String socialTypeString) {
-//        // 예시: 문자열을 Enum으로 변환
-//        return SocialType.valueOf(socialTypeString);
-//    }
 
     private Claims decodeAccessToken(String accessToken) {
         try {

@@ -77,6 +77,5 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         }
 
 
-
     }
 }

@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.techeer.backend.global.jwt.JwtAuthenticationFilter;
 import com.techeer.backend.global.jwt.service.JwtService;
-import io.jsonwebtoken.Jwt;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -102,13 +101,6 @@ public class SecurityConfig {
 //			)
 			.addFilterBefore(new JwtAuthenticationFilter(jwtService, userRepository), UsernamePasswordAuthenticationFilter.class);
 		return http.build();
-	}
-
-
-
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder(); // BCrypt 암호화 방식 사용
 	}
 
 	@Bean
