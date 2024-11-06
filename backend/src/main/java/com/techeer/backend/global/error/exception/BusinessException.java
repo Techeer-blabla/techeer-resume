@@ -1,15 +1,15 @@
 package com.techeer.backend.global.error.exception;
 
 
-import com.techeer.backend.global.error.ErrorCode;
+import com.techeer.backend.global.error.ErrorStatus;
 import lombok.Getter;
 
 @Getter
-public class BusinessException extends RuntimeException{
-    private final ErrorCode errorCode;
+public class BusinessException extends RuntimeException {
+    private final ErrorStatus errorStatus;
 
-    public BusinessException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
+    public BusinessException(ErrorStatus errorStatus) {
+        super(errorStatus.getMessage());
+        this.errorStatus = errorStatus;
     }
 }
