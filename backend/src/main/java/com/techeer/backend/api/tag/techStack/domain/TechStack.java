@@ -1,4 +1,4 @@
-package com.techeer.backend.api.resume.domain;
+package com.techeer.backend.api.tag.techStack.domain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,18 +20,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class TechStack {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@Column(nullable = false)
-	private String name;
+    @Column(nullable = false)
+    private String name;
 
-	@OneToMany(mappedBy = "techStack")
-	private List<ResumeTechStack> resumeTechStacks = new ArrayList<>();
+    @OneToMany(mappedBy = "techStack")
+    private List<ResumeTechStack> resumeTechStacks = new ArrayList<>();
 
-	@Builder
-	public TechStack(String name) {
-		this.name = name;
-	}
+    @Builder
+    public TechStack(String name) {
+        this.name = name;
+    }
 }

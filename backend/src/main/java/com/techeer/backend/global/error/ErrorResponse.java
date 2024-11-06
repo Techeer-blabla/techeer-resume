@@ -1,21 +1,20 @@
 package com.techeer.backend.global.error;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Getter
 public class ErrorResponse {
     private HttpStatus httpStatus;
     private String code;
     private String errorMessage;
-    private List<FieldError> errors =new ArrayList<>();
+    private List<FieldError> errors = new ArrayList<>();
 
 
     public ErrorResponse(HttpStatus status, String s) {
@@ -23,21 +22,21 @@ public class ErrorResponse {
         this.httpStatus = status;
     }
 
-    public ErrorResponse(ErrorCode code) {
-        this.errorMessage = code.getMessage();
-        this.httpStatus = code.getStatus();
-        this.code = code.getCode();
+    public ErrorResponse(ErrorStatus errorStatus) {
+        this.errorMessage = errorStatus.getMessage();
+        this.httpStatus = errorStatus.getHttpStatus();
+        this.code = errorStatus.getCode();
     }
 
-    public ErrorResponse(ErrorCode code, List<FieldError> fieldErrors) {
-        this.httpStatus = code.getStatus();
-        this.code = code.getCode();
-        this.errorMessage = code.getMessage();
+    public ErrorResponse(ErrorStatus errorStatus, List<FieldError> fieldErrors) {
+        this.httpStatus = errorStatus.getHttpStatus();
+        this.code = errorStatus.getCode();
+        this.errorMessage = errorStatus.getMessage();
         this.errors = fieldErrors;
     }
 
-    public static ErrorResponse of(final ErrorCode code, final BindingResult bindingResult) {
-        return new ErrorResponse(code, FieldError.of(bindingResult));
+    public static ErrorResponse of(final ErrorStatus errorStatus, final BindingResult bindingResult) {
+        return new ErrorResponse(errorStatus, FieldError.of(bindingResult));
     }
 
     @Getter
