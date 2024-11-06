@@ -8,7 +8,6 @@ import com.techeer.backend.api.resume.service.ResumeService;
 import com.techeer.backend.api.tag.company.domain.Company;
 import com.techeer.backend.api.tag.company.domain.ResumeCompany;
 import com.techeer.backend.api.tag.company.service.CompanyService;
-import com.techeer.backend.api.tag.position.Position;
 import com.techeer.backend.api.tag.techStack.domain.ResumeTechStack;
 import com.techeer.backend.api.tag.techStack.domain.TechStack;
 import com.techeer.backend.api.tag.techStack.service.TechStackService;
@@ -41,7 +40,7 @@ public class ResumeCreateFacade {
         // 이력서 엔티티 생성
         Resume resume = Resume.builder()
                 .username(req.getUsername())
-                .position(Position.valueOf(req.getPosition()))
+                .position(req.getPosition())
                 .career(req.getCareer())
                 .name("Resume of " + req.getUsername())
                 .build();

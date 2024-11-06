@@ -1,5 +1,6 @@
 package com.techeer.backend.api.resume.dto.request;
 
+import com.techeer.backend.api.tag.position.Position;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
@@ -13,7 +14,7 @@ public class CreateResumeRequest {
     private String username;
 
     @NotNull(message = "position는 필수입니다.")
-    private String position;
+    private Position position;
 
     @NotNull(message = "career는 필수입니다.")
     private int career;
