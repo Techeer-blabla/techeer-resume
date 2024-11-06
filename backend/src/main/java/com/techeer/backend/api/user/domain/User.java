@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "User")
+@Table(name = "`User`")
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
     @Id

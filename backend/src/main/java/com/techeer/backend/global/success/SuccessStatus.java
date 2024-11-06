@@ -13,7 +13,9 @@ public enum SuccessStatus implements BaseStatus {
     OK(HttpStatus.OK, "COMMON_200", "성공적으로 처리되었습니다."),
     CREATED(HttpStatus.CREATED, "COMMON_201", "성공적으로 생성되었습니다."),
     NO_CONTENT(HttpStatus.NO_CONTENT, "COMMON_204", "성공적으로 삭제되었습니다."),
-    ;
+
+    // Resume Success
+    RESUME_CREATED(HttpStatus.CREATED, "RESUME_201", "이력서가 성공적으로 저장되었습니다");;
 
     private final HttpStatus httpStatus;
     private final String code;
