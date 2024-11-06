@@ -1,0 +1,21 @@
+package com.techeer.backend.api.resume.dto.response;
+
+import com.techeer.backend.api.feedback.dto.FeedbackResponse;
+import java.util.List;
+import lombok.Builder;
+import lombok.Getter;
+
+@Builder
+@Getter
+public class ResumeDetailResponse {
+
+    private Long resumeId;
+    private String userName;
+    private String resumeName;
+    private String position;
+    private String fileUrl;
+    private int career;
+    private List<String> techStackNames;
+    private List<String> companyNames;
+    private final List<FeedbackResponse> feedbackResponses;
+}
