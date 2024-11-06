@@ -21,14 +21,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleRuntimeException(BusinessException e) {
-        ErrorCode errorCode = e.getErrorCode();
-        ErrorResponse errorResponse = new ErrorResponse(errorCode);
-        return new ResponseEntity<>(errorResponse, errorCode.getStatus());
+        ErrorStatus errorStatus = e.getErrorStatus();
+        ErrorResponse errorResponse = new ErrorResponse(errorStatus);
+        return new ResponseEntity<>(errorResponse, errorStatus.getHttpStatus());
     }
+
     @ExceptionHandler
     protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException e) {
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_REQUEST, e.getBindingResult());
+        final ErrorResponse response = ErrorResponse.of(ErrorStatus.INVALID_REQUEST, e.getBindingResult());
         log.warn(e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
