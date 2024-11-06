@@ -1,25 +1,21 @@
 package com.techeer.backend.api.user.service;
 
 
-import com.techeer.backend.api.user.domain.Role;
+import com.techeer.backend.api.user.converter.UserConverter;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.dto.request.SignUpRequest;
-import com.techeer.backend.api.user.dto.request.UserRegisterRequest;
 import com.techeer.backend.api.user.dto.request.UserTokenRequest;
 import com.techeer.backend.api.user.dto.response.UserInfoResponse;
 import com.techeer.backend.api.user.repository.UserRepository;
 import com.techeer.backend.global.jwt.JwtToken;
 import com.techeer.backend.global.jwt.service.JwtService;
-import jakarta.validation.constraints.NotBlank;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -85,7 +81,7 @@ public class UserService {
     public UserInfoResponse getUserInfo() {
 
         User user = this.getLoginUser();
-        return UserInfoResponse.of(user);
+        return UserConverter.ofUserInfoResponse(user);
     }
 
 }
