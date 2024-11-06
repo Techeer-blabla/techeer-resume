@@ -30,8 +30,6 @@ public class ResumeService {
     private final GetResumeRepository getResumeRepository;
     private final FeedbackRepository feedbackRepository;
 
-
-    @Transactional
     public Resume saveResume(Resume resume) {
         Resume savedResume = resumeRepository.save(resume);
         return savedResume;

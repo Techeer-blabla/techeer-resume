@@ -15,6 +15,7 @@ import com.techeer.backend.api.tag.techStack.service.TechStackService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -28,6 +29,7 @@ public class ResumeCreateFacade {
     private final ResumePdfService resumePdfService;
 
     // 이력서 생성
+    @Transactional
     public void createResume(CreateResumeRequest req, MultipartFile multipartFile) {
 
         // 관련 기술 처리
