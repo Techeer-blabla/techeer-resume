@@ -10,6 +10,7 @@ import man2 from "../assets/man2.png";
 import PositionModal from "../components/Search/PositionModal"; // 수정된 import
 import CareerModal from "../components/Search/CareerModal";
 import { PostCardsType } from "../dataType.ts";
+
 import { postFilter } from "../api/resumeApi";
 
 function MainPage() {
@@ -18,10 +19,8 @@ function MainPage() {
   const [maxCareer] = useState(5); // 최대 경력
   const [, setFilterResults] = useState<unknown>(null); // 필터링된 데이터
 
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
-
   // 포스트 카드 GET API 요청 함수
-  const fetchPostCards = async (pageParam: number) => {
+  const fetchPostCards = async (page: number, size = 8) => {
     try {
       const resumeList = await getResumeList(page, size);
       return resumeList;
@@ -36,7 +35,7 @@ function MainPage() {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: ["postCards"],
+      queryKey: ["postCards", selectedPositions, minCareer, maxCareer],
       queryFn: async ({ pageParam = 0 }) => {
         return fetchPostCards(pageParam);
       },
@@ -81,6 +80,41 @@ function MainPage() {
       if (loadMoreCurrent) observer.unobserve(loadMoreCurrent);
     };
   }, [hasNextPage, fetchNextPage, isFetchingNextPage]);
+
+  // 포지션, 경력 모달 상태 관리
+  const [isPositionOpen, setIsPositionOpen] = useState(false);
+  const [isCareerOpen, setIsCareerOpen] = useState(false);
+
+  const openPositionModal = () => setIsPositionOpen(true);
+  const closePositionModal = () => setIsPositionOpen(false);
+
+  const openCareerModal = () => {
+    setIsCareerOpen(true);
+    // 경력 필터링 API 호출
+    const filterData = {
+      dto: {
+        positions: selectedPositions,
+        minCareer: minCareer,
+        maxCareer: maxCareer,
+        techStacks: ["string"], // 기술 스택 필터링 필요 시 추가
+      },
+      pageable: {
+        page: 0,
+        size: 1,
+        sort: ["string"], // 정렬 기준 필요 시 추가
+      },
+    };
+
+    postFilter(filterData)
+      .then((response) => {
+        setFilterResults(response.data); // 필터링된 결과 설정
+      })
+      .catch((error) => {
+        console.error("경력 필터링 오류:", error);
+      });
+  };
+
+  const closeCareerModal = () => setIsCareerOpen(false);
 
   return (
     <div className="w-full bg-[#D7E1F5]">
