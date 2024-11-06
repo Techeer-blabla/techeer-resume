@@ -1,4 +1,4 @@
-package com.techeer.backend.global.oauth;
+package com.techeer.backend.global.oauth.oauth2user;
 
 import java.util.Map;
 

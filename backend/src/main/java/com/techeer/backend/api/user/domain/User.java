@@ -42,21 +42,18 @@ public class User extends BaseEntity {
     @Column(name = "role")
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "social_type")
+    private SocialType socialType;
+
     @Builder
-    public User(String email, String refreshToken, Role role) {
+    public User(String email, String refreshToken, Role role, SocialType socialType) {
         this.email = email;
         this.username = null;
         this.refreshToken = refreshToken;
         this.role = role;
+        this.socialType = socialType;
     }
-
-//    public static User fromSignup(String email, String refreshToken){
-//        return User.builder()
-//                .email(email)
-//                .refreshToken(refreshToken)
-//                .build();
-//    }
-
 
     public void updateUser(SignUpRequest req) {
         this.username = req.getUsername();
