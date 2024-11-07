@@ -39,6 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         user.updateRefreshToken(reIssuedRefreshToken);
         userRepository.saveAndFlush(user);
         return reIssuedRefreshToken;
+
     }
 
     public void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response,
