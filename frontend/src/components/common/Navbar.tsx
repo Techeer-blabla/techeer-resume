@@ -9,19 +9,16 @@ function Navbar() {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState<string>(""); // 검색어 상태 관리
   const { setSearchName } = useSearchStore();
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [isLoggedIn] = useState<boolean>(false);
 
   const [userName] = useState<string>("김테커"); //프로필 이름 - 임시
-  const googleAuthUrl = import.meta.env.VITE_GOOGLE_REDIRECT_URI || "";
 
-  const moveToMainPage = () => {
+  const moveMainPage = () => {
     navigate("/");
   };
 
-  const moveLogin = () => {
-    window.location.href = googleAuthUrl;
-    // console.log(googleAuthUrl);
-    // setIsLoggedIn(true);
+  const moveLoginPage = () => {
+    navigate("/login");
   };
 
   const searchName = () => {
@@ -54,7 +51,7 @@ function Navbar() {
             src={logo}
             alt="logo"
             className="w-auto h-6 hover:cursor-pointer"
-            onClick={moveToMainPage}
+            onClick={moveMainPage}
           />
         </div>
 
@@ -93,8 +90,7 @@ function Navbar() {
           ) : (
             <a
               className="px-4 bg-biue-500 text-white rounded-lg"
-              // onClick={() => moveLogin()}
-              href={googleAuthUrl}
+              onClick={moveLoginPage}
             >
               로그인
             </a>
