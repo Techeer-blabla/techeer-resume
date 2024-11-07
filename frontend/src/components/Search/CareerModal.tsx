@@ -8,8 +8,8 @@ interface CareerModalProps {
 }
 
 const CareerModal = ({ isOpen, onClose, onApply }: CareerModalProps) => {
-  const [minCareer, setMinCareer] = useState(0); // 최소 경력
-  const [maxCareer, setMaxCareer] = useState(10); // 최대 경력
+  const [min_career, set_min_career] = useState(0); // 최소 경력
+  const [max_career, set_max_career] = useState(10); // 최대 경력
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,12 +28,12 @@ const CareerModal = ({ isOpen, onClose, onApply }: CareerModalProps) => {
   }, [onClose]);
 
   const handleSliderChange = (newMin: number, newMax: number) => {
-    setMinCareer(newMin);
-    setMaxCareer(newMax);
+    set_min_career(newMin);
+    set_max_career(newMax);
   };
 
   const applyFilter = () => {
-    onApply(minCareer, maxCareer);
+    onApply(min_career, max_career);
     onClose();
   };
 
@@ -53,8 +53,8 @@ const CareerModal = ({ isOpen, onClose, onApply }: CareerModalProps) => {
       <div className="text-black text-2xl font-semibold mb-6">경력</div>
       <div className="p-3 my-3 ml-3">
         <Slider
-          minCareer={minCareer}
-          maxCareer={maxCareer}
+          minCareer={min_career}
+          maxCareer={max_career}
           onChange={handleSliderChange}
         />
       </div>

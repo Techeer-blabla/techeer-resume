@@ -57,17 +57,33 @@ export const getResumeList = async (page: number, size: number) => {
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const postFilter = async (filterParams: { dto: any; pageable: any }) => {
+interface FilterDTO {
+  positions: string[];
+  min_career: number;
+  max_career: number;
+  tech_stack_names: string[];
+}
+
+interface Pageable {
+  page: number;
+  size: number;
+  sort?: string[]; // sort가 선택 사항이라면 optional로 표시
+}
+
+interface FilterParams {
+  dto: FilterDTO;
+  pageable: Pageable;
+}
+
+export const postFilter = async (filterParams: FilterParams) => {
   try {
     const response = await jsonAxios.post(
       `/resumes/search?page=${filterParams.pageable.page}&size=${filterParams.pageable.size}`,
       {
         positions: filterParams.dto.positions,
-        min_career: filterParams.dto.minCareer,
-        max_career: filterParams.dto.maxCareer,
-        tech_stack_names: filterParams.dto.techStacks,
-        company_names: [],
+        min_career: filterParams.dto.min_career,
+        max_career: filterParams.dto.max_career,
+        tech_stack_names: filterParams.dto.tech_stack_names,
       }
     );
 
@@ -76,8 +92,6 @@ export const postFilter = async (filterParams: { dto: any; pageable: any }) => {
   } catch (error) {
     if (error instanceof Error) {
       console.error("포지션/경력 필터링 오류:", error.message);
-    } else {
-      console.error("포지션/경력 필터링 오류:", error);
     }
     throw error;
   }

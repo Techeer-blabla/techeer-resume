@@ -37,8 +37,7 @@ function MainPage() {
         positions: selectedPositions,
         min_career: min,
         max_career: max,
-        tech_stack_names: [], // 필요에 따라 수정
-        company_names: [],
+        tech_stack_names: [],
       },
       pageable: {
         page: 1,
