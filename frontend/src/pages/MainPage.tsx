@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { getResumeList } from "../api/resumeApi.ts";
+import { getResumeList, postFilter } from "../api/resumeApi.ts";
 import Navbar from "../components/common/Navbar.tsx";
 import BannerCard from "../components/MainPage/BannerCard";
 import Category from "../components/MainPage/Category";
@@ -11,14 +11,13 @@ import PositionModal from "../components/Search/PositionModal"; // 수정된 imp
 import CareerModal from "../components/Search/CareerModal";
 import { PostCardsType } from "../dataType.ts";
 
-import { postFilter } from "../api/resumeApi";
-
 function MainPage() {
   const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
-  const [minCareer] = useState(0); // 최소 경력
-  const [maxCareer] = useState(5); // 최대 경력
-  const [, setFilterResults] = useState<unknown>(null); // 필터링된 데이터
-
+  const [, setFilterResults] = useState<unknown>(null);
+  const [min_career, set_min_career] = useState(0);
+  const [max_career, set_max_career] = useState(5);
+  const [isPositionOpen, setIsPositionOpen] = useState(false);
+  const [isCareerOpen, setIsCareerOpen] = useState(false);
   // 포스트 카드 GET API 요청 함수
   const fetchPostCards = async (page: number, size = 8) => {
     try {
@@ -29,13 +28,38 @@ function MainPage() {
       throw error;
     }
   };
+  const handleApplyCareerFilter = async (min: number, max: number) => {
+    set_min_career(min);
+    set_max_career(max);
+
+    const filterData = {
+      dto: {
+        positions: selectedPositions,
+        min_career: min,
+        max_career: max,
+        tech_stack_names: [], // 필요에 따라 수정
+        company_names: [],
+      },
+      pageable: {
+        page: 1,
+        size: 3,
+      },
+    };
+
+    try {
+      const response = await postFilter(filterData);
+      setFilterResults(response);
+    } catch (error) {
+      console.error("필터링 오류:", error);
+    }
+  };
 
   // useInfiniteQuery 사용하여 데이터 가져오기
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: ["postCards", selectedPositions, minCareer, maxCareer],
+      queryKey: ["postCards", selectedPositions, min_career, max_career],
       queryFn: async ({ pageParam = 0 }) => {
         return fetchPostCards(pageParam);
       },
@@ -81,41 +105,6 @@ function MainPage() {
     };
   }, [hasNextPage, fetchNextPage, isFetchingNextPage]);
 
-  // 포지션, 경력 모달 상태 관리
-  const [isPositionOpen, setIsPositionOpen] = useState(false);
-  const [isCareerOpen, setIsCareerOpen] = useState(false);
-
-  const openPositionModal = () => setIsPositionOpen(true);
-  const closePositionModal = () => setIsPositionOpen(false);
-
-  const openCareerModal = () => {
-    setIsCareerOpen(true);
-    // 경력 필터링 API 호출
-    const filterData = {
-      dto: {
-        positions: selectedPositions,
-        minCareer: minCareer,
-        maxCareer: maxCareer,
-        techStacks: ["string"], // 기술 스택 필터링 필요 시 추가
-      },
-      pageable: {
-        page: 0,
-        size: 1,
-        sort: ["string"], // 정렬 기준 필요 시 추가
-      },
-    };
-
-    postFilter(filterData)
-      .then((response) => {
-        setFilterResults(response.data); // 필터링된 결과 설정
-      })
-      .catch((error) => {
-        console.error("경력 필터링 오류:", error);
-      });
-  };
-
-  const closeCareerModal = () => setIsCareerOpen(false);
-
   return (
     <div className="w-full bg-[#D7E1F5]">
       <div className="pt-5">
@@ -151,26 +140,27 @@ function MainPage() {
           <div className="max-w-screen-xl mx-auto py-6 relative">
             <div className="flex space-x-4">
               <Category title="조회순" options={["인기순", "최신순"]} />
-              <Category title="포지션" onClick={openPositionModal} />
-              <Category title="경력" onClick={openCareerModal} />
+              <Category
+                title="포지션"
+                onClick={() => setIsPositionOpen(true)}
+              />
+              <Category title="경력" onClick={() => setIsCareerOpen(true)} />
             </div>
 
-            {/* 포지션 모달 */}
+            {/* 포지션, 경력 모달 */}
             {isPositionOpen && (
-              <div className="absolute top-full left-0 w-full mt-2 z-50">
-                <PositionModal
-                  isOpen={isPositionOpen}
-                  onClose={closePositionModal}
-                  setSelectedPositions={setSelectedPositions} // 포지션 선택 후 상태 업데이트
-                />
-              </div>
+              <PositionModal
+                isOpen={isPositionOpen}
+                onClose={() => setIsPositionOpen(false)}
+                setSelectedPositions={setSelectedPositions}
+              />
             )}
-
-            {/* 경력 모달 */}
             {isCareerOpen && (
-              <div className="absolute top-full left-0 w-full mt-2 z-50">
-                <CareerModal isOpen={isCareerOpen} onClose={closeCareerModal} />
-              </div>
+              <CareerModal
+                isOpen={isCareerOpen}
+                onClose={() => setIsCareerOpen(false)}
+                onApply={handleApplyCareerFilter}
+              />
             )}
           </div>
 
@@ -205,5 +195,4 @@ function MainPage() {
     </div>
   );
 }
-
 export default MainPage;

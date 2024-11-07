@@ -57,25 +57,28 @@ export const getResumeList = async (page: number, size: number) => {
   }
 };
 
-export const postFilter = async (filterData: {
-  dto: {
-    positions: string[];
-    minCareer: number;
-    maxCareer: number;
-    techStacks: string[];
-  };
-  pageable: {
-    page: number;
-    size: number;
-    sort: string[];
-  };
-}) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const postFilter = async (filterParams: { dto: any; pageable: any }) => {
   try {
-    const response = await jsonAxios.post(`/resumes/search`, filterData);
+    const response = await jsonAxios.post(
+      `/resumes/search?page=${filterParams.pageable.page}&size=${filterParams.pageable.size}`,
+      {
+        positions: filterParams.dto.positions,
+        min_career: filterParams.dto.minCareer,
+        max_career: filterParams.dto.maxCareer,
+        tech_stack_names: filterParams.dto.techStacks,
+        company_names: [],
+      }
+    );
 
+    // 서버 응답 데이터 반환
     return response.data;
   } catch (error) {
-    console.error("포지션/경력 필터링 오류:", error);
+    if (error instanceof Error) {
+      console.error("포지션/경력 필터링 오류:", error.message);
+    } else {
+      console.error("포지션/경력 필터링 오류:", error);
+    }
     throw error;
   }
 };
