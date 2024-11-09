@@ -1,23 +1,30 @@
+// components/Search/PositionModal.tsx
 import { useEffect, useRef, useState } from "react";
+import useFilterStore from "../../store/useFilterStore";
 
 interface PositionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  setSelectedPositions: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-const PositionModal = ({
-  isOpen,
-  onClose,
-  setSelectedPositions,
-}: PositionModalProps) => {
+const PositionModal = ({ isOpen, onClose }: PositionModalProps) => {
+  const { positions, setPositions } = useFilterStore();
   const [localSelectedPosition, setLocalSelectedPosition] = useState<
     string | null
-  >(null);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  >(positions[0] || null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const applyPosition = () => {
+    if (localSelectedPosition) {
+      setPositions([localSelectedPosition]);
+    } else {
+      setPositions([]);
+    }
+    onClose();
+  };
 
   // 사전 정의된 포지션 목록
-  const positions = [
+  const availablePositions = [
     "Frontend",
     "Backend",
     "FullStack",
@@ -34,16 +41,6 @@ const PositionModal = ({
     setLocalSelectedPosition(
       position === localSelectedPosition ? null : position
     ); // 같은 포지션 클릭 시 해제
-  };
-
-  // 선택된 포지션 적용
-  const applyPosition = () => {
-    if (localSelectedPosition) {
-      setSelectedPositions([localSelectedPosition]); // 하나의 포지션만 부모 컴포넌트로 전달
-    } else {
-      setSelectedPositions([]); // 선택된 포지션이 없으면 빈 배열 전달
-    }
-    onClose(); // 모달 닫기
   };
 
   // 모달 외부 클릭 시 닫기
@@ -84,7 +81,7 @@ const PositionModal = ({
       <div className="text-black text-2xl font-semibold mb-6">포지션</div>
 
       <div className="grid grid-cols-2 gap-4 mb-6">
-        {positions.map((position, index) => (
+        {availablePositions.map((position, index) => (
           <div
             key={index}
             onClick={() => selectPosition(position)}

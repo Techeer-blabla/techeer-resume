@@ -85,7 +85,6 @@ function SearchPage() {
                     <PositionModal
                       isOpen={isPositionOpen}
                       onClose={closePositionModal}
-                      setSelectedPositions={() => {}} // 추가된 부분
                     />
                   </div>
                 )}

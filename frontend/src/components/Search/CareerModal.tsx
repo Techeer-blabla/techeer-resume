@@ -1,15 +1,16 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Slider from "./Slider";
+import useFilterStore from "../../store/useFilterStore";
 
 interface CareerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onApply: (minCareer: number, maxCareer: number) => void;
 }
 
-const CareerModal = ({ isOpen, onClose, onApply }: CareerModalProps) => {
-  const [min_career, set_min_career] = useState(0); // 최소 경력
-  const [max_career, set_max_career] = useState(10); // 최대 경력
+const CareerModal = ({ isOpen, onClose }: CareerModalProps) => {
+  const { min_career, max_career, setCareerRange } = useFilterStore(); // 상태에서 min_career, max_career 가져오기
+  const [localMinCareer, setLocalMinCareer] = useState(min_career);
+  const [localMaxCareer, setLocalMaxCareer] = useState(max_career);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,12 +29,12 @@ const CareerModal = ({ isOpen, onClose, onApply }: CareerModalProps) => {
   }, [onClose]);
 
   const handleSliderChange = (newMin: number, newMax: number) => {
-    set_min_career(newMin);
-    set_max_career(newMax);
+    setLocalMinCareer(newMin);
+    setLocalMaxCareer(newMax);
   };
 
   const applyFilter = () => {
-    onApply(min_career, max_career);
+    setCareerRange(localMinCareer, localMaxCareer);
     onClose();
   };
 
@@ -53,8 +54,8 @@ const CareerModal = ({ isOpen, onClose, onApply }: CareerModalProps) => {
       <div className="text-black text-2xl font-semibold mb-6">경력</div>
       <div className="p-3 my-3 ml-3">
         <Slider
-          minCareer={min_career}
-          maxCareer={max_career}
+          minCareer={localMinCareer}
+          maxCareer={localMaxCareer}
           onChange={handleSliderChange}
         />
       </div>

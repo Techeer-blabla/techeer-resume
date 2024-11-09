@@ -31,7 +31,7 @@
     "tailwindcss": "^3.4.14",
     "uuid": "^10.0.0",
     "vite-svg-loader": "^5.1.0",
-    "zustand": "^5.0.0-rc.2"
+    "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.0",

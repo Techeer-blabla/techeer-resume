@@ -270,8 +270,7 @@ function Upload() {
 
   return (
     <div className="w-full flex flex-col md:flex-row mt-[2rem] ml-0 md:ml-[4rem] space-y-4 md:space-y-0 md:space-x-4">
-      {/* 왼쪽 섹션: 파일 업로드 박스 */}
-      <div className="w-full md:w-[50rem] h-[42rem] flex-shrink-0 rounded-[0.3125rem] border border-[#CEDAF9] bg-[#F8FAFF]">
+      <div className="w-full md:w-[50rem] h-auto md:h-[42rem] flex-shrink-0 rounded-[0.3125rem] border border-[#CEDAF9] bg-[#F8FAFF]">
         <div className="flex-shrink-0 ml-[2rem] md:ml-[5rem] mt-[4rem] relative">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -312,7 +311,6 @@ function Upload() {
         </div>
       </div>
 
-      {/* 오른쪽 섹션 */}
       <div className="flex flex-col justify-start text-black font-pretendard text-[0.9rem] md:text-[1rem] font-normal">
         <div className="ml-[0.5rem] md:ml-[1rem]"># 포지션</div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">

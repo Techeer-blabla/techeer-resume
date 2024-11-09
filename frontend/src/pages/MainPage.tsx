@@ -1,24 +1,24 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { getResumeList, postFilter } from "../api/resumeApi.ts";
-import Navbar from "../components/common/Navbar.tsx";
+import { getResumeList, postFilter } from "../api/resumeApi";
+import Navbar from "../components/common/Navbar";
 import BannerCard from "../components/MainPage/BannerCard";
 import Category from "../components/MainPage/Category";
-import PostCard from "../components/common/PostCard.tsx";
+import PostCard from "../components/common/PostCard";
 import man1 from "../assets/man1.png";
 import man2 from "../assets/man2.png";
-import PositionModal from "../components/Search/PositionModal"; // 수정된 import
+import PositionModal from "../components/Search/PositionModal";
 import CareerModal from "../components/Search/CareerModal";
+import useFilterStore from "../store/useFilterStore";
 import { PostCardsType } from "../dataType.ts";
 
 function MainPage() {
-  const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
-  const [, setFilterResults] = useState<unknown>(null);
-  const [min_career, set_min_career] = useState(0);
-  const [max_career, set_max_career] = useState(5);
   const [isPositionOpen, setIsPositionOpen] = useState(false);
   const [isCareerOpen, setIsCareerOpen] = useState(false);
-  // 포스트 카드 GET API 요청 함수
+  const { positions, min_career, max_career, setCareerRange } =
+    useFilterStore();
+  const [, setFilterResults] = useState<unknown>(null);
+
   const fetchPostCards = async (page: number, size = 8) => {
     try {
       const resumeList = await getResumeList(page, size);
@@ -28,72 +28,60 @@ function MainPage() {
       throw error;
     }
   };
-  const handleApplyCareerFilter = async (min: number, max: number) => {
-    set_min_career(min);
-    set_max_career(max);
 
-    const filterData = {
-      dto: {
-        positions: selectedPositions,
-        min_career: min,
-        max_career: max,
-        tech_stack_names: [],
-      },
-      pageable: {
-        page: 1,
-        size: 3,
-      },
-    };
+  // useCallback으로 handleApplyCareerFilter 함수 메모이제이션
+  const handleApplyCareerFilter = useCallback(
+    async (min: number, max: number) => {
+      setCareerRange(min, max);
+      const filterData = {
+        dto: {
+          positions,
+          min_career: min,
+          max_career: max,
+          tech_stack_names: [], // 필터링에서 tech_stack_names 제외
+        },
+        pageable: {
+          page: 1,
+          size: 3,
+        },
+      };
 
-    try {
-      const response = await postFilter(filterData);
-      setFilterResults(response);
-    } catch (error) {
-      console.error("필터링 오류:", error);
-    }
-  };
+      try {
+        const response = await postFilter(filterData);
+        setFilterResults(response);
+      } catch (error) {
+        console.error("필터링 오류:", error);
+      }
+    },
+    [positions, setCareerRange] // 의존성 배열에 positions, setCareerRange 추가
+  );
 
-  // useInfiniteQuery 사용하여 데이터 가져오기
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
-
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: ["postCards", selectedPositions, min_career, max_career],
-      queryFn: async ({ pageParam = 0 }) => {
-        return fetchPostCards(pageParam);
-      },
-      getNextPageParam: (lastPage) => {
-        console.log(
-          "Current page and total pages:",
-          lastPage[0].current_page,
-          lastPage[0].total_page
-        );
-        if (lastPage[0].current_page + 1 < lastPage[0].total_page) {
-          return lastPage[0].current_page + 1;
-        } else {
-          return undefined;
-        }
-      },
+      queryKey: ["postCards", positions, min_career, max_career],
+      queryFn: async ({ pageParam = 0 }) => fetchPostCards(pageParam),
+      getNextPageParam: (lastPage) =>
+        lastPage[0].current_page + 1 < lastPage[0].total_page
+          ? lastPage[0].current_page + 1
+          : undefined,
       initialPageParam: 0,
     });
 
-  console.log("resumeList: ", data);
+  // 필터가 변경될 때마다 handleApplyCareerFilter 호출
+  useEffect(() => {
+    handleApplyCareerFilter(min_career, max_career);
+  }, [positions, min_career, max_career, handleApplyCareerFilter]); // handleApplyCareerFilter 추가
 
   useEffect(() => {
     if (!hasNextPage || isFetchingNextPage) return;
-
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          console.log("Observer triggered, fetching next page...");
           fetchNextPage();
         }
       },
-      {
-        root: null,
-        rootMargin: "0px",
-        threshold: 0.1,
-      }
+      { root: null, rootMargin: "0px", threshold: 0.1 }
     );
 
     const loadMoreCurrent = loadMoreRef.current;
@@ -108,8 +96,6 @@ function MainPage() {
     <div className="w-full bg-[#D7E1F5]">
       <div className="pt-5">
         <Navbar />
-
-        {/* 배너 */}
         <div className="flex justify-center p-5 space-x-4 max-w-screen-xl mx-auto">
           <BannerCard
             title="내가 지원할 기업은?"
@@ -135,7 +121,6 @@ function MainPage() {
 
       <div className="w-full bg-white relative">
         <div className="p-6">
-          {/* 카테고리: 조회순, 포지션, 경력 */}
           <div className="max-w-screen-xl mx-auto py-6 relative">
             <div className="flex space-x-4">
               <Category title="조회순" options={["인기순", "최신순"]} />
@@ -151,14 +136,12 @@ function MainPage() {
               <PositionModal
                 isOpen={isPositionOpen}
                 onClose={() => setIsPositionOpen(false)}
-                setSelectedPositions={setSelectedPositions}
               />
             )}
             {isCareerOpen && (
               <CareerModal
                 isOpen={isCareerOpen}
                 onClose={() => setIsCareerOpen(false)}
-                onApply={handleApplyCareerFilter}
               />
             )}
           </div>
@@ -168,7 +151,7 @@ function MainPage() {
             <div className="grid grid-cols-1 min-[700px]:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 p-5">
               {data?.pages && data.pages.length > 0 ? (
                 data.pages.map((page) =>
-                  page?.map((post: PostCardsType) => (
+                  page.map((post: PostCardsType) => (
                     <PostCard
                       key={post.resume_id}
                       name={post.user_name}
@@ -194,4 +177,5 @@ function MainPage() {
     </div>
   );
 }
+
 export default MainPage;
