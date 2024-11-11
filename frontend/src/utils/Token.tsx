@@ -1,8 +1,7 @@
 import { Outlet, Navigate } from "react-router-dom";
-import { getCookie } from "../utils/cookies";
+import { getCookie } from "../utils/Cookies";
 
 function ProtectedRoute() {
-  //   const navigate = useNavigate();
 
   const accessToken = getCookie("accessToken");
   const refreshToken = getCookie("refreshToken");
