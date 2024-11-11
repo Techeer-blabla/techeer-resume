@@ -131,7 +131,7 @@ function MainPage() {
                 )
               ) : (
                 <div className="flex justify-center w-screen mt-10">
-                  <p>데이터 불러오는 중</p>
+                  <p>등록된 이력서가 없습니다.</p>
                 </div>
               )}
             </div>
