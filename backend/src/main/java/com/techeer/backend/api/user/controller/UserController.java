@@ -1,18 +1,18 @@
 package com.techeer.backend.api.user.controller;
-import com.techeer.backend.api.user.domain.User;
+
 import com.techeer.backend.api.user.dto.request.SignUpRequest;
-import com.techeer.backend.api.user.dto.request.UserRegisterRequest;
 import com.techeer.backend.api.user.dto.request.UserTokenRequest;
+import com.techeer.backend.api.user.dto.response.UserInfoResponse;
 import com.techeer.backend.api.user.service.UserService;
+import com.techeer.backend.global.common.response.CommonResponse;
 import com.techeer.backend.global.jwt.JwtToken;
 import com.techeer.backend.global.success.SuccessResponse;
+import com.techeer.backend.global.success.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,8 +24,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
 
+    @Operation(summary = "유저 정보")
+    @GetMapping("/user")
+    public CommonResponse<UserInfoResponse> getUserInfo() {
+        UserInfoResponse result = userService.getUserInfo();
+
+        return CommonResponse.of(SuccessStatus.USER_FETCH_OK, result);
+    }
+
     @Operation(summary = "추가정보 입력")
-    @PostMapping("/users")
+    @PostMapping("/user")
     public ResponseEntity<SuccessResponse> signupUser(@RequestBody @Valid SignUpRequest req) {
         userService.signup(req);
         return ResponseEntity.ok().build();

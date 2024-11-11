@@ -35,6 +35,12 @@ spring:
             scope:
               - email
             redirect-uri: ${GOOGLE_REDIRECT_URI}
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+            scope:
+              - user:email
+            redirect-uri: ${GITHUB_REDIRECT_URI}
 
 logging:
   level:
