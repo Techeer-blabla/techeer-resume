@@ -8,11 +8,11 @@ interface LayoutProps {
 
 function Layout({ children, sidebar }: LayoutProps): React.ReactElement {
   return (
-    <div>
+    <div className="pt-5 bg-white">
       <Navbar />
       <div className="flex flex-row w-full">
         {/* Left Column: Main Content */}
-        <div className="w-full md:w-2/3">{children}</div>
+        <div className="w-full md:w-2/3 mt-2">{children}</div>
 
         {/* Right Column: Sidebar */}
         <div className="w-1/3 flex flex-col p-4 overflow-hidden">{sidebar}</div>

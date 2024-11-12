@@ -72,6 +72,9 @@ function ResumePage({
     setEditingFeedback(null);
   };
 
+  const pdfUrl =
+    "https://rexume.s3.ap-northeast-2.amazonaws.com/resume/3fc27b1d-5_ex2.pdf";
+
   return (
     <div className="relative mb-8">
       <div
@@ -80,7 +83,7 @@ function ResumePage({
         onClick={handleClick}
       >
         {/* PDF 미리보기 */}
-        <PDFPage pdfUrl={tes1} />
+        <PDFPage pdfUrl={pdfUrl} />
 
         {/* <p className="text-black">Resume PDF Page {pageNumber}</p> */}
         {/* 피드백 마커 렌더링 */}
