@@ -2,6 +2,8 @@
 import React, { useRef, useState } from "react";
 import CommentForm from "../comment/CommentForm.tsx";
 import { AddFeedbackPoint, FeedbackPoint } from "../../types.ts";
+import PDFPage from "./PDFPage.tsx";
+import tes1 from "./test1.pdf";
 
 type ResumePageProps = {
   pageNumber: number;
@@ -74,11 +76,13 @@ function ResumePage({
     <div className="relative mb-8">
       <div
         ref={pageRef}
-        className="w-full h-[903px] mx-auto mt-4 bg-[#bbb8b8] flex justify-center items-center relative cursor-pointer"
+        className="w-full h-[903px] mx-auto mt-4 flex justify-center items-center relative cursor-pointer"
         onClick={handleClick}
       >
-        {/* Placeholder for PDF Image */}
-        <p className="text-white">Resume PDF Page {pageNumber}</p>
+        {/* PDF 미리보기 */}
+        <PDFPage pdfUrl={tes1} />
+
+        {/* <p className="text-black">Resume PDF Page {pageNumber}</p> */}
         {/* 피드백 마커 렌더링 */}
         {feedbackPoints.map((point) => (
           <div
