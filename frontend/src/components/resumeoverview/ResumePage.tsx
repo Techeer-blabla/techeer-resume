@@ -1,9 +1,8 @@
-// src/components/resumeoverview/ResumePage.tsx
 import React, { useRef, useState } from "react";
 import CommentForm from "../comment/CommentForm.tsx";
 import { AddFeedbackPoint, FeedbackPoint } from "../../types.ts";
 import PDFPage from "./PDFPage.tsx";
-import tes1 from "./test1.pdf";
+import useResumeStore from "../../store/ResumeStore.ts";
 
 type ResumePageProps = {
   pageNumber: number;
@@ -72,8 +71,7 @@ function ResumePage({
     setEditingFeedback(null);
   };
 
-  const pdfUrl =
-    "https://rexume.s3.ap-northeast-2.amazonaws.com/resume/3fc27b1d-5_ex2.pdf";
+  const { ResumeUrl } = useResumeStore();
 
   return (
     <div className="relative mb-8">
@@ -83,7 +81,7 @@ function ResumePage({
         onClick={handleClick}
       >
         {/* PDF 미리보기 */}
-        <PDFPage pdfUrl={pdfUrl} />
+        <PDFPage pdfUrl={ResumeUrl} />
 
         {/* <p className="text-black">Resume PDF Page {pageNumber}</p> */}
         {/* 피드백 마커 렌더링 */}

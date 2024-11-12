@@ -18,8 +18,7 @@ function MainPage() {
     try {
       const response = await viewResume(resumeId);
       setResumeId(response.data.resume_id);
-      // navigate(`/feedback?${response.data.resume_id}`);
-      navigate(`/feedback`);
+      navigate(`/feedback?${response.data.resume_id}`);
       return response;
     } catch (error) {
       console.error("이력서 조회 오류:", error);
@@ -61,8 +60,6 @@ function MainPage() {
       },
       initialPageParam: 0,
     });
-
-  console.log("resumeList: ", data);
 
   useEffect(() => {
     if (!hasNextPage || isFetchingNextPage) return;

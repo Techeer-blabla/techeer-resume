@@ -21,8 +21,7 @@ function ResumeFeedbackPage() {
   const [hoveredCommentId, setHoveredCommentId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const { resumeId } = useResumeStore();
-  console.log("받는 아이디는: ", resumeId);
+  const { resumeId, setResumeUrl } = useResumeStore();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,7 +30,9 @@ function ResumeFeedbackPage() {
         setError(null);
         const data = await getResumeApi(Number(resumeId));
         setResumeData(data);
-        setFeedbackPoints(data.feedbacks || []);
+
+        setResumeUrl(data.fileUrl);
+        setFeedbackPoints(data.feedbackResponses || []);
       } catch (error) {
         console.error("Failed to fetch resume data", error);
         setError("Failed to fetch resume data. Please try again later.");
@@ -40,7 +41,7 @@ function ResumeFeedbackPage() {
       }
     };
     fetchData();
-  }, [resumeId]);
+  }, [resumeId, setResumeUrl]);
 
   // 피드백 점 추가
   const addFeedbackPoint = async (point: Omit<AddFeedbackPoint, "id">) => {
@@ -63,7 +64,8 @@ function ResumeFeedbackPage() {
       };
       await addFeedbackApi(Number(resumeId), newPoint);
       const updatedData = await getResumeApi(Number(resumeId));
-      setFeedbackPoints(updatedData.feedbacks);
+      console.log("업데이트 데이터: ", updatedData);
+      setFeedbackPoints(updatedData.feedbackResponses);
     } catch (error) {
       console.error("Failed to add feedback point", error);
       setError("Failed to add feedback point. Please try again later.");
