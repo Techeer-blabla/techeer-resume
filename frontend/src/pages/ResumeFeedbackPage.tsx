@@ -9,6 +9,7 @@ import {
   addFeedbackApi,
   deleteFeedbackApi,
   getResumeApi,
+  postAiFeedback,
 } from "../api/feedbackApi.ts";
 import { AddFeedbackPoint, FeedbackPoint, ResumeData } from "../types.ts";
 
@@ -38,7 +39,22 @@ function ResumeFeedbackPage() {
     fetchData();
   }, [resumeId]);
 
-  // 피드백 점 추가
+  const handleAiFeedback = async () => {
+    setLoading(true);
+    try {
+      const aiFeedback = await postAiFeedback(resumeId);
+      setFeedbackPoints((prevPoints) => [
+        ...prevPoints,
+        ...aiFeedback.feedbacks,
+      ]);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      setError("Failed to retrieve AI feedback.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const addFeedbackPoint = async (point: Omit<AddFeedbackPoint, "id">) => {
     if (
       !point.content ||
@@ -68,17 +84,11 @@ function ResumeFeedbackPage() {
     }
   };
 
-  // 댓글 및 피드백 점 삭제 (로그만 출력)
-  // 피드백 점 삭제
   const deleteFeedbackPoint = async (id: number) => {
     try {
       setLoading(true);
       setError(null);
-
-      // Call the API to delete the feedback point
       await deleteFeedbackApi(resumeId, id);
-
-      // After successful deletion, update the local state to remove the feedback
       setFeedbackPoints((prevComments) =>
         (prevComments || []).filter((item) => item.id !== id)
       );
@@ -91,7 +101,6 @@ function ResumeFeedbackPage() {
     }
   };
 
-  // 댓글 및 피드백 점 수정 (로그만 출력)
   const editFeedbackPoint = (updatedItem: AddFeedbackPoint) => {
     console.log("Edit feedback point: ", updatedItem);
   };
@@ -113,7 +122,6 @@ function ResumeFeedbackPage() {
       <Layout
         sidebar={
           <div className="flex flex-col justify-between bg-white p-2 mt-10">
-            {/* Resume Overview */}
             <ResumeOverview />
 
             {/* Comment Section */}
@@ -124,13 +132,13 @@ function ResumeFeedbackPage() {
                 deleteFeedbackPoint={deleteFeedbackPoint}
                 editFeedbackPoint={editFeedbackPoint}
                 hoveredCommentId={hoveredCommentId}
+                handleAiFeedback={handleAiFeedback}
                 setHoveredCommentId={setHoveredCommentId}
               />
             </div>
           </div>
         }
       >
-        {/* Main Content */}
         <MainContainer
           feedbackPoints={feedbackPoints}
           addFeedbackPoint={addFeedbackPoint}
