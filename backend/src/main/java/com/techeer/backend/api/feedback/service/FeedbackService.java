@@ -1,7 +1,10 @@
 package com.techeer.backend.api.feedback.service;
 
+import com.techeer.backend.api.aifeedback.domain.AIFeedback;
+import com.techeer.backend.api.aifeedback.repository.AIFeedbackRepository;
 import com.techeer.backend.api.feedback.converter.FeedbackConverter;
 import com.techeer.backend.api.feedback.domain.Feedback;
+import com.techeer.backend.api.feedback.dto.AllFeedbackResponse;
 import com.techeer.backend.api.feedback.dto.FeedbackCreateRequest;
 import com.techeer.backend.api.feedback.dto.FeedbackResponse;
 import com.techeer.backend.api.feedback.repository.FeedbackRepository;
@@ -24,7 +27,7 @@ public class FeedbackService {
 
     private final FeedbackRepository feedbackRepository;
     private final ResumeRepository resumeRepository;
-    // private final FeedbackConverter feedbackConverter;
+    private final AIFeedbackRepository aiFeedbackRepository;
 
     @Transactional
     public FeedbackResponse createFeedback(Long resumeId, FeedbackCreateRequest feedbackCreateRequest) {
@@ -62,4 +65,16 @@ public class FeedbackService {
         feedbackRepository.delete(feedback);
     }
 
+    @Transactional(readOnly = true)
+    public AllFeedbackResponse getFeedbackwithAIFeedback(Long resumeId) {
+        // 일반 피드백 조회
+        Feedback feedback = feedbackRepository.findByResumeId(resumeId)
+                .orElseThrow(() -> new EntityNotFoundException("일반 피드백을 찾을 수 없습니다."));
+
+        // AI 피드백 조회
+        AIFeedback aiFeedback = aiFeedbackRepository.findByResumeId(resumeId)
+                .orElseThrow(() -> new EntityNotFoundException("AI 피드백을 찾을 수 없습니다."));
+
+        return FeedbackConverter.toAllFeedbackResponse(feedback, aiFeedback);
+    }
 }
