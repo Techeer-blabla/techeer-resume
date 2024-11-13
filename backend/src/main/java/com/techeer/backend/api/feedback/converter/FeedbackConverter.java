@@ -4,6 +4,9 @@ import com.techeer.backend.api.aifeedback.domain.AIFeedback;
 import com.techeer.backend.api.feedback.domain.Feedback;
 import com.techeer.backend.api.feedback.dto.AllFeedbackResponse;
 import com.techeer.backend.api.feedback.dto.FeedbackResponse;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class FeedbackConverter {
 
@@ -18,16 +21,24 @@ public class FeedbackConverter {
                 .build();
     }
 
-    public static AllFeedbackResponse toAllFeedbackResponse(Feedback feedback, AIFeedback aiFeedback) {
+    public static AllFeedbackResponse toAllFeedbackResponse(List<Feedback> feedbacks, AIFeedback aiFeedback) {
         return AllFeedbackResponse.builder()
-                .feedbackId(feedback.getId())
-                .resumeId(feedback.getResume().getId())
-                .content(feedback.getContent())
-                .xCoordinate(feedback.getXCoordinate())
-                .yCoordinate(feedback.getYCoordinate())
-                .pageNumber(feedback.getPageNumber())
-                .aiFeedbackContent(aiFeedback.getFeedback()) // AI 피드백 내용
-                .aiFeedbackId(aiFeedback.getId()) // AI 피드백 ID
+                .feedbacks(convertFeedbacksToResponses(feedbacks))
+                .aiFeedbackContent(Optional.ofNullable(aiFeedback).map(AIFeedback::getFeedback).orElse(null))
+                .aiFeedbackId(Optional.ofNullable(aiFeedback).map(AIFeedback::getId).orElse(null))
                 .build();
+    }
+
+    private static List<FeedbackResponse> convertFeedbacksToResponses(List<Feedback> feedbacks) {
+        return feedbacks.stream()
+                .map(feedback -> FeedbackResponse.builder()
+                        .feedbackId(feedback.getId())
+                        .resumeId(feedback.getResume().getId())
+                        .content(feedback.getContent())
+                        .xCoordinate(feedback.getXCoordinate())
+                        .yCoordinate(feedback.getYCoordinate())
+                        .pageNumber(feedback.getPageNumber())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

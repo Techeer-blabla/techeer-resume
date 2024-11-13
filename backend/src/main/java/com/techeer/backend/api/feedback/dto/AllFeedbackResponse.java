@@ -1,5 +1,6 @@
 package com.techeer.backend.api.feedback.dto;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,13 +11,7 @@ import lombok.ToString;
 @Getter
 @ToString
 public class AllFeedbackResponse {
-    private final Long feedbackId;
-    private final Long resumeId;
-    private final String content;
-    private final Double xCoordinate;
-    private final Double yCoordinate;
-    private final int pageNumber;
-
+    private final List<FeedbackResponse> feedbacks; // 여러 개의 피드백을 리스트로 포함
     private final String aiFeedbackContent;
     private final Long aiFeedbackId;
 }

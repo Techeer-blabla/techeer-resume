@@ -16,5 +16,4 @@ public class FeedbackResponse {
     private final Double xCoordinate;
     private final Double yCoordinate;
     private final int pageNumber;
-    private final String aiFeedbackContent;
 }
