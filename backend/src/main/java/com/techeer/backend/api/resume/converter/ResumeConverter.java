@@ -1,76 +1,65 @@
 package com.techeer.backend.api.resume.converter;
 
-import java.util.ArrayList;
+import com.techeer.backend.api.feedback.converter.FeedbackConverter;
+import com.techeer.backend.api.feedback.domain.Feedback;
+import com.techeer.backend.api.resume.domain.Resume;
+import com.techeer.backend.api.resume.dto.response.PageableResumeResponse;
+import com.techeer.backend.api.resume.dto.response.ResumeDetailResponse;
+import com.techeer.backend.api.resume.dto.response.ResumeResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.data.domain.Page;
-
-import com.techeer.backend.api.feedback.domain.Feedback;
-import com.techeer.backend.api.resume.domain.Company;
-import com.techeer.backend.api.resume.domain.Resume;
-import com.techeer.backend.api.resume.dto.request.CreateResumeRequest;
-import com.techeer.backend.api.resume.dto.response.FetchResumeContentResponse;
-import com.techeer.backend.api.resume.dto.response.ResumePageResponse;
-import com.techeer.backend.api.resume.dto.response.ResumeResponse;
-
 public class ResumeConverter {
 
-	public static Resume toResume(CreateResumeRequest createResumeRequest) {
-		return Resume.builder()
-			.username(createResumeRequest.getUsername())
-			.position(createResumeRequest.getPosition())
-			.career(createResumeRequest.getCareer())
-			.name("Resume of " + createResumeRequest.getUsername())
-			.resumeTechStacks(new ArrayList<>())
-			.companies(new ArrayList<>())
-			.build();
-	}
+    public static PageableResumeResponse toPageableResumeResponse(Resume resume) {
+        return PageableResumeResponse.builder()
+                .resumeId(resume.getId())
+                .userName(resume.getUsername())
+                .resumeName(resume.getName())
+                .position(resume.getPosition().getValue())
+                .career(resume.getCareer())
+                .techStackNames(resume.getResumeTechStacks()
+                        .stream()
+                        .map(resumetechStack -> resumetechStack.getTechStack().getName()).collect(Collectors.toList()))
+                .companyNames(resume.getResumeCompanies()
+                        .stream()
+                        .map(resumeCompany -> resumeCompany.getCompany().getName()).collect(Collectors.toList()))
+                .build();
+    }
 
-	public static ResumeResponse toResumeResponse(Resume resume) {
-		return ResumeResponse.builder()
-			.resumeId(resume.getId())
-			.userName(resume.getUsername())  // User 객체에서 username 추출
-			.resumeName(resume.getName())
-			.fileUrl(resume.getUrl())
-			.position(resume.getPosition())
-			.career(resume.getCareer())
-			.applyingCompanies(resume.getCompanies().stream()
-				.map(Company::getName)  // Map each Company to its name
-				.collect(Collectors.toList()))
-			.techStackNames(resume.getResumeTechStacks().stream()
-				.map(resumeTechStack -> resumeTechStack.getTechStack().getName())  // ResumeTechStack 객체에서 기술 스택 이름 추출
-				.collect(Collectors.toList()))  // 기술 스택 이름 리스트로 변환
-			.build();
-	}
 
-	public static FetchResumeContentResponse toFetchResumeContentResponse(Resume resume, List<Feedback> feedbacks) {
-		return FetchResumeContentResponse.builder()
-			.resumeId(resume.getId())
-			.userName(resume.getName())
-			.position(resume.getPosition())
-			.career(resume.getCareer())
-			.techStacks(resume.getResumeTechStacks().stream()
-				.map(resumeTechStack -> resumeTechStack.getTechStack().getName())
-				.collect(Collectors.toList()))
-			.fileUrl(resume.getUrl())
-			.feedbacks(feedbacks)
-			.build();
-	}
+    public static ResumeDetailResponse toResumeDetailResponse(Resume resume, List<Feedback> feedbacks) {
+        return ResumeDetailResponse.builder()
+                .resumeId(resume.getId())
+                .userName(resume.getUsername())
+                .position(resume.getPosition().getValue())
+                .career(resume.getCareer())
+                .techStackNames(resume.getResumeTechStacks()
+                        .stream()
+                        .map(resumetechStack -> resumetechStack.getTechStack().getName()).collect(Collectors.toList()))
+                .companyNames(resume.getResumeCompanies()
+                        .stream()
+                        .map(resumeCompany -> resumeCompany.getCompany().getName()).collect(Collectors.toList()))
+                .fileUrl(resume.getResumePdf().getPdf().getPdfUrl())
+                .feedbackResponses(feedbacks.stream().map(FeedbackConverter::toFeedbackResponse).collect(Collectors.toList()))
+                .build();
+    }
 
-	public static ResumePageResponse toResumePageResponse(Resume resume, Page page) {
-		return ResumePageResponse.builder()
-			.resumeId(resume.getId())
-			.userName(resume.getUsername())
-			.resumeName(resume.getName())
-			.position(resume.getPosition())
-			.career(resume.getCareer())
-			.techStackNames(resume.getResumeTechStacks().stream()
-				.map(resumeTechStack -> resumeTechStack.getTechStack().getName())
-				.collect(Collectors.toList()))
-			.totalPage(page.getTotalPages())
-			.currentPage(page.getNumber())
-			.build();
-	}
 
+    public static ResumeResponse toResumeResponse(Resume resume) {
+        return ResumeResponse.builder()
+                .resumeId(resume.getId())
+                .userName(resume.getUsername())
+                .resumeName(resume.getName())
+                .position(resume.getPosition().getValue())
+                .career(resume.getCareer())
+                .techStackNames(resume.getResumeTechStacks()
+                        .stream()
+                        .map(resumetechStack -> resumetechStack.getTechStack().getName()).collect(Collectors.toList()))
+                .companyNames(resume.getResumeCompanies()
+                        .stream()
+                        .map(resumeCompany -> resumeCompany.getCompany().getName()).collect(Collectors.toList()))
+                .build();
+
+    }
 }

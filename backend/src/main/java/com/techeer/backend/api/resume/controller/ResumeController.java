@@ -1,10 +1,23 @@
 package com.techeer.backend.api.resume.controller;
 
+import com.techeer.backend.api.resume.dto.request.CreateResumeRequest;
+import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
+import com.techeer.backend.api.resume.dto.response.PageableResumeResponse;
+import com.techeer.backend.api.resume.dto.response.ResumeDetailResponse;
+import com.techeer.backend.api.resume.dto.response.ResumeResponse;
+import com.techeer.backend.api.resume.service.ResumeService;
+import com.techeer.backend.api.resume.service.facade.ResumeCreateFacade;
+import com.techeer.backend.global.error.ErrorStatus;
+import com.techeer.backend.global.error.exception.GeneralException;
+import com.techeer.backend.global.success.SuccessCode;
+import com.techeer.backend.global.success.SuccessResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import com.techeer.backend.global.common.response.CommonResponse;
-
 import java.io.IOException;
 import java.util.List;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,27 +33,14 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.techeer.backend.api.resume.dto.request.CreateResumeRequest;
-import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
-import com.techeer.backend.api.resume.dto.response.FetchResumeContentResponse;
-import com.techeer.backend.api.resume.dto.response.ResumePageResponse;
-import com.techeer.backend.api.resume.dto.response.ResumeResponse;
-import com.techeer.backend.api.resume.service.ResumeService;
-import com.techeer.backend.global.success.SuccessCode;
-import com.techeer.backend.global.success.SuccessResponse;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-
 //todo @RequiredArgsConstructor 추가 후 만든 생성자 삭제
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "resume", description = "Resume API")
 @RequestMapping("/api/v1")
 public class ResumeController {
-	private final ResumeService resumeService;
+    private final ResumeCreateFacade resumeCreateFacade;
+    private final ResumeService resumeService;
 
 	// 이력서 등록
 	@Operation(summary = "이력서 등록")
@@ -61,47 +61,49 @@ public class ResumeController {
 		return CommonResponse.onSuccess("이력서 등록 성공");
 	}
 
-	// 회원 이름으로 게시물 조회
-	@Operation(summary = "회원 이름으로 이력서 조회")
-	@GetMapping("/resumes/search")
-	public CommonResponse<List<ResumeResponse>> searchResumesByUserName(@RequestParam("user_name") String userName) {
-		List<ResumeResponse> resumeResponses = resumeService.searchResumesByUserName(userName);
 
-		return null;
-	}
+    @Operation(summary = "회원 이름으로 이력서 조회")
+    @GetMapping("/resumes/search")
+    public ResponseEntity<List<ResumeResponse>> searchResumesByUserName(@RequestParam("user_name") String userName) {
+        List<ResumeResponse> resumeResponse = resumeService.searchResumesByUserName(userName);
+        return ResponseEntity.ok(resumeResponse);
+    }
 
-	//todo 피드백 완성되면 작업
-	@Operation(summary = "이력서 개별 조회")
-	@GetMapping("/resumes/{resume_id}")
-	public ResponseEntity<SuccessResponse> fetchResumeContent(@PathVariable("resume_id") Long resumeId) throws IOException {
 
-		FetchResumeContentResponse resumeContent = resumeService.getResumeContent(resumeId);
-		SuccessResponse response = SuccessResponse.of(SuccessCode.SUCCESS, resumeContent);
+    @Operation(summary = "이력서 개별 조회")
+    @GetMapping("/resumes/{resume_id}")
+    public ResponseEntity<SuccessResponse> searchResumeDetail(@PathVariable("resume_id") Long resumeId) {
 
-		return ResponseEntity.ok(response);
-	}
+        ResumeDetailResponse resumeContent = resumeService.getResumeContent(resumeId);
+        SuccessResponse response = SuccessResponse.of(SuccessCode.SUCCESS, resumeContent);
 
-	@Operation(summary = "이력서 여러 조회")
-	@GetMapping(value = "/resumes")
-	public ResponseEntity<List<ResumePageResponse>> getResumes( @RequestParam int page,@RequestParam int size) {
-		//ResumeService를 통해 페이지네이션된 이력서 목록을 가져옵니다.
-		final Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
-		final List<ResumePageResponse> resumes = resumeService.getResumePage(pageable);
+        return ResponseEntity.ok(response);
+    }
 
-		if (resumes == null) {
-			// 404 Not Found
-			return ResponseEntity.notFound().build();
-		}
-		return ResponseEntity.ok(resumes);
-	}
 
-	// 태그 조회 (페이지네이션)
-	@Operation(summary = "이력서 태그 조회")
-	@PostMapping("/resumes/search")
-	public ResponseEntity<List<ResumeResponse>> getResumesByTag(@RequestParam int page,@RequestParam int size,
-																@RequestBody ResumeSearchRequest dto) {
-		final Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
-		final List<ResumeResponse> resumeResponses = resumeService.searchByTages(dto, pageable);
-		return ResponseEntity.ok(resumeResponses);
-	}
+    @Operation(summary = "여러 이력서 조회(페이지네이션)")
+    @GetMapping(value = "/resumes")
+    public ResponseEntity<List<PageableResumeResponse>> searchResumes(@RequestParam int page,
+                                                                      @RequestParam int size) {
+        //ResumeService를 통해 페이지네이션된 이력서 목록을 가져옵니다.
+        final Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
+        final List<PageableResumeResponse> pageableResumeResponses = resumeService.getResumePage(pageable);
+
+        if (pageableResumeResponses == null) {
+            // 404 Not Found
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(pageableResumeResponses);
+    }
+
+
+    @Operation(summary = "이력서 태그 조회")
+    @PostMapping("/resumes/search")
+    public ResponseEntity<List<PageableResumeResponse>> searchResumesByTag(@RequestParam int page,
+                                                                           @RequestParam int size,
+                                                                           @RequestBody ResumeSearchRequest dto) {
+        final Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
+        final List<PageableResumeResponse> pageableResumeRespons = resumeService.searchByTages(dto, pageable);
+        return ResponseEntity.ok(pageableResumeRespons);
+    }
 }

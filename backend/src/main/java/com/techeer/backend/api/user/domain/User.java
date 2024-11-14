@@ -3,7 +3,14 @@ package com.techeer.backend.api.user.domain;
 
 import com.techeer.backend.api.user.dto.request.SignUpRequest;
 import com.techeer.backend.global.common.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "User")
+@Table(name = "`User`")
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
     @Id
@@ -35,15 +42,20 @@ public class User extends BaseEntity {
     @Column(name = "role")
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "social_type")
+    private SocialType socialType;
+
     @Builder
-    public User(String email, String refreshToken, Role role) {
+    public User(String email, String refreshToken, Role role, SocialType socialType) {
         this.email = email;
         this.username = null;
         this.refreshToken = refreshToken;
         this.role = role;
+        this.socialType = socialType;
     }
 
-    public void updateUser(SignUpRequest req){
+    public void updateUser(SignUpRequest req) {
         this.username = req.getUsername();
         this.role = req.getRole();
     }
