@@ -54,7 +54,7 @@ public class UserService {
         Object[] emailAndSocialType = jwtService.extractEmailAndSocialType(userTokenReq.getAccessToken());
         if (emailAndSocialType.length >= 1) {
             String email = (String) emailAndSocialType[0];
-            //SocialType socialType = (SocialType) emailAndSocialType[1];
+
             User user = userRepository.findByEmail(email)
                     .orElseThrow();
             String refreshToken = user.getRefreshToken();
@@ -65,12 +65,11 @@ public class UserService {
             }
 
             String reissueAccessToken = jwtService.createAccessToken(email);
-            String reissueRefreshToken = jwtService.createRefreshToken();
-            user.updateRefreshToken(reissueRefreshToken);
+            String reIssueRefreshToken = jwtService.reIssueRefreshToken(user);
 
             return JwtToken.builder()
                     .accessToken(reissueAccessToken)
-                    .refreshToken(reissueRefreshToken)
+                    .refreshToken(reIssueRefreshToken)
                     .build();
         }
 

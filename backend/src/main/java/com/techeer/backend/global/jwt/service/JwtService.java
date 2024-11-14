@@ -112,7 +112,6 @@ public class JwtService {
             Claims claims = decodeAccessToken(accessToken);
             if (claims != null) {
                 String email = claims.get("email", String.class);
-                //SocialType socialType = deserializeSocialType(claims.get("socialType", String.class));
                 return new Object[]{email};
             }
         } catch (Exception e) {
@@ -122,11 +121,6 @@ public class JwtService {
         return null;
     }
 
-    // Claims에서 추출할 때 문자열을 SocialType으로 변환
-//    private SocialType deserializeSocialType(String socialTypeString) {
-//        // 예시: 문자열을 Enum으로 변환
-//        return SocialType.valueOf(socialTypeString);
-//    }
 
     private Claims decodeAccessToken(String accessToken) {
         try {
