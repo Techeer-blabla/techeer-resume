@@ -3,6 +3,7 @@ import MainPage from "./pages/MainPage";
 import ResumeFeedbackPage from "./pages/ResumeFeedbackPage";
 import SearchPage from "./pages/SearchPage";
 import Upload from "./pages/Upload";
+import MyInfoPage from "./pages/MyInfoPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // QueryClient 생성
@@ -19,6 +20,7 @@ export default function App() {
               <Route path="/feedback" element={<ResumeFeedbackPage />} />
               <Route path="/search" element={<SearchPage />} />
               <Route path="/upload" element={<Upload />} />
+              <Route path="/myInfo" element={<MyInfoPage />} />
             </Routes>
           </div>
         </div>
