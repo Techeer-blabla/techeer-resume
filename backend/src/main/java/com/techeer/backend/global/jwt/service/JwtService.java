@@ -69,7 +69,7 @@ public class JwtService {
     }
 
 
-    private String reIssueRefreshToken(User user) {
+    public String reIssueRefreshToken(User user) {
         String reIssuedRefreshToken = this.createRefreshToken();
         user.updateRefreshToken(reIssuedRefreshToken);
         userRepository.saveAndFlush(user);
