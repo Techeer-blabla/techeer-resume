@@ -7,14 +7,12 @@ import com.techeer.backend.api.resume.dto.response.ResumeDetailResponse;
 import com.techeer.backend.api.resume.dto.response.ResumeResponse;
 import com.techeer.backend.api.resume.service.ResumeService;
 import com.techeer.backend.api.resume.service.facade.ResumeCreateFacade;
-import com.techeer.backend.global.error.ErrorStatus;
-import com.techeer.backend.global.error.exception.GeneralException;
+import com.techeer.backend.global.common.response.CommonResponse;
 import com.techeer.backend.global.success.SuccessCode;
 import com.techeer.backend.global.success.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import com.techeer.backend.global.common.response.CommonResponse;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -42,24 +40,24 @@ public class ResumeController {
     private final ResumeCreateFacade resumeCreateFacade;
     private final ResumeService resumeService;
 
-	// 이력서 등록
-	@Operation(summary = "이력서 등록")
-	@PostMapping(value = "/resumes", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public CommonResponse<String> resumeRegistration(
-		@RequestPart @Valid CreateResumeRequest createResumeReq,
-		@RequestPart(name = "resume_file") @Valid MultipartFile resumeFile) throws IOException {
-		// 파일 유효성 검사 -> 나중에 vaildtor로 변경해서 유효성 검사할 예정
-		if (resumeFile.isEmpty()) {
-			throw new IllegalArgumentException("이력서 파일이 비어있습니다.");
-		}
-		if (!resumeFile.getContentType().equals("application/pdf")) {
-			throw new IllegalArgumentException("이력서 파일은 PDF 형식만 허용됩니다.");
-		}
+    // 이력서 등록
+    @Operation(summary = "이력서 등록")
+    @PostMapping(value = "/resumes", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public CommonResponse<String> resumeRegistration(
+            @RequestPart @Valid CreateResumeRequest createResumeReq,
+            @RequestPart(name = "resume_file") @Valid MultipartFile resumeFile) throws IOException {
+        // 파일 유효성 검사 -> 나중에 vaildtor로 변경해서 유효성 검사할 예정
+        if (resumeFile.isEmpty()) {
+            throw new IllegalArgumentException("이력서 파일이 비어있습니다.");
+        }
+        if (!resumeFile.getContentType().equals("application/pdf")) {
+            throw new IllegalArgumentException("이력서 파일은 PDF 형식만 허용됩니다.");
+        }
 
-		// resume db에 저장
-		resumeService.createResume(createResumeReq, resumeFile);
-		return CommonResponse.onSuccess("이력서 등록 성공");
-	}
+        // resume db에 저장
+        resumeCreateFacade.createResume(createResumeReq, resumeFile);
+        return CommonResponse.onSuccess("이력서 등록 성공");
+    }
 
 
     @Operation(summary = "회원 이름으로 이력서 조회")

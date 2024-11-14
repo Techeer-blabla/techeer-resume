@@ -35,9 +35,6 @@ public class User extends BaseEntity {
     @Column(name = "refresh_token")
     private String refreshToken;
 
-//    @Column(name = "profile_image")
-//    private String profileImage;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
@@ -64,5 +61,7 @@ public class User extends BaseEntity {
         this.refreshToken = null;
     }
 
-    public void updateRefreshToken(String updateRefreshToken) { this.refreshToken = updateRefreshToken; }
+    public void updateRefreshToken(String updateRefreshToken) {
+        this.refreshToken = updateRefreshToken;
+    }
 }

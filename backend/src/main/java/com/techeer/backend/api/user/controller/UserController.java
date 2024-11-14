@@ -6,12 +6,10 @@ import com.techeer.backend.api.user.dto.response.UserInfoResponse;
 import com.techeer.backend.api.user.service.UserService;
 import com.techeer.backend.global.common.response.CommonResponse;
 import com.techeer.backend.global.jwt.JwtToken;
-import com.techeer.backend.global.success.SuccessResponse;
 import com.techeer.backend.global.success.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,23 +32,23 @@ public class UserController {
 
     @Operation(summary = "추가정보 입력")
     @PostMapping("/user")
-    public ResponseEntity<SuccessResponse> signupUser(@RequestBody @Valid SignUpRequest req) {
+    public CommonResponse<String> signupUser(@RequestBody @Valid SignUpRequest req) {
         userService.signup(req);
-        return ResponseEntity.ok().build();
+        return CommonResponse.onSuccess("유저 추가정보 입력 성공");
     }
 
     @Operation(summary = "로그아웃")
     @PostMapping("/logout")
-    public ResponseEntity<SuccessResponse> logoutUser() {
+    public CommonResponse<String> logoutUser() {
         userService.logout();
-        return ResponseEntity.ok().build();
+        return CommonResponse.onSuccess("로그아웃 성공");
     }
 
     @Operation(summary = "액세스 토큰 재발급")
     @PostMapping("/reissue")
-    public ResponseEntity<String> reGenerateAccessToken(@RequestBody @Valid UserTokenRequest userTokenReq) {
-        JwtToken newToken = userService.reissueToken(userTokenReq);
-        return ResponseEntity.ok(newToken.toString());
+    public CommonResponse<JwtToken> reGenerateAccessToken(@RequestBody @Valid UserTokenRequest userTokenReq) {
+        JwtToken result = userService.reissueToken(userTokenReq);
+        return CommonResponse.of(SuccessStatus.TOKEN_REISSUE_OK, result);
     }
 
 }

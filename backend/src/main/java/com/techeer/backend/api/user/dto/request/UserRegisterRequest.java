@@ -18,5 +18,4 @@ public class UserRegisterRequest {
     @NotBlank
     private String email;
 
-    //public User toEntity() {return new User(this);}
 }
