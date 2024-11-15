@@ -23,7 +23,7 @@ public class FeedbackConverter {
 
     public static AllFeedbackResponse toAllFeedbackResponse(List<Feedback> feedbacks, AIFeedback aiFeedback) {
         return AllFeedbackResponse.builder()
-                .feedbacks(convertFeedbacksToResponses(feedbacks))
+                .feedbackResponses(convertFeedbacksToResponses(feedbacks))
                 .aiFeedbackContent(Optional.ofNullable(aiFeedback).map(AIFeedback::getFeedback).orElse(null))
                 .aiFeedbackId(Optional.ofNullable(aiFeedback).map(AIFeedback::getId).orElse(null))
                 .build();
