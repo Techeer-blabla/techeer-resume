@@ -27,9 +27,15 @@ public enum ErrorStatus implements BaseStatus {
     RESUME_UPLOAD_ERROR(HttpStatus.BAD_REQUEST, "RESUME_PDf_502", "S3에 pdf를 올리는 것에 실패했습니다"),
 
     OPENAI_SERVER_ERROR(HttpStatus.BAD_GATEWAY, "OPENAI_502", "OPENAI 서버에 연결하는 데 실패했습니다"),
-    ;
+
+    // BOOKMARK Error
+    BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKMARK_404", "북마크를 찾을 수 없습니다."),
+    BOOKMARKS_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKMARK_404", "북마크가 없습니다."),
 
     // User Error
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_404", "유저를 찾을 수 없습니다."),
+    ;
+
 
     private final HttpStatus httpStatus;
     private final String code;
