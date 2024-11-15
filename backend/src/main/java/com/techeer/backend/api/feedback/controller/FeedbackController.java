@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,7 +52,7 @@ public class FeedbackController {
 
     @Operation(summary = "피드백 삭제")
     @DeleteMapping("/{resume_id}/feedbacks/{feedback_id}")
-    public ResponseEntity<CommonResponse<Void>> deleteFeedback(
+    public CommonResponse<Void> deleteFeedback(
             @PathVariable("resume_id") Long resumeId,
             @PathVariable("feedback_id") Long feedbackId) {
 
@@ -61,7 +60,6 @@ public class FeedbackController {
 
         feedbackService.deleteFeedbackById(resumeId, feedbackId);
 
-        return ResponseEntity.status(SuccessStatus.NO_CONTENT.getHttpStatus())
-                .body(CommonResponse.of(SuccessStatus.NO_CONTENT, null));
+        return CommonResponse.of(SuccessStatus.NO_CONTENT, null);
     }
 }
