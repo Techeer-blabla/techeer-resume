@@ -109,15 +109,10 @@ public class JwtService {
 
 
     public Object[] extractEmailAndSocialType(String accessToken) {
-        try {
-            Claims claims = decodeAccessToken(accessToken);
-            if (claims != null) {
-                String email = claims.get("email", String.class);
-                return new Object[]{email};
-            }
-        } catch (Exception e) {
-            // 디코딩 실패 시 예외 처리
-            e.printStackTrace();
+        Claims claims = decodeAccessToken(accessToken);
+        if (claims != null) {
+            String email = claims.get("email", String.class);
+            return new Object[]{email};
         }
         return null;
     }

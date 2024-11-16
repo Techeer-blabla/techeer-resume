@@ -27,6 +27,13 @@ public enum ErrorStatus implements BaseStatus {
     RESUME_UPLOAD_ERROR(HttpStatus.BAD_REQUEST, "RESUME_PDf_502", "S3에 pdf를 올리는 것에 실패했습니다"),
 
     OPENAI_SERVER_ERROR(HttpStatus.BAD_GATEWAY, "OPENAI_502", "OPENAI 서버에 연결하는 데 실패했습니다"),
+
+    // User Error
+    USER_NOT_FOUND(HttpStatus.UNAUTHORIZED, "USER_401", "로그인 정보가 없습니다."),
+    USER_NOT_AUTHENTICATED(HttpStatus.UNAUTHORIZED, "USER_401", "로그인 하지 않았습니다."),
+
+    // Token Error
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "TOKEN_401", "리프레시 토큰이 유효하지 않습니다."),
     ;
 
     // User Error
