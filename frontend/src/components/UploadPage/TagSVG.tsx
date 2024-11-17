@@ -1,44 +1,46 @@
+import { ReactNode } from "react";
+
 type TagSVGProps = {
-  text: string;
+  text: ReactNode;
   isSelected: boolean;
   onClick: () => void;
 };
 
 const TagSVG = ({ text, isSelected, onClick }: TagSVGProps) => (
   <div
-    className={`flex justify-center items-center cursor-pointer border rounded-lg ${
-      isSelected ? "border-blue-500" : "border-transparent"
+    onClick={onClick}
+    className={`flex justify-center items-center cursor-pointer rounded-lg ${
+      isSelected ? "border-2 border-[#0060FF]" : "border border-transparent"
     }`}
     style={{
       boxSizing: "border-box",
       width: "121px",
       height: "33px",
-      padding: "4px",
     }}
-    onClick={onClick}
   >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="121"
-      height="33"
-      viewBox="0 0 121 33"
-      fill="none"
-      className="flex-shrink-0"
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        backgroundColor: "#F3F3F3",
+        borderRadius: "5px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
     >
-      <rect width="121" height="32.4206" rx="5" fill="#F3F3F3" />
-      <text
-        x="50%"
-        y="50%"
-        textAnchor="middle"
-        fill="#040404"
-        fontFamily="pretendard"
-        fontSize="16"
-        fontWeight="400"
-        dy=".35em"
+      <span
+        style={{
+          color: "#040404",
+          fontFamily: "pretendard",
+          fontSize: "16px",
+          fontWeight: "400",
+          textAlign: "center",
+        }}
       >
         {text}
-      </text>
-    </svg>
+      </span>
+    </div>
   </div>
 );
 

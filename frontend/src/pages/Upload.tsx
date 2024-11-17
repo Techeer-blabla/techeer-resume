@@ -3,6 +3,7 @@ import Slider from "@mui/material/Slider";
 import { postResume } from "../api/resumeApi";
 import FileUploadBox from "../components/UploadPage/UploadBox.tsx";
 import TagSVG from "../components/UploadPage/TagSVG.tsx";
+import Navbar from "../components/common/Navbar";
 
 function Upload() {
   const [resume, setResume] = useState<File | null>(null);
@@ -28,8 +29,8 @@ function Upload() {
         username: "testuser",
         position: position,
         career: career,
-        applying_company: applyingCompany,
-        tech_stack: techStack,
+        company_names: applyingCompany,
+        tech_stack_names: techStack,
       };
 
       try {
@@ -45,7 +46,7 @@ function Upload() {
 
   // 포지션, 학력, 회사, 스택 데이터
   const positions = [
-    "Frontend",
+    "FRONTEND",
     "Backend",
     "FullStack",
     "DevOps",
@@ -67,7 +68,7 @@ function Upload() {
     "유니콘",
   ];
   const stacks = [
-    "Java",
+    "JAVA",
     "Go",
     "JavaScript",
     "Spring Boot",
@@ -105,13 +106,13 @@ function Upload() {
     };
 
     return (
-      <div className="flex justify-center cursor-pointer">
+      <div className="flex cursor-pointer">
         <input
           type="text"
           value={inputValue}
           onChange={handleInputChange}
           onKeyPress={handleKeyPress}
-          className="w-[121px] h-[33px] bg-[#F3F3F3] flex items-center justify-center rounded-lg text-black text-center outline-none"
+          className="w-[121px] h-[33px] bg-[#F3F3F3] flex items-center justify-center rounded-[0.3rem] text-black text-center outline-none"
           placeholder="직접입력"
         />
       </div>
@@ -197,91 +198,95 @@ function Upload() {
     setStackTags([...stackTags, newTag]);
 
   return (
-    <div className="flex flex-col lg:flex-row justify-center items-start p-4 space-y-4 lg:space-y-0 lg:space-x-8">
-      {/* 업로드 박스 */}
-      <div className="w-full lg:w-2/3">
-        <FileUploadBox
-          resume={resume}
-          handleFileChange={handleFileChange}
-          handleCancel={handleCancel}
-        />
-      </div>
-
-      {/* 태그 선택 부분: lg 이상에서만 보이도록 설정 */}
-      <div className="w-full lg:w-1/3 flex flex-col space-y-6 text-black font-pretendard text-[0.9rem] md:text-[1rem] font-normal">
-        <div className="ml-[0.5rem] md:ml-[1rem]"># 포지션</div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
-          {positionTags.map((positionTag) => (
-            <TagSVG
-              key={positionTag}
-              text={positionTag}
-              isSelected={position == positionTag}
-              onClick={() => handlePositionClick(positionTag)}
-            />
-          ))}
+    <div>
+      <div className="pt-5"></div>
+      <Navbar />
+      <div className="flex flex-col lg:flex-row justify-center items-start p-4 space-y-4 lg:space-y-0 lg:space-x-8">
+        {/* 업로드 박스 */}
+        <div className="w-full lg:w-2/3">
+          <FileUploadBox
+            resume={resume}
+            handleFileChange={handleFileChange}
+            handleCancel={handleCancel}
+          />
         </div>
 
-        {/* 스택 */}
-        <div className="flex flex-col justify-start mt-[1rem]">
-          <div className="ml-[0.5rem] md:ml-[1rem]"># 스택</div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
-            {stackTags.map((stackTag) => (
+        {/* 태그 선택 부분: lg 이상에서만 보이도록 설정 */}
+        <div className="w-full lg:w-1/3 flex flex-col space-y-6 text-black font-pretendard text-[0.9rem] md:text-[1rem] font-normal">
+          <div className="ml-[0.5rem] md:ml-[1rem]"># 포지션</div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+            {positionTags.map((positionTag) => (
               <TagSVG
-                key={stackTag}
-                text={stackTag}
-                isSelected={techStack.includes(stackTag)}
-                onClick={() => handleStackClick(stackTag)}
-              />
-            ))}
-            <DirectInputTag existingTags={stackTags} onAdd={handleAddStack} />
-          </div>
-        </div>
-
-        {/* 경력 슬라이더 */}
-        <div className="flex flex-col justify-start mt-[1rem]">
-          <div className="ml-[0.5rem] md:ml-[1rem]"># 경력</div>
-          <div className="ml-[0.5rem] md:ml-[1rem]">
-            <ExperienceSlider value={career} onChange={setCareer} />
-          </div>
-        </div>
-
-        {/* 학력 */}
-        <div className="flex flex-col justify-start mt-[1rem]">
-          <div className="ml-[0.5rem] md:ml-[1rem]"># 학력</div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
-            {educationTags.map((education) => (
-              <TagSVG
-                key={education}
-                text={education}
-                isSelected={selectedEducation === education}
-                onClick={() => handleEducationClick(education)}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* 회사 */}
-        <div className="flex flex-col justify-start mt-[1rem]">
-          <div className="ml-[0.5rem] md:ml-[1rem]"># 회사</div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
-            {companyTags.map((company) => (
-              <TagSVG
-                key={company}
-                text={company}
-                isSelected={applyingCompany.includes(company)}
-                onClick={() => handleCompanyClick(company)}
+                key={positionTag}
+                text={positionTag}
+                isSelected={position == positionTag}
+                onClick={() => handlePositionClick(positionTag)}
               />
             ))}
           </div>
 
-          {/* 최종 업로드 버튼 */}
-          <div className="flex justify-end mt-8">
-            <button
-              className="w-[8rem] md:w-[10rem] h-[3rem] text-white font-pretendard text-[1rem] font-semibold bg-[#0060FF] rounded"
-              onClick={handleUpload}
-            >
-              Submit Resume
-            </button>
+          {/* 스택 */}
+          <div className="flex flex-col justify-start mt-[1rem]">
+            <div className="ml-[0.5rem] md:ml-[1rem]"># 스택</div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
+              {stackTags.map((stackTag) => (
+                <TagSVG
+                  key={stackTag}
+                  text={stackTag}
+                  isSelected={techStack.includes(stackTag)}
+                  onClick={() => handleStackClick(stackTag)}
+                />
+              ))}
+              <DirectInputTag existingTags={stackTags} onAdd={handleAddStack} />
+            </div>
+          </div>
+
+          {/* 경력 슬라이더 */}
+          <div className="flex flex-col justify-start mt-[1rem]">
+            <div className="ml-[0.5rem] md:ml-[1rem]"># 경력</div>
+            <div className="ml-[0.5rem] md:ml-[1rem]">
+              <ExperienceSlider value={career} onChange={setCareer} />
+            </div>
+          </div>
+
+          {/* 학력 */}
+          <div className="flex flex-col justify-start mt-[1rem]">
+            <div className="ml-[0.5rem] md:ml-[1rem]"># 학력</div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
+              {educationTags.map((education) => (
+                <TagSVG
+                  key={education}
+                  text={education}
+                  isSelected={selectedEducation === education}
+                  onClick={() => handleEducationClick(education)}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* 회사 */}
+          <div className="flex flex-col justify-start mt-[1rem]">
+            <div className="ml-[0.5rem] md:ml-[1rem]"># 회사</div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
+              {companyTags.map((company) => (
+                <TagSVG
+                  key={company}
+                  text={company}
+                  isSelected={applyingCompany.includes(company)}
+                  onClick={() => handleCompanyClick(company)}
+                />
+              ))}
+            </div>
+
+            {/* 최종 업로드 버튼 */}
+            <div className="flex justify-end mt-8">
+              <button
+                className="w-[8rem] md:w-[10rem] h-[3rem] text-white font-pretendard text-[1rem] font-semibold bg-[#0060FF] rounded"
+                onClick={handleUpload}
+              >
+                Submit Resume
+              </button>
+            </div>
           </div>
         </div>
       </div>

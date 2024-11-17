@@ -4,11 +4,11 @@ import { formAxios, jsonAxios, formAxiosjson } from "./axios.config.ts";
 export const postResume = async (
   resume: File,
   createResumeReq: {
-    username: string;
+    // username: string;
     position: string;
     career: number;
-    applying_company: string[];
-    tech_stack: string[];
+    company_names: string[];
+    tech_stack_names: string[];
   }
 ) => {
   try {
@@ -16,7 +16,6 @@ export const postResume = async (
     formData.append("resume_file", resume);
     formData.append("createResumeReq", JSON.stringify(createResumeReq));
 
-    // API 호출
     const response = await formAxios.post(`/resumes`, formData, {});
 
     return response.data;
@@ -62,12 +61,13 @@ interface FilterDTO {
   min_career: number;
   max_career: number;
   tech_stack_names: string[];
+  company_names: string[]; // 추가
 }
 
 interface Pageable {
   page: number;
   size: number;
-  sort?: string[]; // sort가 선택 사항이라면 optional로 표시
+  sort?: string[];
 }
 
 interface FilterParams {
@@ -77,21 +77,28 @@ interface FilterParams {
 
 export const postFilter = async (filterParams: FilterParams) => {
   try {
-    const response = await jsonAxios.post(
-      `/resumes/search?page=${filterParams.pageable.page}&size=${filterParams.pageable.size}`,
-      {
-        positions: filterParams.dto.positions,
-        min_career: filterParams.dto.min_career,
-        max_career: filterParams.dto.max_career,
-        tech_stack_names: filterParams.dto.tech_stack_names,
-      }
-    );
+    // 쿼리 파라미터 구성
+    const queryParams = new URLSearchParams({
+      page: String(filterParams.pageable.page),
+      size: String(filterParams.pageable.size),
+      ...(filterParams.pageable.sort && {
+        sort: filterParams.pageable.sort.join(","),
+      }),
+    }).toString();
 
-    // 서버 응답 데이터 반환
+    // API 요청
+    const response = await jsonAxios.post(`/resumes/search?${queryParams}`, {
+      positions: filterParams.dto.positions,
+      min_career: filterParams.dto.min_career,
+      max_career: filterParams.dto.max_career,
+      tech_stack_names: filterParams.dto.tech_stack_names,
+      company_names: filterParams.dto.company_names, // 추가
+    });
+
     return response.data;
   } catch (error) {
     if (error instanceof Error) {
-      console.error("포지션/경력 필터링 오류:", error.message);
+      console.error("필터링 api 오류:", error.message);
     }
     throw error;
   }

@@ -32,6 +32,7 @@ function MainPage() {
   // useCallback으로 handleApplyCareerFilter 함수 메모이제이션
   const handleApplyCareerFilter = useCallback(
     async (min: number, max: number) => {
+      console.log("handleApplyCareerFilter called with:", { min, max }); // 호출 확인
       setCareerRange(min, max);
       const filterData = {
         dto: {
@@ -39,15 +40,18 @@ function MainPage() {
           min_career: min,
           max_career: max,
           tech_stack_names: [], // 필터링에서 tech_stack_names 제외
+          company_names: [],
         },
         pageable: {
           page: 1,
           size: 3,
         },
       };
+      console.log("Filter data to be sent:", filterData); // API 호출 데이터 확인
 
       try {
         const response = await postFilter(filterData);
+        console.log("Filter API response:", response); // 응답 데이터 확인
         setFilterResults(response);
       } catch (error) {
         console.error("필터링 오류:", error);
