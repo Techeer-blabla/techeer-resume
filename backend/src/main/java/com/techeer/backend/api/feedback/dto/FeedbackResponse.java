@@ -10,12 +10,10 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class FeedbackResponse {
-
-	private final Long feedbackId;
-	private final Long resumeId;
-	private final String content;
-	private final Double xCoordinate;
-	private final Double yCoordinate;
-	private final int pageNumber;
-
+    private final Long feedbackId;
+    private final Long resumeId;
+    private final String content;
+    private final Double xCoordinate;
+    private final Double yCoordinate;
+    private final int pageNumber;
 }
