@@ -13,11 +13,27 @@ jobs:
   lighthouseci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-      - run: yarn && yarn add @lhci/cli@0.6.x
-      - run: yarn build
-      - run: yarn add serve --dev
-      - run: lhci autorun
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build project
+        run: yarn build
+
+      - name: Install serve package
+        run: yarn add serve --dev
+
+      - name: Run Lighthouse CI
+        run: |
+          npx serve -s dist -l 4173 &
+          sleep 5
+          lhci autorun --collect.url=http://localhost:4173 --collect.startServerCommand='' --collect.numberOfRuns=3
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
