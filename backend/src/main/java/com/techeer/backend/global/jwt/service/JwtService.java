@@ -3,7 +3,6 @@ package com.techeer.backend.global.jwt.service;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -85,12 +84,6 @@ public class JwtService {
                 .compact();
     }
 
-    public Optional<String> extractRefreshToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(refreshHeader))
-                .filter(refreshToken -> refreshToken.startsWith(BEARER))
-                .map(refreshToken -> refreshToken.replace(BEARER, ""));
-    }
-
     public Optional<String> extractAccessToken(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader(accessHeader))
                 .filter(refreshToken -> refreshToken.startsWith(BEARER))
@@ -107,7 +100,6 @@ public class JwtService {
         }
     }
 
-
     public Object[] extractEmailAndSocialType(String accessToken) {
         Claims claims = decodeAccessToken(accessToken);
         if (claims != null) {
@@ -117,17 +109,11 @@ public class JwtService {
         return null;
     }
 
-
     private Claims decodeAccessToken(String accessToken) {
-        try {
-            return Jwts.parser()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(accessToken)
-                    .getBody();
-        } catch (ExpiredJwtException e) {
-            // 만료된 토큰 예외 처리
-            return e.getClaims();
-        }
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(accessToken)
+                .getBody();
     }
 }

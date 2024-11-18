@@ -5,10 +5,9 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.techeer.backend.api.user.domain.Role;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.Getter;
 
 @Getter
-@Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SignUpRequest {
     @NotBlank(message = "이름 입력하세요")

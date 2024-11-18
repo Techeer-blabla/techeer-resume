@@ -26,7 +26,6 @@ public class UserController {
     @GetMapping("/user")
     public CommonResponse<UserInfoResponse> getUserInfo() {
         UserInfoResponse result = userService.getUserInfo();
-
         return CommonResponse.of(SuccessStatus.USER_FETCH_OK, result);
     }
 
