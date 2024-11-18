@@ -62,7 +62,7 @@ function MainPage() {
     console.log("요청 데이터:", filterData);
     try {
       const response = await postFilter(filterData);
-      setFilteredData(response); // 서버에서 필터링된 데이터만 사용
+      setFilteredData(response);
       console.log("포스트필터 응답:", response);
     } catch (error) {
       console.error("필터링 오류:", error);
