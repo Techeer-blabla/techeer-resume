@@ -114,3 +114,78 @@ jobs:
 #        with:
 #          name: build-artifacts
 #          path: frontend/build/
+      - name: Lighthouse Run
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+        run: |
+          npm install -g @lhci/cli
+          lhci autorun || echo "LHCI failed!"
+
+      - name: Format lighthouse score
+        id: format_lighthouse_score
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const results = JSON.parse(fs.readFileSync('${{ github.workspace }}/frontend/lhci_reports/manifest.json'));
+            let comments = "";
+
+            const { summary, jsonPath } = results[0];
+
+            const details = JSON.parse(fs.readFileSync(jsonPath));
+            const { audits } = details;
+
+            const formatResult = (res) => Math.round(res * 100);
+
+            Object.keys(summary).forEach(
+              (key) => (summary[key] = formatResult(summary[key]))
+            );
+
+            const score = (res) => (res >= 90 ? "🟢" : res >= 50 ? "🟠" : "🔴");
+
+            const comment = [
+              `## ⚡️ Lighthouse Report`,
+              `| Category | Score |`,
+              `| --- | --- |`,
+              `| ${score(summary.performance)} Performance | ${summary.performance} |`,
+              `| ${score(summary.accessibility)} Accessibility | ${summary.accessibility} |`,
+              `| ${score(summary[`best-practices`])} Best Practices | ${summary[`best-practices`]} |`,
+              `| ${score(summary.seo)} Seo | ${summary.seo} |`,
+              `| ${score(summary.pwa)} Pwa | ${summary.pwa} |`
+            ].join("\n");
+
+            const detail = [
+              ``,
+              `| Category | Score |`,
+              `| --- | --- |`,
+              `| ${score(
+                audits[`first-contentful-paint`].score * 100
+              )} First Contentful Paint | ${
+                audits[`first-contentful-paint`].displayValue
+              } |`,
+              `| ${score(
+                audits[`speed-index`].score * 100
+              )} Speed Index | ${
+                audits[`speed-index`].displayValue
+              } |`,
+              `| ${score(
+                audits[`total-blocking-time`].score * 100
+              )} Total Blocking Time | ${
+                audits[`total-blocking-time`].displayValue
+              } |`,
+              `| ${score(
+                audits[`largest-contentful-paint`].score * 100
+              )} Largest Contentful Paint | ${
+                audits[`largest-contentful-paint`].displayValue
+              } |`,
+              `| ${score(
+                audits[`cumulative-layout-shift`].score * 100
+              )} Cumulative Layout Shift | ${
+                audits[`cumulative-layout-shift`].displayValue
+              } |`
+            ].join("\n");
+
+            comments += comment + "\n" + detail + "\n";
+
+            core.setOutput('comments', comments);
