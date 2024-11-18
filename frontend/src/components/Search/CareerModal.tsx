@@ -5,9 +5,10 @@ import useFilterStore from "../../store/useFilterStore";
 interface CareerModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onApply?: (minCareer: number, maxCareer: number) => void; // onApply 콜백 추가
 }
 
-const CareerModal = ({ isOpen, onClose }: CareerModalProps) => {
+const CareerModal = ({ isOpen, onClose, onApply }: CareerModalProps) => {
   const { min_career, max_career, setCareerRange } = useFilterStore(); // 상태에서 min_career, max_career 가져오기
   const [localMinCareer, setLocalMinCareer] = useState(min_career);
   const [localMaxCareer, setLocalMaxCareer] = useState(max_career);
@@ -35,6 +36,7 @@ const CareerModal = ({ isOpen, onClose }: CareerModalProps) => {
 
   const applyFilter = () => {
     setCareerRange(localMinCareer, localMaxCareer);
+    if (onApply) onApply(localMinCareer, localMaxCareer); // onApply 호출
     onClose();
   };
 

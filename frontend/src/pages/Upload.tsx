@@ -27,10 +27,10 @@ function Upload() {
     if (resume) {
       const createResumeReq = {
         username: "testuser",
-        position: position,
+        position: position.toUpperCase(),
         career: career,
         company_names: applyingCompany,
-        tech_stack_names: techStack,
+        tech_stack_names: techStack.map((stack) => stack.toUpperCase()),
       };
 
       try {
@@ -46,7 +46,7 @@ function Upload() {
 
   // 포지션, 학력, 회사, 스택 데이터
   const positions = [
-    "FRONTEND",
+    "Frontend",
     "Backend",
     "FullStack",
     "DevOps",

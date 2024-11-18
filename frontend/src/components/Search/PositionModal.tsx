@@ -1,29 +1,26 @@
-// components/Search/PositionModal.tsx
 import { useEffect, useRef, useState } from "react";
 import useFilterStore from "../../store/useFilterStore";
 
 interface PositionModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onApply?: (position: string | null) => void; // onApply 콜백 추가
 }
 
-const PositionModal = ({ isOpen, onClose }: PositionModalProps) => {
+const PositionModal = ({ isOpen, onClose, onApply }: PositionModalProps) => {
   const { positions, setPositions } = useFilterStore();
   const [localSelectedPosition, setLocalSelectedPosition] = useState<
     string | null
-  >(positions[0] || null);
+  >(positions[0] || null); // 초기값을 상태에서 가져옴
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const applyPosition = () => {
-    if (localSelectedPosition) {
-      setPositions([localSelectedPosition]);
-    } else {
-      setPositions([]);
-    }
+    // 상태 업데이트 및 부모 컴포넌트로 값 전달
+    setPositions(localSelectedPosition ? [localSelectedPosition] : []);
+    if (onApply) onApply(localSelectedPosition);
     onClose();
   };
 
-  // 사전 정의된 포지션 목록
   const availablePositions = [
     "Frontend",
     "Backend",
@@ -36,14 +33,12 @@ const PositionModal = ({ isOpen, onClose }: PositionModalProps) => {
     "Data",
   ];
 
-  // 포지션 선택 처리 (하나만 선택 가능)
   const selectPosition = (position: string) => {
     setLocalSelectedPosition(
       position === localSelectedPosition ? null : position
     ); // 같은 포지션 클릭 시 해제
   };
 
-  // 모달 외부 클릭 시 닫기
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -63,7 +58,6 @@ const PositionModal = ({ isOpen, onClose }: PositionModalProps) => {
     };
   }, [onClose, isOpen]);
 
-  // 모달이 열려있을 때만 렌더링
   if (!isOpen) return null;
 
   return (

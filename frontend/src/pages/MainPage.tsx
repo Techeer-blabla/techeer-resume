@@ -15,9 +15,25 @@ import { PostCardsType } from "../dataType.ts";
 function MainPage() {
   const [isPositionOpen, setIsPositionOpen] = useState(false);
   const [isCareerOpen, setIsCareerOpen] = useState(false);
-  const { positions, min_career, max_career, setCareerRange } =
+  const [filteredData, setFilteredData] = useState<PostCardsType[] | null>(
+    null
+  ); // 필터링된 데이터를 저장
+  const [positionTitle, setPositionTitle] = useState("포지션"); // 카테고리에 표시될 포지션 제목
+  const [careerTitle, setCareerTitle] = useState("경력"); // 경력 카테고리 제목
+  const { positions, min_career, max_career, setCareerRange, setPositions } =
     useFilterStore();
-  const [, setFilterResults] = useState<unknown>(null);
+
+  const handleApplyPosition = (selectedPosition: string | null) => {
+    setPositions(selectedPosition ? [selectedPosition] : []); // 상태 업데이트
+    setPositionTitle(selectedPosition || "포지션"); // 선택된 포지션을 제목에 반영
+    setIsPositionOpen(false); // 모달 닫기
+  };
+
+  const handleApplyCareer = (min: number, max: number) => {
+    setCareerRange(min, max);
+    setCareerTitle(`${min}년 ~ ${max}년`); // 경력 범위를 제목에 반영
+    setIsCareerOpen(false); // 모달 닫기
+  };
 
   const fetchPostCards = async (page: number, size = 8) => {
     try {
@@ -29,36 +45,33 @@ function MainPage() {
     }
   };
 
-  // useCallback으로 handleApplyCareerFilter 함수 메모이제이션
-  const handleApplyCareerFilter = useCallback(
-    async (min: number, max: number) => {
-      console.log("handleApplyCareerFilter called with:", { min, max }); // 호출 확인
-      setCareerRange(min, max);
-      const filterData = {
-        dto: {
-          positions,
-          min_career: min,
-          max_career: max,
-          tech_stack_names: [], // 필터링에서 tech_stack_names 제외
-          company_names: [],
-        },
-        pageable: {
-          page: 1,
-          size: 3,
-        },
-      };
-      console.log("Filter data to be sent:", filterData); // API 호출 데이터 확인
+  const applyFilters = useCallback(async () => {
+    const filterData = {
+      dto: {
+        positions: positions.length > 0 ? positions : [],
+        min_career,
+        max_career,
+        tech_stack_names: [],
+        company_names: [],
+      },
+      pageable: {
+        page: 1,
+        size: 100, // 필터링은 전체 데이터 기반으로 수행
+      },
+    };
+    console.log("요청 데이터:", filterData);
+    try {
+      const response = await postFilter(filterData);
+      setFilteredData(response); // 서버에서 필터링된 데이터만 사용
+      console.log("포스트필터 응답:", response);
+    } catch (error) {
+      console.error("필터링 오류:", error);
+    }
+  }, [positions, min_career, max_career]);
 
-      try {
-        const response = await postFilter(filterData);
-        console.log("Filter API response:", response); // 응답 데이터 확인
-        setFilterResults(response);
-      } catch (error) {
-        console.error("필터링 오류:", error);
-      }
-    },
-    [positions, setCareerRange] // 의존성 배열에 positions, setCareerRange 추가
-  );
+  useEffect(() => {
+    applyFilters();
+  }, [positions, min_career, max_career, applyFilters]);
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -71,11 +84,6 @@ function MainPage() {
           : undefined,
       initialPageParam: 0,
     });
-
-  // 필터가 변경될 때마다 handleApplyCareerFilter 호출
-  useEffect(() => {
-    handleApplyCareerFilter(min_career, max_career);
-  }, [positions, min_career, max_career, handleApplyCareerFilter]); // handleApplyCareerFilter 추가
 
   useEffect(() => {
     if (!hasNextPage || isFetchingNextPage) return;
@@ -129,33 +137,35 @@ function MainPage() {
             <div className="flex space-x-4">
               <Category title="조회순" options={["인기순", "최신순"]} />
               <Category
-                title="포지션"
+                title={positionTitle} // 선택한 포지션 반영
                 onClick={() => setIsPositionOpen(true)}
               />
-              <Category title="경력" onClick={() => setIsCareerOpen(true)} />
+              <Category
+                title={careerTitle} // 선택한 경력 범위 반영
+                onClick={() => setIsCareerOpen(true)}
+              />
             </div>
 
-            {/* 포지션, 경력 모달 */}
             {isPositionOpen && (
               <PositionModal
                 isOpen={isPositionOpen}
                 onClose={() => setIsPositionOpen(false)}
+                onApply={handleApplyPosition}
               />
             )}
             {isCareerOpen && (
               <CareerModal
                 isOpen={isCareerOpen}
                 onClose={() => setIsCareerOpen(false)}
+                onApply={handleApplyCareer} // 선택된 경력 범위 처리
               />
             )}
           </div>
 
-          {/* 포스트 카드 */}
           <div className="flex justify-center">
             <div className="grid grid-cols-1 min-[700px]:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 p-5">
-              {data?.pages && data.pages.length > 0 ? (
-                data.pages.map((page) =>
-                  page.map((post: PostCardsType) => (
+              {filteredData && filteredData.length > 0
+                ? filteredData.map((post: PostCardsType) => (
                     <PostCard
                       key={post.resume_id}
                       name={post.user_name}
@@ -165,16 +175,21 @@ function MainPage() {
                       skills={post.tech_stack_names}
                     />
                   ))
-                )
-              ) : (
-                <div className="flex justify-center w-screen mt-10">
-                  <p>데이터 불러오는 중...</p>
-                </div>
-              )}
+                : data?.pages.map((page) =>
+                    page.map((post: PostCardsType) => (
+                      <PostCard
+                        key={post.resume_id}
+                        name={post.user_name}
+                        role={post.position}
+                        experience={post.career}
+                        education="전공자"
+                        skills={post.tech_stack_names}
+                      />
+                    ))
+                  )}
             </div>
           </div>
 
-          {/* 무한스크롤 로딩 트리거 */}
           <div ref={loadMoreRef} className="h-1" />
         </div>
       </div>
