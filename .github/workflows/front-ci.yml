@@ -114,11 +114,12 @@ jobs:
 #        with:
 #          name: build-artifacts
 #          path: frontend/build/
+
       - name: Lighthouse Run
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
         run: |
-          npm install -g @lhci/cli
+          yarn add @lhci/cli
           lhci autorun || echo "LHCI failed!"
 
       - name: Format lighthouse score
