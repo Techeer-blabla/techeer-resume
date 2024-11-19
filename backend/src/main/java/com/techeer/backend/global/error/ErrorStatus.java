@@ -32,6 +32,13 @@ public enum ErrorStatus implements BaseStatus {
     BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKMARK_404", "북마크를 찾을 수 없습니다."),
     BOOKMARKS_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKMARK_404", "북마크가 없습니다."),
 
+    // Feedback Error
+    FEEDBACK_NOT_FOUND(HttpStatus.NOT_FOUND, "FEEDBACK_404", "피드백을 찾을 수 없습니다."),
+    INVALID_FEEDBACK_FOR_RESUME(HttpStatus.BAD_REQUEST, "FEEDBACK_400", "이력서에 해당하는 피드백이 아닙니다."),
+
+    // AIFeedback Error
+    AIFEEDBACK_NOT_FOUND(HttpStatus.NOT_FOUND, "AIFEEDBACK_404", "AI 피드백을 찾을 수 없습니다."),
+
     // User Error
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_404", "유저를 찾을 수 없습니다."),
     ;

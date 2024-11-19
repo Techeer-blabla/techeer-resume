@@ -18,7 +18,13 @@ public enum SuccessStatus implements BaseStatus {
     RESUME_CREATED(HttpStatus.CREATED, "RESUME_201", "이력서가 성공적으로 저장되었습니다"),
 
     // User  Success
-    USER_FETCH_OK(HttpStatus.OK, "USER_200", "유저 정보 조회 성공");
+    USER_FETCH_OK(HttpStatus.OK, "USER_200", "유저 정보 조회 성공"),
+
+    // Feedback Success
+    FEEDBACK_FETCH_OK(HttpStatus.OK, "FEEDBACK_200", "피드백 조회 성공"),
+
+    // AIFeedback Success
+    ;
 
     private final HttpStatus httpStatus;
     private final String code;
