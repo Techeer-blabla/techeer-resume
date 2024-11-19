@@ -40,7 +40,7 @@ public class UserController {
     @PostMapping("/logout")
     public CommonResponse<String> logoutUser() {
         userService.logout();
-        return CommonResponse.onSuccess("로그아웃 성공");
+        return CommonResponse.of(SuccessStatus.USER_LOGOUT_OK, "유저 로그아웃 성공");
     }
 
     @Operation(summary = "액세스 토큰 재발급")
