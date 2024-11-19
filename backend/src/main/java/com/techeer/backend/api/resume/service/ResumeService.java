@@ -5,14 +5,11 @@ import com.techeer.backend.api.feedback.repository.FeedbackRepository;
 import com.techeer.backend.api.resume.converter.ResumeConverter;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
-import com.techeer.backend.api.resume.dto.response.PageableResumeResponse;
 import com.techeer.backend.api.resume.dto.response.ResumeDetailResponse;
-import com.techeer.backend.api.resume.dto.response.ResumeResponse;
 import com.techeer.backend.api.resume.repository.GetResumeRepository;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
 import com.techeer.backend.global.error.exception.NotFoundException;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,15 +47,12 @@ public class ResumeService {
     }
 
     // 유저 이름으로 이력서 조회
-    public List<ResumeResponse> searchResumesByUserName(String userName) {
-        List<Resume> resumes = resumeRepository.findByUsername(userName);
-        return resumes.stream()
-                .map(ResumeConverter::toResumeResponse)
-                .collect(Collectors.toList());
+    public List<Resume> searchResumesByUserName(String userName) {
+        return resumeRepository.findByUsername(userName);
     }
 
     // 태그 조회
-    public List<PageableResumeResponse> searchByTages(ResumeSearchRequest req, Pageable pageable) {
+    public List<Resume> searchByTages(ResumeSearchRequest req, Pageable pageable) {
         List<String> techStackNames = req.getTechStackNames();
         List<String> companyNames = req.getCompanyNames();
 
@@ -78,13 +72,11 @@ public class ResumeService {
                 pageable
         );
 
-        return resumesByCriteria.stream()
-                .map(ResumeConverter::toPageableResumeResponse)
-                .collect(Collectors.toList());
+        return (List<Resume>) resumesByCriteria;
     }
 
 
-    public List<PageableResumeResponse> getResumePage(Pageable pageable) {
+    public List<Resume> getResumePage(Pageable pageable) {
         // 페이지네이션을 적용하여 레포지토리에서 데이터를 가져옴
         Page<Resume> resumes = resumeRepository.findAll(pageable);
 
@@ -97,10 +89,6 @@ public class ResumeService {
             return null;
         }
 
-        List<PageableResumeResponse> resumeDetailRespons = resumes.stream()
-                .map(ResumeConverter::toPageableResumeResponse)
-                .collect(Collectors.toList());
-        // Resume와 페이지 정보를 바탕으로 ResumePageResponse로 변환
-        return resumeDetailRespons;
+        return (List<Resume>) resumes;
     }
 }
