@@ -9,6 +9,8 @@ import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.repository.UserRepository;
+import com.techeer.backend.global.error.ErrorStatus;
+import com.techeer.backend.global.error.exception.BusinessException;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,9 +29,9 @@ public class BookmarkService {
     public BookmarkResponse addBookmark(BookmarkAddRequest bookmarkRequest) {
 
         User user = userRepository.findById(bookmarkRequest.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("user not found"));
+                .orElseThrow(() -> new BusinessException(ErrorStatus.USER_NOT_FOUND));
         Resume resume = resumeRepository.findById(bookmarkRequest.getResumeId())
-                .orElseThrow(() -> new IllegalArgumentException("resume not found"));
+                .orElseThrow(() -> new BusinessException(ErrorStatus.RESUME_NOT_FOUND));
 
         Bookmark bookmark = Bookmark.of(resume, user);
         bookmarkRepository.save(bookmark);
@@ -41,7 +43,7 @@ public class BookmarkService {
     public BookmarkResponse removeBookmark(Long bookmarkId) {
         // bookmark_id로 북마크 조회
         Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
-                .orElseThrow(() -> new IllegalArgumentException("Bookmark not found"));
+                .orElseThrow(() -> new BusinessException(ErrorStatus.BOOKMARK_NOT_FOUND));
 
         // 북마크 삭제
         bookmarkRepository.delete(bookmark);
@@ -49,12 +51,13 @@ public class BookmarkService {
         return BookmarkConverter.toBookmarkResponse(bookmark);
     }
 
-
     // user_id로 모든 북마크 조회
-    @Transactional
     public List<BookmarkResponse> getBookmarksByUserId(Long userId) {
 
         List<Bookmark> bookmarks = bookmarkRepository.findByUserId(userId);
+        if (bookmarks.isEmpty()) {
+            throw new BusinessException(ErrorStatus.BOOKMARKS_NOT_FOUND);
+        }
 
         return bookmarks.stream()
                 .map(BookmarkConverter::toBookmarkResponse)
@@ -62,12 +65,10 @@ public class BookmarkService {
     }
 
     // bookmark_id로 단일 북마크 조회
-    @Transactional
     public BookmarkResponse getBookmarkById(Long bookmarkId) {
         Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
-                .orElseThrow(() -> new IllegalArgumentException("Bookmark not found"));
+                .orElseThrow(() -> new BusinessException(ErrorStatus.BOOKMARK_NOT_FOUND));
 
         return BookmarkConverter.toBookmarkResponse(bookmark);
     }
 }
-
