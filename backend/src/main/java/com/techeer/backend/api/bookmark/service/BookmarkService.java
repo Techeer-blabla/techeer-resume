@@ -52,7 +52,6 @@ public class BookmarkService {
     }
 
     // user_id로 모든 북마크 조회
-    @Transactional
     public List<BookmarkResponse> getBookmarksByUserId(Long userId) {
 
         List<Bookmark> bookmarks = bookmarkRepository.findByUserId(userId);
@@ -66,7 +65,6 @@ public class BookmarkService {
     }
 
     // bookmark_id로 단일 북마크 조회
-    @Transactional
     public BookmarkResponse getBookmarkById(Long bookmarkId) {
         Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
                 .orElseThrow(() -> new BusinessException(ErrorStatus.BOOKMARK_NOT_FOUND));
