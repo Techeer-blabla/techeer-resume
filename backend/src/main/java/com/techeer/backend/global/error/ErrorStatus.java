@@ -53,7 +53,6 @@ public enum ErrorStatus implements BaseStatus {
         return ReasonDto.builder()
                 .message(message)
                 .code(code)
-                .isSuccess(false)
                 .build();
     }
 
@@ -63,7 +62,6 @@ public enum ErrorStatus implements BaseStatus {
                 .status(httpStatus)
                 .message(message)
                 .code(code)
-                .isSuccess(false)
                 .build();
     }
 }

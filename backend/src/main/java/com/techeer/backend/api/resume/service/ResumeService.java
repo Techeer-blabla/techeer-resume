@@ -4,6 +4,8 @@ import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
 import com.techeer.backend.api.resume.repository.GetResumeRepository;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
+import com.techeer.backend.global.error.ErrorStatus;
+import com.techeer.backend.global.error.exception.GeneralException;
 import com.techeer.backend.global.error.exception.NotFoundException;
 import java.util.List;
 import lombok.AccessLevel;
@@ -38,7 +40,7 @@ public class ResumeService {
     }
 
     // 태그 조회
-    public List<Resume> searchByTages(ResumeSearchRequest req, Pageable pageable) {
+    public Page<Resume> searchByTages(ResumeSearchRequest req, Pageable pageable) {
         List<String> techStackNames = req.getTechStackNames();
         List<String> companyNames = req.getCompanyNames();
 
@@ -58,23 +60,22 @@ public class ResumeService {
                 pageable
         );
 
-        return resumesByCriteria.getContent();
+        return resumesByCriteria;
     }
 
 
-    public List<Resume> getResumePage(Pageable pageable) {
+    public Page<Resume> getResumePage(Pageable pageable) {
         // 페이지네이션을 적용하여 레포지토리에서 데이터를 가져옴
         Page<Resume> resumes = resumeRepository.findAll(pageable);
 
         // 첫 번째 Resume 객체를 가져옴 (예시로 첫 번째 요소를 변환)
-        // 여러 Resume 객체를 페이지로 처리하려면 추가 로직 필요
         Resume resume = resumes.getContent().isEmpty() ? null : resumes.getContent().get(0);
 
         // Resume가 없을 경우 빈 결과를 처리
         if (resume == null) {
-            return null;
+            throw new GeneralException(ErrorStatus.RESUME_NOT_FOUND);
         }
 
-        return resumes.getContent();
+        return resumes;
     }
 }

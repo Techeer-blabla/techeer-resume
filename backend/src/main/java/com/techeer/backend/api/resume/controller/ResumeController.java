@@ -23,6 +23,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -105,7 +106,7 @@ public class ResumeController {
                                                                       @RequestParam int size) {
         //ResumeService를 통해 페이지네이션된 이력서 목록을 가져옵니다.
         final Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
-        List<Resume> resumes = resumeService.getResumePage(pageable);
+        Page<Resume> resumes = resumeService.getResumePage(pageable);
 
         List<PageableResumeResponse> resumeResponses = resumes.stream()
                 .map(ResumeConverter::toPageableResumeResponse)
@@ -121,7 +122,7 @@ public class ResumeController {
                                                                            @RequestParam int size,
                                                                            @RequestBody ResumeSearchRequest dto) {
         final Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
-        List<Resume> resumeList = resumeService.searchByTages(dto, pageable);
+        Page<Resume> resumeList = resumeService.searchByTages(dto, pageable);
 
         List<PageableResumeResponse> pageableResumeResponse = resumeList.stream()
                 .map(ResumeConverter::toPageableResumeResponse)

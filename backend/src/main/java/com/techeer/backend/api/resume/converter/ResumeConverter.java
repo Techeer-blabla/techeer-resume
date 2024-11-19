@@ -14,6 +14,7 @@ public class ResumeConverter {
     public static PageableResumeResponse toPageableResumeResponse(Resume resume) {
         return PageableResumeResponse.builder()
                 .resumeId(resume.getId())
+                .resumeName(resume.getName())
                 .userName(resume.getUser().getUsername())
                 .resumeName(resume.getName())
                 .position(resume.getPosition().getValue())
@@ -31,6 +32,7 @@ public class ResumeConverter {
     public static ResumeDetailResponse toResumeDetailResponse(Resume resume, List<Feedback> feedbacks) {
         return ResumeDetailResponse.builder()
                 .resumeId(resume.getId())
+                .resumeName(resume.getName())
                 .userName(resume.getUser().getUsername())
                 .position(resume.getPosition().getValue())
                 .career(resume.getCareer())
@@ -49,6 +51,7 @@ public class ResumeConverter {
     public static ResumeResponse toResumeResponse(Resume resume) {
         return ResumeResponse.builder()
                 .resumeId(resume.getId())
+                .resumeName(resume.getName())
                 .userName(resume.getUser().getUsername())
                 .resumeName(resume.getName())
                 .position(resume.getPosition().getValue())
