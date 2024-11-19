@@ -1,6 +1,5 @@
 package com.techeer.backend.api.resume.service;
 
-import com.techeer.backend.api.feedback.repository.FeedbackRepository;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
 import com.techeer.backend.api.resume.repository.GetResumeRepository;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Service;
 public class ResumeService {
     private final ResumeRepository resumeRepository;
     private final GetResumeRepository getResumeRepository;
-    private final FeedbackRepository feedbackRepository;
 
     public Resume saveResume(Resume resume) {
         Resume savedResume = resumeRepository.save(resume);
@@ -60,7 +58,7 @@ public class ResumeService {
                 pageable
         );
 
-        return (List<Resume>) resumesByCriteria;
+        return resumesByCriteria.getContent();
     }
 
 
@@ -77,6 +75,6 @@ public class ResumeService {
             return null;
         }
 
-        return (List<Resume>) resumes;
+        return resumes.getContent();
     }
 }
