@@ -31,16 +31,16 @@ public class UserController {
 
     @Operation(summary = "추가정보 입력")
     @PostMapping("/user")
-    public CommonResponse<String> signupUser(@RequestBody @Valid SignUpRequest req) {
+    public CommonResponse<Void> signupUser(@RequestBody @Valid SignUpRequest req) {
         userService.signup(req);
-        return CommonResponse.of(SuccessStatus.USER_ADDITIONAL_INFO_OK, "유저 추가정보 입력 성공");
+        return CommonResponse.of(SuccessStatus.USER_ADDITIONAL_INFO_OK, null);
     }
 
     @Operation(summary = "로그아웃")
     @PostMapping("/logout")
-    public CommonResponse<String> logoutUser() {
+    public CommonResponse<Void> logoutUser() {
         userService.logout();
-        return CommonResponse.of(SuccessStatus.USER_LOGOUT_OK, "유저 로그아웃 성공");
+        return CommonResponse.of(SuccessStatus.USER_LOGOUT_OK, null);
     }
 
     @Operation(summary = "액세스 토큰 재발급")
