@@ -7,7 +7,8 @@ import com.techeer.backend.api.resume.dto.response.ResumeDetailResponse;
 import com.techeer.backend.api.resume.dto.response.ResumeResponse;
 import com.techeer.backend.api.resume.service.ResumeService;
 import com.techeer.backend.api.resume.service.facade.ResumeCreateFacade;
-import com.techeer.backend.global.common.response.CommonResponse;
+import com.techeer.backend.global.error.ErrorStatus;
+import com.techeer.backend.global.error.exception.GeneralException;
 import com.techeer.backend.global.success.SuccessCode;
 import com.techeer.backend.global.success.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,20 +43,23 @@ public class ResumeController {
     // 이력서 등록
     @Operation(summary = "이력서 등록")
     @PostMapping(value = "/resumes", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public CommonResponse<String> resumeRegistration(
-            @RequestPart @Valid CreateResumeRequest createResumeReq,
-            @RequestPart(name = "resume_file") @Valid MultipartFile resumeFile) {
+    public ResponseEntity<SuccessResponse> resumeRegistration(@RequestPart @Valid CreateResumeRequest createResumeReq,
+                                                              @RequestPart(name = "resume_file")
+                                                              @Valid MultipartFile resumeFile) {
         // 파일 유효성 검사 -> 나중에 vaildtor로 변경해서 유효성 검사할 예정
         if (resumeFile.isEmpty()) {
-            throw new IllegalArgumentException("이력서 파일이 비어있습니다.");
+            throw new GeneralException(ErrorStatus.RESUME_FILE_EMPTY);
         }
         if (!resumeFile.getContentType().equals("application/pdf")) {
-            throw new IllegalArgumentException("이력서 파일은 PDF 형식만 허용됩니다.");
+            throw new GeneralException(ErrorStatus.RESUME_FILE_TYPE_NOT_ALLOWED);
         }
+        // todo 유저 이름으로 객체 탐색
+        //        Optional<User> registrars = userService.findUserByName(createResumeReq.getUsername());
+        //        User registrar = null;
+        //        if (registrars.isPresent()) {registrar = registrars.get();}
 
-        // resume db에 저장
         resumeCreateFacade.createResume(createResumeReq, resumeFile);
-        return CommonResponse.onSuccess("이력서 등록 성공");
+        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS));
     }
 
 
