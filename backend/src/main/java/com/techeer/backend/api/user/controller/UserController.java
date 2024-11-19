@@ -33,7 +33,7 @@ public class UserController {
     @PostMapping("/user")
     public CommonResponse<String> signupUser(@RequestBody @Valid SignUpRequest req) {
         userService.signup(req);
-        return CommonResponse.onSuccess("유저 추가정보 입력 성공");
+        return CommonResponse.of(SuccessStatus.USER_ADDITIONAL_INFO_OK, "유저 추가정보 입력 성공");
     }
 
     @Operation(summary = "로그아웃")

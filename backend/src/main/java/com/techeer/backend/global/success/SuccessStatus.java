@@ -19,7 +19,9 @@ public enum SuccessStatus implements BaseStatus {
 
     // User  Success
     USER_FETCH_OK(HttpStatus.OK, "USER_200", "유저 정보 조회 성공"),
-    TOKEN_REISSUE_OK(HttpStatus.OK, "TOKEN_200", "토큰 재발급 성공");
+    USER_ADDITIONAL_INFO_OK(HttpStatus.OK, "USER_201", "유저 추가정보 입력 성공"),
+
+    TOKEN_REISSUE_OK(HttpStatus.OK, "TOKEN_200", "토큰 재발급 성공"),
 
     // Feedback Success
     FEEDBACK_FETCH_OK(HttpStatus.OK, "FEEDBACK_200", "피드백 조회 성공"),

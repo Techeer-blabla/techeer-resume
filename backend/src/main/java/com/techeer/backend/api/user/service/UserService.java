@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -47,6 +48,7 @@ public class UserService {
                 .orElseThrow(() -> new BusinessException(ErrorStatus.USER_NOT_FOUND));
     }
 
+    @Transactional(readOnly = true)
     public JwtToken reissueToken(UserTokenRequest userTokenReq) {
         // Refresh Token 검증
         if (!jwtService.isTokenValid(userTokenReq.getRefreshToken())) {

@@ -13,7 +13,6 @@ import com.techeer.backend.global.success.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -45,7 +44,7 @@ public class ResumeController {
     @PostMapping(value = "/resumes", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public CommonResponse<String> resumeRegistration(
             @RequestPart @Valid CreateResumeRequest createResumeReq,
-            @RequestPart(name = "resume_file") @Valid MultipartFile resumeFile) throws IOException {
+            @RequestPart(name = "resume_file") @Valid MultipartFile resumeFile) {
         // 파일 유효성 검사 -> 나중에 vaildtor로 변경해서 유효성 검사할 예정
         if (resumeFile.isEmpty()) {
             throw new IllegalArgumentException("이력서 파일이 비어있습니다.");

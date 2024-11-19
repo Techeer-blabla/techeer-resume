@@ -34,7 +34,6 @@ public enum ErrorStatus implements BaseStatus {
 
     // Token Error
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "TOKEN_401", "리프레시 토큰이 유효하지 않습니다."),
-    ;
 
     // BOOKMARK Error
     BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKMARK_404", "북마크를 찾을 수 없습니다."),
@@ -47,8 +46,6 @@ public enum ErrorStatus implements BaseStatus {
     // AIFeedback Error
     AIFEEDBACK_NOT_FOUND(HttpStatus.NOT_FOUND, "AIFEEDBACK_404", "AI 피드백을 찾을 수 없습니다."),
 
-    // User Error
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_404", "유저를 찾을 수 없습니다."),
     ;
 
 
