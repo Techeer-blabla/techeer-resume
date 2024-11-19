@@ -58,7 +58,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                     }, () -> {
                         // 사용자가 존재하지 않을 경우 (GUEST)
                         // todo: 지금은 바로 REGULAR 저장 하지만 나중에 수정
-                        User newUser = UserConverter.fromSignUp(oAuth2User.getEmail(), refreshToken, Role.REGULAR,
+                        User newUser = UserConverter.fromSignUp(oAuth2User.getEmail(), oAuth2User.getName(),
+                                refreshToken, Role.REGULAR,
                                 oAuth2User.getSocialType());// 초기 RefreshToken 설정
                         userRepository.save(newUser); // 새로운 사용자 저장
 

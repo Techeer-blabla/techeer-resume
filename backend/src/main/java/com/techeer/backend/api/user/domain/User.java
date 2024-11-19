@@ -47,9 +47,9 @@ public class User extends BaseEntity {
     private SocialType socialType;
 
     @Builder
-    public User(String email, String refreshToken, Role role, SocialType socialType) {
+    public User(String email, String username, String refreshToken, Role role, SocialType socialType) {
         this.email = email;
-        this.username = null;
+        this.username = username;
         this.refreshToken = refreshToken;
         this.role = role;
         this.socialType = socialType;
