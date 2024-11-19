@@ -11,6 +11,8 @@ import com.techeer.backend.api.resume.dto.response.ResumeDetailResponse;
 import com.techeer.backend.api.resume.dto.response.ResumeResponse;
 import com.techeer.backend.api.resume.service.ResumeService;
 import com.techeer.backend.api.resume.service.facade.ResumeCreateFacade;
+import com.techeer.backend.api.user.domain.User;
+import com.techeer.backend.api.user.service.UserService;
 import com.techeer.backend.global.common.response.CommonResponse;
 import com.techeer.backend.global.error.ErrorStatus;
 import com.techeer.backend.global.error.exception.GeneralException;
@@ -44,14 +46,15 @@ public class ResumeController {
     private final ResumeCreateFacade resumeCreateFacade;
     private final ResumeService resumeService;
     private final FeedbackService feedbackService;
+    private final UserService userService;
 
     // 이력서 등록
     // todo
     @Operation(summary = "이력서 등록")
     @PostMapping(value = "/resumes", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public CommonResponse<Void> resumeRegistration(@RequestPart @Valid CreateResumeRequest createResumeReq,
-                                                   @RequestPart(name = "resume_file")
-                                                   @Valid MultipartFile resumeFile) {
+    public CommonResponse<Object> resumeRegistration(@RequestPart @Valid CreateResumeRequest createResumeReq,
+                                                     @RequestPart(name = "resume_file")
+                                                     @Valid MultipartFile resumeFile) {
         // 파일 유효성 검사 -> 나중에 vaildtor로 변경해서 유효성 검사할 예정
         if (resumeFile.isEmpty()) {
             throw new GeneralException(ErrorStatus.RESUME_FILE_EMPTY);
@@ -72,6 +75,8 @@ public class ResumeController {
     @Operation(summary = "회원 이름으로 이력서 조회")
     @GetMapping("/resumes/search")
     public CommonResponse<List<ResumeResponse>> searchResumesByUserName(@RequestParam("user_name") String userName) {
+        User user = userService.getLoginUser();
+
         List<Resume> resumes = resumeService.searchResumesByUserName(userName);
 
         List<ResumeResponse> resumeResponse = resumes.stream()

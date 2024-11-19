@@ -34,7 +34,7 @@ public class ResumeService {
 
     // 유저 이름으로 이력서 조회
     public List<Resume> searchResumesByUserName(String userName) {
-        return resumeRepository.findByUsername(userName);
+        return resumeRepository.findResumesByUsername(userName);
     }
 
     // 태그 조회
