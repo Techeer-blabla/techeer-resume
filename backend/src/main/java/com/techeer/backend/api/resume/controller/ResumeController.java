@@ -1,5 +1,7 @@
 package com.techeer.backend.api.resume.controller;
 
+import com.techeer.backend.api.feedback.domain.Feedback;
+import com.techeer.backend.api.feedback.service.FeedbackService;
 import com.techeer.backend.api.resume.converter.ResumeConverter;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.dto.request.CreateResumeRequest;
@@ -41,6 +43,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ResumeController {
     private final ResumeCreateFacade resumeCreateFacade;
     private final ResumeService resumeService;
+    private final FeedbackService feedbackService;
 
     // 이력서 등록
     // todo
@@ -83,8 +86,10 @@ public class ResumeController {
     @GetMapping("/resumes/{resume_id}")
     public CommonResponse<ResumeDetailResponse> searchResumeDetail(@PathVariable("resume_id") Long resumeId) {
 
-        ResumeDetailResponse resumeContent = resumeService.getResumeContent(resumeId);
+        Resume resume = resumeService.getResume(resumeId);
+        List<Feedback> feedbakcs = feedbackService.getFeedbacksByResumeId(resumeId);
 
+        ResumeDetailResponse resumeContent = ResumeConverter.toResumeDetailResponse(resume, feedbakcs);
         return CommonResponse.of(SuccessStatus.OK, resumeContent);
     }
 

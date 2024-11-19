@@ -1,11 +1,8 @@
 package com.techeer.backend.api.resume.service;
 
-import com.techeer.backend.api.feedback.domain.Feedback;
 import com.techeer.backend.api.feedback.repository.FeedbackRepository;
-import com.techeer.backend.api.resume.converter.ResumeConverter;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
-import com.techeer.backend.api.resume.dto.response.ResumeDetailResponse;
 import com.techeer.backend.api.resume.repository.GetResumeRepository;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
 import com.techeer.backend.global.error.exception.NotFoundException;
@@ -16,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -32,18 +28,10 @@ public class ResumeService {
         return savedResume;
     }
 
-    //todo 피드백까지 생기면
     // 이력서 개별 조회
-    @Transactional(readOnly = true)
-    public ResumeDetailResponse getResumeContent(Long resumeId) {
-        Resume resume = resumeRepository.findById(resumeId)
+    public Resume getResume(Long resumeId) {
+        return resumeRepository.findById(resumeId)
                 .orElseThrow(NotFoundException::new);
-
-        // 이력서의 피드백 찾기
-        List<Feedback> feedbacks = feedbackRepository.findAllByResumeId(resumeId);
-
-        // ResumeDetailResponse 객체 생성 후 반환
-        return ResumeConverter.toResumeDetailResponse(resume, feedbacks);
     }
 
     // 유저 이름으로 이력서 조회

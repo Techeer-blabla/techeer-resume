@@ -69,4 +69,8 @@ public class FeedbackService {
         return FeedbackConverter.toAllFeedbackResponse(feedbacks, aiFeedback);
     }
 
+    public List<Feedback> getFeedbacksByResumeId(Long resumeId) {
+        return feedbackRepository.findAllByResumeId(resumeId);
+    }
+
 }
