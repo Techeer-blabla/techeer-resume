@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Bookmark, FileText, User } from "lucide-react";
+import { useNavigate } from "react-router-dom"; // useNavigate 임포트
 import Navbar from "../components/common/Navbar.tsx";
 import ResumeItem from "../components/MyInfoPage/ResumeItem.tsx";
 import BookmarkItem from "../components/MyInfoPage/BookmarkItem.tsx";
+import { getAllBookmarksByUserId } from "../api/bookMarkApi.ts"; // API 임포트
 
 interface Resume {
   id: number;
@@ -23,6 +25,9 @@ function MyInfoPage() {
   const [activeTab, setActiveTab] = useState<"resume" | "bookmark">("resume");
   const [role] = useState<"테커" | "외부" | "기업">("테커");
   const [userName] = useState("김테커");
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]); // 북마크 상태 추가
+  const userId = 1; // 예시로 사용자 ID를 1로 설정
+  const navigate = useNavigate(); // navigate 함수 사용
 
   const resumes: Resume[] = [
     {
@@ -41,20 +46,27 @@ function MyInfoPage() {
     },
   ];
 
-  const bookmarks: Bookmark[] = [
-    {
-      id: 1,
-      title: "정테커의 이력서",
-      views: 100,
-      date: "2024-01-25",
-    },
-    {
-      id: 2,
-      title: "이테커의 이력서",
-      views: 75,
-      date: "2024-02-10",
-    },
-  ];
+  // 북마크 조회 API 호출
+  const fetchBookmarks = async () => {
+    try {
+      const data = await getAllBookmarksByUserId(userId);
+      setBookmarks(data.result); // API에서 받은 북마크 데이터를 상태에 저장
+    } catch (error) {
+      console.error("북마크를 가져오는 데 실패했습니다.", error);
+    }
+  };
+
+  // 컴포넌트가 마운트될 때 북마크를 가져옴
+  useEffect(() => {
+    if (activeTab === "bookmark") {
+      fetchBookmarks(); // '북마크' 탭을 선택하면 북마크 조회
+    }
+  }, [activeTab]);
+
+  // 북마크 클릭 시 피드백 페이지로 이동
+  const handleBookmarkClick = (resumeId: number) => {
+    navigate(`/feedback/${resumeId}`); // 해당 북마크 ID를 포함한 피드백 페이지로 이동
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -125,7 +137,12 @@ function MyInfoPage() {
                   <div className="space-y-4">
                     {bookmarks.length > 0 ? (
                       bookmarks.map((bookmark) => (
-                        <BookmarkItem key={bookmark.id} bookmark={bookmark} />
+                        <div
+                          key={bookmark.id}
+                          onClick={() => handleBookmarkClick(bookmark.id)} // 북마크 클릭 시 이동
+                        >
+                          <BookmarkItem bookmark={bookmark} />
+                        </div>
                       ))
                     ) : (
                       <div className="text-center text-gray-500 py-8">

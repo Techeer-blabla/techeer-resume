@@ -10,6 +10,7 @@ export type FeedbackPoint = {
 };
 
 export type ResumeData = {
+  bookmarks?: BookmarkData[];
   resumeId: number;
   userName: string;
   position: string;
@@ -19,6 +20,10 @@ export type ResumeData = {
   feedbacks: FeedbackPoint[];
 };
 
+export type BookmarkData = {
+  bookmarkId: number; // 북마크의 고유 ID
+  userId: number; // 북마크를 생성한 사용자 ID
+};
 export type AddFeedbackPoint = {
   content: string;
   xCoordinate: number;
