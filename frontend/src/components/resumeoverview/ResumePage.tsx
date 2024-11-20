@@ -77,7 +77,7 @@ function ResumePage({
     <div className="relative mb-8">
       <div
         ref={pageRef}
-        className="w-full h-[903px] mx-auto mt-4 flex justify-center items-center relative cursor-pointer"
+        className="w-full h-[903px] items-center relative cursor-pointer"
         onClick={handleClick}
       >
         {/* PDF 미리보기 */}
@@ -85,44 +85,46 @@ function ResumePage({
 
         {/* <p className="text-black">Resume PDF Page {pageNumber}</p> */}
         {/* 피드백 마커 렌더링 */}
-        {feedbackPoints.map((point) => (
-          <div
-            key={point.id}
-            className={`absolute w-4 h-4 rounded-full transform -translate-x-1/2 -translate-y-1/2 cursor-pointer ${
-              point.id === hoveredCommentId ? "bg-sky-500" : "bg-red-500"
-            }`}
-            style={{
-              left: `${point.xCoordinate}%`,
-              top: `${point.yCoordinate}%`,
-            }}
-            onMouseEnter={() => setHoveredCommentId(point.id)}
-            onMouseLeave={() => setHoveredCommentId(null)}
-            onClick={(e) => {
-              e.stopPropagation(); // 페이지 클릭 방지
-              handleMarkerClick(point);
-            }}
-          ></div>
-        ))}
-        {/* 피드백 추가 폼 */}
-        {addingFeedback && (
-          <CommentForm
-            position={{ x: addingFeedback.x, y: addingFeedback.y }}
-            onSubmit={handleAddSubmit}
-            onCancel={handleCancel}
-          />
-        )}
-        {/* 피드백 수정 폼 */}
-        {editingFeedback && (
-          <CommentForm
-            position={{
-              x: editingFeedback.xCoordinate,
-              y: editingFeedback.yCoordinate,
-            }}
-            initialComment={editingFeedback.content}
-            onSubmit={handleEditSubmit}
-            onCancel={handleCancel}
-          />
-        )}
+        <>
+          {feedbackPoints.map((point) => (
+            <div
+              key={point.id}
+              className={`absolute w-4 h-4 rounded-full transform -translate-x-1/2 -translate-y-1/2 cursor-pointer ${
+                point.id === hoveredCommentId ? "bg-sky-500" : "bg-red-500"
+              }`}
+              style={{
+                left: `${point.xCoordinate}%`,
+                top: `${point.yCoordinate}%`,
+              }}
+              onMouseEnter={() => setHoveredCommentId(point.id)}
+              onMouseLeave={() => setHoveredCommentId(null)}
+              onClick={(e) => {
+                e.stopPropagation(); // 페이지 클릭 방지
+                handleMarkerClick(point);
+              }}
+            ></div>
+          ))}
+          {/* 피드백 추가 폼 */}
+          {addingFeedback && (
+            <CommentForm
+              position={{ x: addingFeedback.x, y: addingFeedback.y }}
+              onSubmit={handleAddSubmit}
+              onCancel={handleCancel}
+            />
+          )}
+          {/* 피드백 수정 폼 */}
+          {editingFeedback && (
+            <CommentForm
+              position={{
+                x: editingFeedback.xCoordinate,
+                y: editingFeedback.yCoordinate,
+              }}
+              initialComment={editingFeedback.content}
+              onSubmit={handleEditSubmit}
+              onCancel={handleCancel}
+            />
+          )}
+        </>
       </div>
     </div>
   );
