@@ -3,6 +3,9 @@ import MainPage from "./pages/MainPage";
 import ResumeFeedbackPage from "./pages/ResumeFeedbackPage";
 import SearchPage from "./pages/SearchPage";
 import Upload from "./pages/Upload";
+import Login from "./pages/LoginPage";
+import ProtectedRoute from "./utils/Token";
+import MyInfoPage from "./pages/MyInfoPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 
@@ -12,20 +15,22 @@ const queryClient = new QueryClient();
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <React.StrictMode>
-        <BrowserRouter>
-          <div className="flex flex-col min-h-screen">
-            <div className="flex-grow">
-              <Routes>
-                <Route path="/" element={<MainPage />} />
+      <BrowserRouter>
+        <div className="flex flex-col min-h-screen">
+          <div className="flex-grow">
+            <Routes>
+              <Route path="/" element={<MainPage />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/search" element={<SearchPage />} />
+
+              <Route element={<ProtectedRoute />}>
                 <Route path="/feedback" element={<ResumeFeedbackPage />} />
-                <Route path="/search" element={<SearchPage />} />
                 <Route path="/upload" element={<Upload />} />
-              </Routes>
-            </div>
+                <Route path="/myInfo" element={<MyInfoPage />} />
+              </Route>
+            </Routes>
           </div>
         </BrowserRouter>
-      </React.StrictMode>
     </QueryClientProvider>
   );
 }

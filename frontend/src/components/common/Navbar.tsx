@@ -9,11 +9,16 @@ function Navbar() {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState<string>(""); // 검색어 상태 관리
   const { setSearchName } = useSearchStore();
+  const [isLoggedIn] = useState<boolean>(false);
 
   const [userName] = useState<string>("김테커"); //프로필 이름 - 임시
 
-  const moveToMainPage = () => {
+  const moveMainPage = () => {
     navigate("/");
+  };
+
+  const moveLoginPage = () => {
+    navigate("/login");
   };
 
   const searchName = () => {
@@ -38,7 +43,7 @@ function Navbar() {
   };
 
   return (
-    <div className="w-full h-12 px-4 bg-transparent">
+    <div className="w-full h-12 px-4 bg-transparent -mt-1 mb-2">
       <div className="flex flex-row justify-between items-center">
         {/* 로고 */}
         <div className="pl-10">
@@ -46,16 +51,16 @@ function Navbar() {
             src={logo}
             alt="logo"
             className="w-auto h-6 hover:cursor-pointer"
-            onClick={moveToMainPage}
+            onClick={moveMainPage}
           />
         </div>
 
         {/* 검색 바 */}
         <div className="flex-grow max-w-lg mx-4">
-          <div className="mw-140 h-10 bg-[#FBFAFE] border border-[#CDCCCC] border-solid rounded-3xl flex items-center px-4">
+          <div className="mw-140 h-10 rounded-full bg-gray-100 hover:outline-none hover:ring-2 hover:ring-blue-500 flex items-center px-4">
             <input
               id="search-box"
-              className="flex-1 bg-transparent text-gray-950 placeholder-gray-500 outline-none lg:text-base"
+              className="flex-1 bg-transparent text-gray-950 placeholder-gray-500 outline-none lg:text-base ml-2"
               placeholder="검색어를 입력하세요."
               aria-label="search-box"
               autoComplete="off"
@@ -75,10 +80,21 @@ function Navbar() {
 
         {/* 프로필 */}
         <div className="flex items-center pr-10">
-          <img src={profile} alt="profile" className="w-10 h-10 mx-2" />
-          <p className="hidden sm:block ml-3 mb-[1px] text-base lg:text-lg">
-            {userName}
-          </p>
+          {isLoggedIn ? (
+            <>
+              <img src={profile} alt="profile" className="w-10 h-10 mx-2" />
+              <p className="hidden sm:block ml-3 mb-[1px] text-base lg:text-lg">
+                {userName}
+              </p>
+            </>
+          ) : (
+            <a
+              className="px-4 bg-biue-500 text-white rounded-lg"
+              onClick={moveLoginPage}
+            >
+              로그인
+            </a>
+          )}
         </div>
       </div>
       <div className="absolute mt-4 left-0 w-full h-[1px] bg-gray-300" />
