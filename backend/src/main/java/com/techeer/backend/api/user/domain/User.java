@@ -1,8 +1,10 @@
 package com.techeer.backend.api.user.domain;
 
 
+import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.user.dto.request.SignUpRequest;
 import com.techeer.backend.global.common.BaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,7 +12,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,6 +40,8 @@ public class User extends BaseEntity {
     @Column(name = "refresh_token")
     private String refreshToken;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Resume> resumes = new ArrayList<>();
 //    @Column(name = "profile_image")
 //    private String profileImage;
 
@@ -67,4 +74,10 @@ public class User extends BaseEntity {
     public void updateRefreshToken(String updateRefreshToken) {
         this.refreshToken = updateRefreshToken;
     }
+
+    public void addResume(Resume resume) {
+        this.resumes.add(resume);
+    }
+
+    
 }
