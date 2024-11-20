@@ -3,6 +3,8 @@ import MainPage from "./pages/MainPage";
 import ResumeFeedbackPage from "./pages/ResumeFeedbackPage";
 import SearchPage from "./pages/SearchPage";
 import Upload from "./pages/Upload";
+import Login from "./pages/LoginPage";
+import ProtectedRoute from "./utils/Token";
 import MyInfoPage from "./pages/MyInfoPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -17,10 +19,14 @@ export default function App() {
           <div className="flex-grow">
             <Routes>
               <Route path="/" element={<MainPage />} />
-              <Route path="/feedback" element={<ResumeFeedbackPage />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/search" element={<SearchPage />} />
-              <Route path="/upload" element={<Upload />} />
-              <Route path="/myInfo" element={<MyInfoPage />} />
+
+              <Route element={<ProtectedRoute />}>
+                <Route path="/feedback" element={<ResumeFeedbackPage />} />
+                <Route path="/upload" element={<Upload />} />
+                <Route path="/myInfo" element={<MyInfoPage />} />
+              </Route>
             </Routes>
           </div>
         </div>
