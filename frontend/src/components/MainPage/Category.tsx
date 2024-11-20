@@ -52,7 +52,7 @@ function Category({ title, onClick, options, onSelect }: CategoryProps) {
             onClick(); // options가 없으면 모달 열기
           }
         }}
-        className="w-28 h-9 bg-white rounded-xl border-[1.5px] border-[#abbdec] flex justify-between items-center px-4"
+        className="w-33 h-9 bg-white rounded-xl border-[1.5px] border-[#abbdec] flex justify-between items-center px-4"
         aria-expanded={isOpen} // 접근성 속성 추가
         aria-haspopup={options ? "listbox" : undefined}
       >
