@@ -1,16 +1,15 @@
 package com.techeer.backend.api.user.service;
 
 
-import com.techeer.backend.api.user.converter.UserConverter;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.dto.request.SignUpRequest;
 import com.techeer.backend.api.user.dto.request.UserTokenRequest;
-import com.techeer.backend.api.user.dto.response.UserInfoResponse;
 import com.techeer.backend.api.user.repository.UserRepository;
 import com.techeer.backend.global.error.ErrorStatus;
 import com.techeer.backend.global.error.exception.BusinessException;
 import com.techeer.backend.global.jwt.JwtToken;
 import com.techeer.backend.global.jwt.service.JwtService;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,10 +62,12 @@ public class UserService {
 
         String email = (String) emailAndSocialType[0];
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException(ErrorStatus.USER_NOT_FOUND));
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isEmpty()) {
+            throw new BusinessException(ErrorStatus.USER_NOT_AUTHENTICATED);
+        }
 
-        String refreshToken = user.getRefreshToken();
+        String refreshToken = user.get().getRefreshToken();
 
         // db에 리프레시 토큰 없을 경우(logout)
         if (refreshToken == null || !refreshToken.equals(userTokenReq.getRefreshToken())) {
@@ -75,16 +76,9 @@ public class UserService {
 
         return JwtToken.builder()
                 .accessToken(jwtService.createAccessToken(email))
-                .refreshToken(jwtService.reIssueRefreshToken(user))
+                .refreshToken(jwtService.reIssueRefreshToken(user.orElse(null)))
                 .build();
 
-
-    }
-
-
-    public UserInfoResponse getUserInfo() {
-        User user = this.getLoginUser();
-        return UserConverter.ofUserInfoResponse(user);
     }
 
 }

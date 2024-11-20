@@ -1,5 +1,6 @@
 package com.techeer.backend.api.user.controller;
 
+import com.techeer.backend.api.user.converter.UserConverter;
 import com.techeer.backend.api.user.dto.request.SignUpRequest;
 import com.techeer.backend.api.user.dto.request.UserTokenRequest;
 import com.techeer.backend.api.user.dto.response.UserInfoResponse;
@@ -25,7 +26,7 @@ public class UserController {
     @Operation(summary = "유저 정보")
     @GetMapping("/user")
     public CommonResponse<UserInfoResponse> getUserInfo() {
-        UserInfoResponse result = userService.getUserInfo();
+        UserInfoResponse result = UserConverter.ofUserInfoResponse(userService.getLoginUser());
         return CommonResponse.of(SuccessStatus.USER_FETCH_OK, result);
     }
 
