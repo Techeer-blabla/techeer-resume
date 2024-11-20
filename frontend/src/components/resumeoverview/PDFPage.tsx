@@ -1,23 +1,58 @@
 import { Worker, Viewer } from "@react-pdf-viewer/core";
+import { toolbarPlugin } from "@react-pdf-viewer/toolbar";
+import type {
+  ToolbarSlot,
+  TransformToolbarSlot,
+} from "@react-pdf-viewer/toolbar";
+
 import "@react-pdf-viewer/core/lib/styles/index.css";
-import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
-import "@react-pdf-viewer/default-layout/lib/styles/index.css";
-import { pageNavigationPlugin } from "@react-pdf-viewer/page-navigation";
+import "@react-pdf-viewer/toolbar/lib/styles/index.css";
+
+const workerUrl = `https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js`;
 
 const PDFPage = ({ pdfUrl }: { pdfUrl: string }) => {
-  const defaultLayout = defaultLayoutPlugin();
-  const workerUrl = `https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js`;
-  const pageNavigationPluginInstance = pageNavigationPlugin();
-  const { CurrentPageLabel } = pageNavigationPluginInstance;
+  const toolbarPluginInstance = toolbarPlugin();
+  const { renderDefaultToolbar, Toolbar } = toolbarPluginInstance;
 
-  console.log("pdf 링크: ", pdfUrl);
+  const transform: TransformToolbarSlot = (slot: ToolbarSlot) => ({
+    ...slot,
+    Print: () => <></>,
+    PrintMenuItem: () => <></>,
+    Open: () => <></>,
+    OpenMenuItem: () => <></>,
+  });
 
   return (
-    <div style={{ height: "100vh" }}>
-      <Worker workerUrl={workerUrl}>
-        <Viewer fileUrl={pdfUrl} plugins={[defaultLayout]} />
-      </Worker>
-    </div>
+    <Worker workerUrl={workerUrl}>
+      <div
+        className="rpv-core__viewer"
+        style={{
+          // border: "1px solid rgba(0, 0, 0, 0.3)",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <div
+          style={{
+            alignItems: "center",
+            backgroundColor: "#ffff",
+            borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
+            display: "flex",
+            padding: "0.25rem",
+          }}
+        >
+          <Toolbar>{renderDefaultToolbar(transform)}</Toolbar>
+        </div>
+        <div
+          style={{
+            flex: 1,
+            overflow: "hidden",
+          }}
+        >
+          <Viewer fileUrl={pdfUrl} plugins={[toolbarPluginInstance]} />
+        </div>
+      </div>
+    </Worker>
   );
 };
 
