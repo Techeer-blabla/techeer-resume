@@ -1,8 +1,8 @@
 package com.techeer.backend.api.feedback.controller;
 
-import com.techeer.backend.api.feedback.dto.AllFeedbackResponse;
-import com.techeer.backend.api.feedback.dto.FeedbackCreateRequest;
-import com.techeer.backend.api.feedback.dto.FeedbackResponse;
+import com.techeer.backend.api.feedback.dto.request.FeedbackCreateRequest;
+import com.techeer.backend.api.feedback.dto.response.AllFeedbackResponse;
+import com.techeer.backend.api.feedback.dto.response.FeedbackResponse;
 import com.techeer.backend.api.feedback.service.FeedbackService;
 import com.techeer.backend.global.common.response.CommonResponse;
 import com.techeer.backend.global.success.SuccessStatus;

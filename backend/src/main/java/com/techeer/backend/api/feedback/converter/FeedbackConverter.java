@@ -2,8 +2,8 @@ package com.techeer.backend.api.feedback.converter;
 
 import com.techeer.backend.api.aifeedback.domain.AIFeedback;
 import com.techeer.backend.api.feedback.domain.Feedback;
-import com.techeer.backend.api.feedback.dto.AllFeedbackResponse;
-import com.techeer.backend.api.feedback.dto.FeedbackResponse;
+import com.techeer.backend.api.feedback.dto.response.AllFeedbackResponse;
+import com.techeer.backend.api.feedback.dto.response.FeedbackResponse;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

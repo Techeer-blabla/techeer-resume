@@ -8,7 +8,7 @@ import com.techeer.backend.api.bookmark.repository.BookmarkRepository;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
 import com.techeer.backend.api.user.domain.User;
-import com.techeer.backend.api.user.repository.UserRepository;
+import com.techeer.backend.api.user.service.UserService;
 import com.techeer.backend.global.error.ErrorStatus;
 import com.techeer.backend.global.error.exception.BusinessException;
 import jakarta.transaction.Transactional;
@@ -23,13 +23,13 @@ public class BookmarkService {
 
     private final BookmarkRepository bookmarkRepository;
     private final ResumeRepository resumeRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Transactional
     public BookmarkResponse addBookmark(BookmarkAddRequest bookmarkRequest) {
 
-        User user = userRepository.findById(bookmarkRequest.getUserId())
-                .orElseThrow(() -> new BusinessException(ErrorStatus.USER_NOT_FOUND));
+        User user = userService.getLoginUser();
+
         Resume resume = resumeRepository.findById(bookmarkRequest.getResumeId())
                 .orElseThrow(() -> new BusinessException(ErrorStatus.RESUME_NOT_FOUND));
 

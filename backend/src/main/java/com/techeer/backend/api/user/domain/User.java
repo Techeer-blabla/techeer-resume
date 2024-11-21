@@ -1,6 +1,8 @@
 package com.techeer.backend.api.user.domain;
 
 
+import com.techeer.backend.api.bookmark.domain.Bookmark;
+import com.techeer.backend.api.feedback.domain.Feedback;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.user.dto.request.SignUpRequest;
 import com.techeer.backend.global.common.BaseEntity;
@@ -45,6 +47,12 @@ public class User extends BaseEntity {
 //    @Column(name = "profile_image")
 //    private String profileImage;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Feedback> feedbacks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Bookmark> bookmarks = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
@@ -79,5 +87,5 @@ public class User extends BaseEntity {
         this.resumes.add(resume);
     }
 
-    
+
 }

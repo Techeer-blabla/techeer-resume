@@ -4,12 +4,14 @@ import com.techeer.backend.api.aifeedback.domain.AIFeedback;
 import com.techeer.backend.api.aifeedback.repository.AIFeedbackRepository;
 import com.techeer.backend.api.feedback.converter.FeedbackConverter;
 import com.techeer.backend.api.feedback.domain.Feedback;
-import com.techeer.backend.api.feedback.dto.AllFeedbackResponse;
-import com.techeer.backend.api.feedback.dto.FeedbackCreateRequest;
-import com.techeer.backend.api.feedback.dto.FeedbackResponse;
+import com.techeer.backend.api.feedback.dto.request.FeedbackCreateRequest;
+import com.techeer.backend.api.feedback.dto.response.AllFeedbackResponse;
+import com.techeer.backend.api.feedback.dto.response.FeedbackResponse;
 import com.techeer.backend.api.feedback.repository.FeedbackRepository;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
+import com.techeer.backend.api.user.domain.User;
+import com.techeer.backend.api.user.service.UserService;
 import com.techeer.backend.global.error.ErrorStatus;
 import com.techeer.backend.global.error.exception.BusinessException;
 import java.util.List;
@@ -25,13 +27,17 @@ public class FeedbackService {
     private final FeedbackRepository feedbackRepository;
     private final ResumeRepository resumeRepository;
     private final AIFeedbackRepository aiFeedbackRepository;
+    private final UserService userService;
 
     @Transactional
     public FeedbackResponse createFeedback(Long resumeId, FeedbackCreateRequest feedbackCreateRequest) {
+
+        User user = userService.getLoginUser();
+
         Resume resume = resumeRepository.findByIdAndDeletedAtIsNull(resumeId)
                 .orElseThrow(() -> new BusinessException(ErrorStatus.RESUME_NOT_FOUND));
 
-        Feedback feedback = Feedback.of(resume, feedbackCreateRequest);
+        Feedback feedback = Feedback.of(user, resume, feedbackCreateRequest);
         feedbackRepository.save(feedback);
 
         return FeedbackConverter.toFeedbackResponse(feedback);
@@ -39,6 +45,9 @@ public class FeedbackService {
 
     @Transactional
     public void deleteFeedbackById(Long resumeId, Long feedbackId) {
+
+        User user = userService.getLoginUser();
+
         Resume resume = resumeRepository.findById(resumeId)
                 .orElseThrow(() -> new BusinessException(ErrorStatus.RESUME_NOT_FOUND));
 
@@ -49,13 +58,17 @@ public class FeedbackService {
             throw new BusinessException(ErrorStatus.INVALID_FEEDBACK_FOR_RESUME);
         }
 
+        if (!feedback.getUser().getId().equals(user.getId())) {
+            throw new BusinessException(ErrorStatus.UNAUTHORIZED);
+        }
+
         log.info("피드백 삭제 중: 피드백 ID {} (이력서 ID {})", feedbackId, resumeId);
 
         feedbackRepository.delete(feedback);
     }
 
-    @Transactional(readOnly = true)
     public AllFeedbackResponse getFeedbackWithAIFeedback(Long resumeId) {
+        
         // resumeId에 해당하는 모든 피드백 가져오기
         List<Feedback> feedbacks = feedbackRepository.findAllByResumeId(resumeId);
         if (feedbacks.isEmpty()) {
