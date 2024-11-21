@@ -2,8 +2,11 @@ package com.techeer.backend.api.feedback.converter;
 
 import com.techeer.backend.api.aifeedback.domain.AIFeedback;
 import com.techeer.backend.api.feedback.domain.Feedback;
+import com.techeer.backend.api.feedback.dto.request.FeedbackCreateRequest;
 import com.techeer.backend.api.feedback.dto.response.AllFeedbackResponse;
 import com.techeer.backend.api.feedback.dto.response.FeedbackResponse;
+import com.techeer.backend.api.resume.domain.Resume;
+import com.techeer.backend.api.user.domain.User;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,5 +43,15 @@ public class FeedbackConverter {
                         .pageNumber(feedback.getPageNumber())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    public static Feedback toFeedbackEntity(User user, Resume resume, FeedbackCreateRequest feedbackCreateRequest) {
+        return Feedback.builder()
+                .user(user)
+                .resume(resume)
+                .content(feedbackCreateRequest.getContent())
+                .xCoordinate(feedbackCreateRequest.getXCoordinate())
+                .yCoordinate(feedbackCreateRequest.getYCoordinate())
+                .build();
     }
 }

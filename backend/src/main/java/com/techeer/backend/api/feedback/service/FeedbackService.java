@@ -11,7 +11,6 @@ import com.techeer.backend.api.feedback.repository.FeedbackRepository;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
 import com.techeer.backend.api.user.domain.User;
-import com.techeer.backend.api.user.service.UserService;
 import com.techeer.backend.global.error.ErrorStatus;
 import com.techeer.backend.global.error.exception.BusinessException;
 import java.util.List;
@@ -27,7 +26,6 @@ public class FeedbackService {
     private final FeedbackRepository feedbackRepository;
     private final ResumeRepository resumeRepository;
     private final AIFeedbackRepository aiFeedbackRepository;
-    private final UserService userService;
 
     @Transactional
     public FeedbackResponse createFeedback(User user, Long resumeId, FeedbackCreateRequest feedbackCreateRequest) {
@@ -35,7 +33,7 @@ public class FeedbackService {
         Resume resume = resumeRepository.findByIdAndDeletedAtIsNull(resumeId)
                 .orElseThrow(() -> new BusinessException(ErrorStatus.RESUME_NOT_FOUND));
 
-        Feedback feedback = Feedback.of(user, resume, feedbackCreateRequest);
+        Feedback feedback = FeedbackConverter.toFeedbackEntity(user, resume, feedbackCreateRequest);
         feedbackRepository.save(feedback);
 
         return FeedbackConverter.toFeedbackResponse(feedback);
