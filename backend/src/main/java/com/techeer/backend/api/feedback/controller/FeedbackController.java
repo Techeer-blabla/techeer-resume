@@ -4,6 +4,8 @@ import com.techeer.backend.api.feedback.dto.request.FeedbackCreateRequest;
 import com.techeer.backend.api.feedback.dto.response.AllFeedbackResponse;
 import com.techeer.backend.api.feedback.dto.response.FeedbackResponse;
 import com.techeer.backend.api.feedback.service.FeedbackService;
+import com.techeer.backend.api.user.domain.User;
+import com.techeer.backend.api.user.service.UserService;
 import com.techeer.backend.global.common.response.CommonResponse;
 import com.techeer.backend.global.success.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class FeedbackController {
 
     private final FeedbackService feedbackService;
+    private final UserService userService;
 
     @Operation(summary = "피드백 등록", description = "원하는 위치에 피드백을 작성합니다.")
     @PostMapping("/{resume_id}/feedbacks")
@@ -36,7 +39,9 @@ public class FeedbackController {
 
         log.info("이력서 ID: {} 에 대한 피드백 생성 요청", resumeId);
 
-        FeedbackResponse feedbackResponse = feedbackService.createFeedback(resumeId, feedbackRequest);
+        User user = userService.getLoginUser();
+
+        FeedbackResponse feedbackResponse = feedbackService.createFeedback(user, resumeId, feedbackRequest);
 
         log.info("피드백 생성 완료: {}", feedbackResponse);
 
@@ -56,9 +61,11 @@ public class FeedbackController {
             @PathVariable("resume_id") Long resumeId,
             @PathVariable("feedback_id") Long feedbackId) {
 
+        User user = userService.getLoginUser();
+
         log.info("이력서 ID: {}, 피드백 ID: {} 에 대한 삭제 요청", resumeId, feedbackId);
 
-        feedbackService.deleteFeedbackById(resumeId, feedbackId);
+        feedbackService.deleteFeedbackById(user, resumeId, feedbackId);
 
         return CommonResponse.of(SuccessStatus.NO_CONTENT, null);
     }

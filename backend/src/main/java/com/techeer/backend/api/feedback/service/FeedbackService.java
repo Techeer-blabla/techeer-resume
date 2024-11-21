@@ -30,9 +30,7 @@ public class FeedbackService {
     private final UserService userService;
 
     @Transactional
-    public FeedbackResponse createFeedback(Long resumeId, FeedbackCreateRequest feedbackCreateRequest) {
-
-        User user = userService.getLoginUser();
+    public FeedbackResponse createFeedback(User user, Long resumeId, FeedbackCreateRequest feedbackCreateRequest) {
 
         Resume resume = resumeRepository.findByIdAndDeletedAtIsNull(resumeId)
                 .orElseThrow(() -> new BusinessException(ErrorStatus.RESUME_NOT_FOUND));
@@ -44,9 +42,7 @@ public class FeedbackService {
     }
 
     @Transactional
-    public void deleteFeedbackById(Long resumeId, Long feedbackId) {
-
-        User user = userService.getLoginUser();
+    public void deleteFeedbackById(User user, Long resumeId, Long feedbackId) {
 
         Resume resume = resumeRepository.findById(resumeId)
                 .orElseThrow(() -> new BusinessException(ErrorStatus.RESUME_NOT_FOUND));
@@ -59,7 +55,7 @@ public class FeedbackService {
         }
 
         if (!feedback.getUser().getId().equals(user.getId())) {
-            throw new BusinessException(ErrorStatus.USER_NOT_FOUND);
+            throw new BusinessException(ErrorStatus.UNAUTHORIZED);
         }
 
         log.info("피드백 삭제 중: 피드백 ID {} (이력서 ID {})", feedbackId, resumeId);
@@ -75,8 +71,8 @@ public class FeedbackService {
             throw new BusinessException(ErrorStatus.FEEDBACK_NOT_FOUND);
         }
 
-        // resumeId에 해당하는 AI 피드백 가져오기 (없으면 null 설정)
-        AIFeedback aiFeedback = aiFeedbackRepository.findByResumeId(resumeId).orElse(null);
+        // resumeId에 해당하는 AI 피드백 가져오기 (없으면 빈 배열 반환)
+        AIFeedback aiFeedback = aiFeedbackRepository.findByResumeId(resumeId).orElse(AIFeedback.empty());
 
         // FeedbackConverter에서 모든 피드백 리스트와 AI 피드백을 포함한 응답으로 변환
         return FeedbackConverter.toAllFeedbackResponse(feedbacks, aiFeedback);

@@ -26,9 +26,7 @@ public class BookmarkService {
     private final UserService userService;
 
     @Transactional
-    public BookmarkResponse addBookmark(BookmarkAddRequest bookmarkRequest) {
-
-        User user = userService.getLoginUser();
+    public BookmarkResponse addBookmark(User user, BookmarkAddRequest bookmarkRequest) {
 
         Resume resume = resumeRepository.findById(bookmarkRequest.getResumeId())
                 .orElseThrow(() -> new BusinessException(ErrorStatus.RESUME_NOT_FOUND));
@@ -40,9 +38,7 @@ public class BookmarkService {
     }
 
     @Transactional
-    public BookmarkResponse removeBookmark(Long bookmarkId) {
-
-        User user = userService.getLoginUser();
+    public BookmarkResponse removeBookmark(User user, Long bookmarkId) {
 
         // bookmark_id로 북마크 조회
         Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
@@ -61,27 +57,18 @@ public class BookmarkService {
     // user_id로 모든 북마크 조회
     public List<BookmarkResponse> getBookmarksByUserId(Long userId) {
 
-        User user = userService.getLoginUser();
-
-        if (!user.getId().equals(userId)) {
-            throw new BusinessException(ErrorStatus.UNAUTHORIZED);
-        }
-
         List<Bookmark> bookmarks = bookmarkRepository.findByUserId(userId);
-        if (bookmarks.isEmpty()) {
-            throw new BusinessException(ErrorStatus.BOOKMARKS_NOT_FOUND);
-        }
 
         return bookmarks.stream()
                 .map(BookmarkConverter::toBookmarkResponse)
                 .collect(Collectors.toList());
     }
 
-    // bookmark_id로 단일 북마크 조회
-    public BookmarkResponse getBookmarkById(Long bookmarkId) {
-        Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
-                .orElseThrow(() -> new BusinessException(ErrorStatus.BOOKMARK_NOT_FOUND));
-
-        return BookmarkConverter.toBookmarkResponse(bookmark);
-    }
+//    // bookmark_id로 단일 북마크 조회
+//    public BookmarkResponse getBookmarkById(Long bookmarkId) {
+//        Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
+//                .orElseThrow(() -> new BusinessException(ErrorStatus.BOOKMARK_NOT_FOUND));
+//
+//        return BookmarkConverter.toBookmarkResponse(bookmark);
+//    }
 }
