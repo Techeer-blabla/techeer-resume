@@ -33,10 +33,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // 소셜 로그인에서 API가 제공하는 userInfo의 Json 값(유저 정보들)
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        OAuthAttributes extractAttributes;
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
-        extractAttributes = OAuthAttributes.of(registrationId, userNameAttributeName, attributes);
+        OAuthAttributes extractAttributes = OAuthAttributes.of(registrationId, userNameAttributeName, attributes);
 
         // DefaultOAuth2User를 구현한 CustomOAuth2User 객체를 생성해서 반환
         return CustomOAuth2User.builder()
