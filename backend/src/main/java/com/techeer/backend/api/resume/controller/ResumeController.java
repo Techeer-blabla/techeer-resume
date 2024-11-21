@@ -50,7 +50,6 @@ public class ResumeController {
     private final UserService userService;
 
     // 이력서 등록
-    // todo
     @Operation(summary = "이력서 등록")
     @PostMapping(value = "/resumes", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public CommonResponse<Object> resumeRegistration(@RequestPart @Valid CreateResumeRequest createResumeReq,
