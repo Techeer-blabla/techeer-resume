@@ -38,9 +38,9 @@ public enum SuccessStatus implements BaseStatus {
     @Override
     public ReasonDto getReason() {
         return ReasonDto.builder()
+                .status(httpStatus)
                 .message(message)
                 .code(code)
-                .isSuccess(true)
                 .build();
     }
 
@@ -50,7 +50,6 @@ public enum SuccessStatus implements BaseStatus {
                 .status(httpStatus)
                 .message(message)
                 .code(code)
-                .isSuccess(true)
                 .build();
     }
 }

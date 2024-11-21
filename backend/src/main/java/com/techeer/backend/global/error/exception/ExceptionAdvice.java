@@ -85,7 +85,8 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
     private ResponseEntity<Object> handleExceptionInternalConstraint(Exception e, ErrorStatus errorStatus,
                                                                      HttpHeaders headers, WebRequest request) {
-        CommonResponse<Object> body = CommonResponse.onFailure(errorStatus.getCode(),
+        CommonResponse<Object> body = CommonResponse.onFailure(errorStatus.getHttpStatus(),
+                errorStatus.getCode(),
                 errorStatus.getMessage(),
                 null);
 
@@ -96,7 +97,8 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
                                                                ErrorStatus errorStatus,
                                                                WebRequest request,
                                                                Map<String, String> errorArgs) {
-        CommonResponse<Object> body = CommonResponse.onFailure(errorStatus.getCode(),
+        CommonResponse<Object> body = CommonResponse.onFailure(errorStatus.getHttpStatus(),
+                errorStatus.getCode(),
                 errorStatus.getMessage(),
                 errorArgs);
 
@@ -107,7 +109,8 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
                                                                   ReasonDto reason,
                                                                   HttpHeaders headers,
                                                                   HttpServletRequest request) {
-        CommonResponse<Object> body = CommonResponse.onFailure(reason.getCode(),
+        CommonResponse<Object> body = CommonResponse.onFailure(reason.getStatus(),
+                reason.getCode(),
                 reason.getMessage(),
                 null);
 
@@ -117,7 +120,8 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     private ResponseEntity<Object> handleExceptionInternalOthers(Exception e, ErrorStatus errorStatus,
                                                                  HttpHeaders headers, HttpStatus status,
                                                                  WebRequest request, String errorPoint) {
-        CommonResponse<Object> body = CommonResponse.onFailure(errorStatus.getCode(),
+        CommonResponse<Object> body = CommonResponse.onFailure(errorStatus.getReasonHttpStatus().getStatus(),
+                errorStatus.getCode(),
                 errorStatus.getMessage(),
                 errorPoint);
 

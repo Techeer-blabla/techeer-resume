@@ -11,6 +11,10 @@ import com.techeer.backend.api.tag.company.service.CompanyService;
 import com.techeer.backend.api.tag.techStack.domain.ResumeTechStack;
 import com.techeer.backend.api.tag.techStack.domain.TechStack;
 import com.techeer.backend.api.tag.techStack.service.TechStackService;
+import com.techeer.backend.api.user.domain.User;
+import com.techeer.backend.api.user.service.UserService;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,11 +30,12 @@ public class ResumeCreateFacade {
     private final CompanyService companyService;
     private final TechStackService techStackService;
     private final ResumePdfService resumePdfService;
+    private final UserService userService;
 
     // 이력서 생성
     @Transactional
     public void createResume(CreateResumeRequest req, MultipartFile multipartFile) {
-
+        User user = userService.getLoginUser();
         // 관련 기술 처리
         List<TechStack> techStacks = techStackService.findOrCreateTechStacks(req.getTechStackNames());
 
@@ -39,28 +44,37 @@ public class ResumeCreateFacade {
 
         // 이력서 엔티티 생성
         Resume resume = Resume.builder()
-                .username(req.getUsername())
+                .user(user)
                 .position(req.getPosition())
                 .career(req.getCareer())
-                .name("Resume of " + req.getUsername())
+                .name("Resume of " + user.getUsername() + " - " + LocalDate.now(ZoneId.of("Asia/Seoul")))
                 .build();
 
         resumeService.saveResume(resume);
 
-        // ResumeTechStack 생성 및 이력서에 추가
+        // ResumeTechStack, ResumeCompany 생성 및 이력서에 추가
+        addResumeTechStacks(resume, techStacks);
+        addResumeCompanies(resume, companies);
+
+        ResumePdf resumePdf = resumePdfService.saveResumePdf(resume, multipartFile);
+        resume.addResumePdf(resumePdf);
+
+        user.addResume(resume);
+    }
+
+
+    private void addResumeTechStacks(Resume resume, List<TechStack> techStacks) {
         techStacks.forEach(techStack -> {
             ResumeTechStack resumeTechStack = new ResumeTechStack(resume, techStack);
             resume.addResumeTechStack(resumeTechStack);
         });
+    }
 
-        // ResumeCompany 생성 및 이력서에 추가
+    private void addResumeCompanies(Resume resume, List<Company> companies) {
         companies.forEach(company -> {
             ResumeCompany resumeCompany = new ResumeCompany(resume, company);
             resume.addResumeCompany(resumeCompany);
         });
-
-        ResumePdf resumePdf = resumePdfService.saveResumePdf(resume, multipartFile);
-        resume.addResumePdf(resumePdf);
     }
 
 }
