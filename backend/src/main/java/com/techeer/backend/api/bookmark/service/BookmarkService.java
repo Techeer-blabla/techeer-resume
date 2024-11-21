@@ -41,9 +41,16 @@ public class BookmarkService {
 
     @Transactional
     public BookmarkResponse removeBookmark(Long bookmarkId) {
+
+        User user = userService.getLoginUser();
+
         // bookmark_id로 북마크 조회
         Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
                 .orElseThrow(() -> new BusinessException(ErrorStatus.BOOKMARK_NOT_FOUND));
+
+        if (!bookmark.getUser().getId().equals(user.getId())) {
+            throw new BusinessException(ErrorStatus.UNAUTHORIZED);
+        }
 
         // 북마크 삭제
         bookmarkRepository.delete(bookmark);
@@ -53,6 +60,12 @@ public class BookmarkService {
 
     // user_id로 모든 북마크 조회
     public List<BookmarkResponse> getBookmarksByUserId(Long userId) {
+
+        User user = userService.getLoginUser();
+
+        if (!user.getId().equals(userId)) {
+            throw new BusinessException(ErrorStatus.UNAUTHORIZED);
+        }
 
         List<Bookmark> bookmarks = bookmarkRepository.findByUserId(userId);
         if (bookmarks.isEmpty()) {

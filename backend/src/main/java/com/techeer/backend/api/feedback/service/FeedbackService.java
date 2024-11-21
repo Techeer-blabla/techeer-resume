@@ -59,7 +59,7 @@ public class FeedbackService {
         }
 
         if (!feedback.getUser().getId().equals(user.getId())) {
-            throw new BusinessException(ErrorStatus.UNAUTHORIZED);
+            throw new BusinessException(ErrorStatus.USER_NOT_FOUND);
         }
 
         log.info("피드백 삭제 중: 피드백 ID {} (이력서 ID {})", feedbackId, resumeId);
@@ -68,7 +68,7 @@ public class FeedbackService {
     }
 
     public AllFeedbackResponse getFeedbackWithAIFeedback(Long resumeId) {
-        
+
         // resumeId에 해당하는 모든 피드백 가져오기
         List<Feedback> feedbacks = feedbackRepository.findAllByResumeId(resumeId);
         if (feedbacks.isEmpty()) {
