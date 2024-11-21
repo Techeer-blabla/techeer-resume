@@ -55,6 +55,7 @@ public class ResumeService {
         Page<Resume> resumesByCriteria = getResumeRepository.findResumesByCriteria(
                 req.getMinCareer(),
                 req.getMaxCareer(),
+                req.getPositions(),
                 techStackNames,
                 companyNames,
                 pageable
