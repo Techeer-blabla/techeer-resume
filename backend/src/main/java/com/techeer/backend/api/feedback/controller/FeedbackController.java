@@ -1,5 +1,7 @@
 package com.techeer.backend.api.feedback.controller;
 
+import com.techeer.backend.api.feedback.converter.FeedbackConverter;
+import com.techeer.backend.api.feedback.domain.Feedback;
 import com.techeer.backend.api.feedback.dto.request.FeedbackCreateRequest;
 import com.techeer.backend.api.feedback.dto.response.AllFeedbackResponse;
 import com.techeer.backend.api.feedback.dto.response.FeedbackResponse;
@@ -41,7 +43,11 @@ public class FeedbackController {
 
         User user = userService.getLoginUser();
 
-        FeedbackResponse feedbackResponse = feedbackService.createFeedback(user, resumeId, feedbackRequest);
+        // feedback 엔티티 반환
+        Feedback feedback = feedbackService.createFeedback(user, resumeId, feedbackRequest);
+
+        // feedbackresponse로 변환
+        FeedbackResponse feedbackResponse = FeedbackConverter.toFeedbackResponse(feedback);
 
         log.info("피드백 생성 완료: {}", feedbackResponse);
 

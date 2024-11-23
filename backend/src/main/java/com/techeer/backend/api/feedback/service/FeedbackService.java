@@ -6,7 +6,6 @@ import com.techeer.backend.api.feedback.converter.FeedbackConverter;
 import com.techeer.backend.api.feedback.domain.Feedback;
 import com.techeer.backend.api.feedback.dto.request.FeedbackCreateRequest;
 import com.techeer.backend.api.feedback.dto.response.AllFeedbackResponse;
-import com.techeer.backend.api.feedback.dto.response.FeedbackResponse;
 import com.techeer.backend.api.feedback.repository.FeedbackRepository;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
@@ -28,7 +27,7 @@ public class FeedbackService {
     private final AIFeedbackRepository aiFeedbackRepository;
 
     @Transactional
-    public FeedbackResponse createFeedback(User user, Long resumeId, FeedbackCreateRequest feedbackCreateRequest) {
+    public Feedback createFeedback(User user, Long resumeId, FeedbackCreateRequest feedbackCreateRequest) {
 
         Resume resume = resumeRepository.findByIdAndDeletedAtIsNull(resumeId)
                 .orElseThrow(() -> new BusinessException(ErrorStatus.RESUME_NOT_FOUND));
@@ -36,7 +35,7 @@ public class FeedbackService {
         Feedback feedback = FeedbackConverter.toFeedbackEntity(user, resume, feedbackCreateRequest);
         feedbackRepository.save(feedback);
 
-        return FeedbackConverter.toFeedbackResponse(feedback);
+        return feedback;
     }
 
     @Transactional
