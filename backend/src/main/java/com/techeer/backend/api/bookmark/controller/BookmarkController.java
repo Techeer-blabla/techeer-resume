@@ -1,5 +1,7 @@
 package com.techeer.backend.api.bookmark.controller;
 
+import com.techeer.backend.api.bookmark.converter.BookmarkConverter;
+import com.techeer.backend.api.bookmark.domain.Bookmark;
 import com.techeer.backend.api.bookmark.dto.BookmarkAddRequest;
 import com.techeer.backend.api.bookmark.dto.BookmarkResponse;
 import com.techeer.backend.api.bookmark.service.BookmarkService;
@@ -32,8 +34,12 @@ public class BookmarkController {
     @PostMapping
     public CommonResponse<BookmarkResponse> addBookmark(
             @RequestBody BookmarkAddRequest bookmarkRequest) {
+
         User user = userService.getLoginUser();
-        BookmarkResponse bookmarkResponse = bookmarkService.addBookmark(user, bookmarkRequest);
+
+        Bookmark bookmark = bookmarkService.addBookmark(user, bookmarkRequest);
+        BookmarkResponse bookmarkResponse = BookmarkConverter.toBookmarkResponse(bookmark);
+
         return CommonResponse.of(SuccessStatus.CREATED, bookmarkResponse);
     }
 

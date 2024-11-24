@@ -26,15 +26,14 @@ public class BookmarkService {
     private final UserService userService;
 
     @Transactional
-    public BookmarkResponse addBookmark(User user, BookmarkAddRequest bookmarkRequest) {
+    public Bookmark addBookmark(User user, BookmarkAddRequest bookmarkRequest) {
 
         Resume resume = resumeRepository.findById(bookmarkRequest.getResumeId())
                 .orElseThrow(() -> new BusinessException(ErrorStatus.RESUME_NOT_FOUND));
 
-        Bookmark bookmark = Bookmark.of(resume, user);
-        bookmarkRepository.save(bookmark);
+        Bookmark bookmark = BookmarkConverter.toBookmarkEntity(user, resume);
 
-        return BookmarkConverter.toBookmarkResponse(bookmark);
+        return bookmarkRepository.save(bookmark);
     }
 
     @Transactional
