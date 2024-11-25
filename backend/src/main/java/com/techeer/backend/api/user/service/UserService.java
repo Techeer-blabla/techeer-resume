@@ -36,10 +36,10 @@ public class UserService {
         }
     }
 
-    public void CreateRegularUser(Map<String, Object> attributes, SocialType socialType) {
+    public void CreateRegularUser(Map<String, Object> attributes, String name, SocialType socialType) {
         User user = User.builder()
                 .email((String) attributes.get("email"))
-                .username((String) attributes.get("login"))
+                .username(name)
                 .socialType(socialType)
                 .role(Role.REGULAR)
                 .build();

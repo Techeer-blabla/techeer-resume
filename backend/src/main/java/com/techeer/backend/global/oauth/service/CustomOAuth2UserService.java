@@ -1,5 +1,6 @@
 package com.techeer.backend.global.oauth.service;
 
+import com.techeer.backend.api.user.domain.SocialType;
 import com.techeer.backend.api.user.repository.UserRepository;
 import com.techeer.backend.api.user.service.UserService;
 import com.techeer.backend.global.error.exception.ExceptionAdvice;
@@ -41,11 +42,12 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        String username = (String) attributes.get("login");
         extractAttributes = OAuthAttributes.of(registrationId, userNameAttributeName, attributes);
+        String username = extractAttributes.getSocialType().equals(SocialType.GITHUB) ? (String) attributes.get("login")
+                : (String) attributes.get("name");
 
         if (userRepository.findByUsernameAndSocialType(username, extractAttributes.getSocialType()).isEmpty()) {
-            userService.CreateRegularUser(attributes, extractAttributes.getSocialType());
+            userService.CreateRegularUser(attributes, username, extractAttributes.getSocialType());
         }
 
         // DefaultOAuth2User를 구현한 CustomOAuth2User 객체를 생성해서 반환
