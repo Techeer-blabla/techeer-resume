@@ -2,6 +2,8 @@ package com.techeer.backend.api.user.service;
 
 
 import com.techeer.backend.api.user.converter.UserConverter;
+import com.techeer.backend.api.user.domain.Role;
+import com.techeer.backend.api.user.domain.SocialType;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.dto.request.SignUpRequest;
 import com.techeer.backend.api.user.dto.request.UserTokenRequest;
@@ -9,6 +11,7 @@ import com.techeer.backend.api.user.dto.response.UserInfoResponse;
 import com.techeer.backend.api.user.repository.UserRepository;
 import com.techeer.backend.global.jwt.JwtToken;
 import com.techeer.backend.global.jwt.service.JwtService;
+import java.util.Map;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +34,16 @@ public class UserService {
             user.updateUser(signUpReq);
             userRepository.save(user);
         }
+    }
+
+    public void CreateRegularUser(Map<String, Object> attributes, SocialType socialType) {
+        User user = User.builder()
+                .email((String) attributes.get("email"))
+                .username((String) attributes.get("login"))
+                .socialType(socialType)
+                .role(Role.REGULAR)
+                .build();
+        userRepository.save(user);
     }
 
     public void logout() {

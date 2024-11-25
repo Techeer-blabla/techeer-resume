@@ -40,7 +40,8 @@ spring:
             client-id: ${GITHUB_CLIENT_ID}
             client-secret: ${GITHUB_CLIENT_SECRET}
             scope:
-              - user
+              - user:email
+              - read:user
             redirect-uri: ${GITHUB_REDIRECT_URI}
 
 logging:

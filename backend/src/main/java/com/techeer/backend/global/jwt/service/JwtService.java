@@ -1,7 +1,6 @@
 package com.techeer.backend.global.jwt.service;
-import com.techeer.backend.api.user.domain.User;
-import com.techeer.backend.api.user.repository.UserRepository;
 
+import com.techeer.backend.api.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -10,15 +9,14 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import java.security.Key;
+import java.util.Date;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.security.Key;
-import java.util.Date;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -55,6 +53,7 @@ public class JwtService {
     public void init() {
         key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
     }
+
     /**
      * AccessToken 생성 메소드
      */
@@ -68,12 +67,12 @@ public class JwtService {
                 .compact();
     }
 
-    private String reIssueRefreshToken(User user) {
-        String reIssuedRefreshToken = this.createRefreshToken();
-        user.updateRefreshToken(reIssuedRefreshToken);
-        userRepository.saveAndFlush(user);
-        return reIssuedRefreshToken;
-    }
+//    private String reIssueRefreshToken(User user) {
+//        String reIssuedRefreshToken = this.createRefreshToken();
+//        user.updateRefreshToken(reIssuedRefreshToken);
+//        userRepository.saveAndFlush(user);
+//        return reIssuedRefreshToken;
+//    }
 
     public String createRefreshToken() {
         Date now = new Date();
@@ -84,11 +83,11 @@ public class JwtService {
                 .compact();
     }
 
-    public Optional<String> extractRefreshToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(refreshHeader))
-                .filter(refreshToken -> refreshToken.startsWith(BEARER))
-                .map(refreshToken -> refreshToken.replace(BEARER, ""));
-    }
+//    public Optional<String> extractRefreshToken(HttpServletRequest request) {
+//        return Optional.ofNullable(request.getHeader(refreshHeader))
+//                .filter(refreshToken -> refreshToken.startsWith(BEARER))
+//                .map(refreshToken -> refreshToken.replace(BEARER, ""));
+//    }
 
     public Optional<String> extractAccessToken(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader(accessHeader))

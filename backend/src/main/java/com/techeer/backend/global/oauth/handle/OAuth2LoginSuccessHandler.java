@@ -1,8 +1,5 @@
 package com.techeer.backend.global.oauth.handle;
 
-import com.techeer.backend.api.user.converter.UserConverter;
-import com.techeer.backend.api.user.domain.Role;
-import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.repository.UserRepository;
 import com.techeer.backend.global.jwt.service.JwtService;
 import com.techeer.backend.global.oauth.oauth2user.CustomOAuth2User;
@@ -26,7 +23,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws IOException {
+                                        Authentication authentication) {
         log.info("OAuth2 Login 성공!");
 
         try {
@@ -36,32 +33,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             String refreshToken = jwtService.createRefreshToken();
 
             // 이메일로 사용자가 이미 있는지 확인
-            userRepository.findByEmail(oAuth2User.getEmail())
-                    .ifPresentOrElse(user -> {
+            userRepository.findByUsernameAndSocialType(oAuth2User.getName(), oAuth2User.getSocialType())
+                    .ifPresent(user -> {
                         // 기존 유저는 RefreshToken 업데이트
                         user.updateRefreshToken(refreshToken);
                         userRepository.saveAndFlush(user);
-
-                        response.setContentType("application/json");
-                        response.setCharacterEncoding("UTF-8");
-
-                        // 쿠키에 accessToken과 refreshToken 저장
-                        addTokenCookies(response, accessToken, refreshToken);
-
-                        // 로그인 성공 처리
-                        String redirectUrl = "http://localhost:5173";
-                        try {
-                            response.sendRedirect(redirectUrl);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }, () -> {
-                        // 사용자가 존재하지 않을 경우 (GUEST)
-                        // todo: 지금은 바로 REGULAR 저장 하지만 나중에 수정
-                        User newUser = UserConverter.fromSignUp(oAuth2User.getEmail(), oAuth2User.getName(),
-                                refreshToken, Role.REGULAR,
-                                oAuth2User.getSocialType());// 초기 RefreshToken 설정
-                        userRepository.save(newUser); // 새로운 사용자 저장
 
                         response.setContentType("application/json");
                         response.setCharacterEncoding("UTF-8");
