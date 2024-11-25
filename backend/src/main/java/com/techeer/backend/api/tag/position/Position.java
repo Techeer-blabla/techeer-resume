@@ -1,7 +1,6 @@
 package com.techeer.backend.api.tag.position;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-
 import lombok.ToString;
 
 @ToString
@@ -10,7 +9,12 @@ public enum Position {
     FRONTEND("FRONTEND"),
     ANDROID("ANDROID"),
     IOS("IOS"),
-    DEVOPS("DEVOPS");
+    DEVOPS("DEVOPS"),
+    FULLSTACK("FULLSTACK"),
+    DATA("DATA"),
+    DESIGNER("DESIGNER"),
+    AI("AI"),
+    ;
 
     private final String value;
 

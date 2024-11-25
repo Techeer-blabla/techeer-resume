@@ -1,25 +1,19 @@
 package com.techeer.backend.api.resume.service;
 
-import com.techeer.backend.api.feedback.domain.Feedback;
-import com.techeer.backend.api.feedback.repository.FeedbackRepository;
-import com.techeer.backend.api.resume.converter.ResumeConverter;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
-import com.techeer.backend.api.resume.dto.response.PageableResumeResponse;
-import com.techeer.backend.api.resume.dto.response.ResumeDetailResponse;
-import com.techeer.backend.api.resume.dto.response.ResumeResponse;
 import com.techeer.backend.api.resume.repository.GetResumeRepository;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
+import com.techeer.backend.global.error.ErrorStatus;
+import com.techeer.backend.global.error.exception.GeneralException;
 import com.techeer.backend.global.error.exception.NotFoundException;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -28,37 +22,25 @@ import org.springframework.transaction.annotation.Transactional;
 public class ResumeService {
     private final ResumeRepository resumeRepository;
     private final GetResumeRepository getResumeRepository;
-    private final FeedbackRepository feedbackRepository;
 
     public Resume saveResume(Resume resume) {
         Resume savedResume = resumeRepository.save(resume);
         return savedResume;
     }
 
-    //todo 피드백까지 생기면
     // 이력서 개별 조회
-    @Transactional(readOnly = true)
-    public ResumeDetailResponse getResumeContent(Long resumeId) {
-        Resume resume = resumeRepository.findById(resumeId)
+    public Resume getResume(Long resumeId) {
+        return resumeRepository.findById(resumeId)
                 .orElseThrow(NotFoundException::new);
-
-        // 이력서의 피드백 찾기
-        List<Feedback> feedbacks = feedbackRepository.findAllByResumeId(resumeId);
-
-        // ResumeDetailResponse 객체 생성 후 반환
-        return ResumeConverter.toResumeDetailResponse(resume, feedbacks);
     }
 
     // 유저 이름으로 이력서 조회
-    public List<ResumeResponse> searchResumesByUserName(String userName) {
-        List<Resume> resumes = resumeRepository.findByUsername(userName);
-        return resumes.stream()
-                .map(ResumeConverter::toResumeResponse)
-                .collect(Collectors.toList());
+    public List<Resume> searchResumesByUserName(String userName) {
+        return resumeRepository.findResumesByUsername(userName);
     }
 
     // 태그 조회
-    public List<PageableResumeResponse> searchByTages(ResumeSearchRequest req, Pageable pageable) {
+    public Page<Resume> searchByTages(ResumeSearchRequest req, Pageable pageable) {
         List<String> techStackNames = req.getTechStackNames();
         List<String> companyNames = req.getCompanyNames();
 
@@ -73,34 +55,28 @@ public class ResumeService {
         Page<Resume> resumesByCriteria = getResumeRepository.findResumesByCriteria(
                 req.getMinCareer(),
                 req.getMaxCareer(),
+                req.getPositions(),
                 techStackNames,
                 companyNames,
                 pageable
         );
 
-        return resumesByCriteria.stream()
-                .map(ResumeConverter::toPageableResumeResponse)
-                .collect(Collectors.toList());
+        return resumesByCriteria;
     }
 
 
-    public List<PageableResumeResponse> getResumePage(Pageable pageable) {
+    public Page<Resume> getResumePage(Pageable pageable) {
         // 페이지네이션을 적용하여 레포지토리에서 데이터를 가져옴
         Page<Resume> resumes = resumeRepository.findAll(pageable);
 
         // 첫 번째 Resume 객체를 가져옴 (예시로 첫 번째 요소를 변환)
-        // 여러 Resume 객체를 페이지로 처리하려면 추가 로직 필요
         Resume resume = resumes.getContent().isEmpty() ? null : resumes.getContent().get(0);
 
         // Resume가 없을 경우 빈 결과를 처리
         if (resume == null) {
-            return null;
+            throw new GeneralException(ErrorStatus.RESUME_NOT_FOUND);
         }
 
-        List<PageableResumeResponse> resumeDetailRespons = resumes.stream()
-                .map(ResumeConverter::toPageableResumeResponse)
-                .collect(Collectors.toList());
-        // Resume와 페이지 정보를 바탕으로 ResumePageResponse로 변환
-        return resumeDetailRespons;
+        return resumes;
     }
 }

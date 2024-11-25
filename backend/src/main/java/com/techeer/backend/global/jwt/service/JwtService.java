@@ -1,24 +1,22 @@
 package com.techeer.backend.global.jwt.service;
+
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.repository.UserRepository;
-
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import java.security.Key;
+import java.util.Date;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.security.Key;
-import java.util.Date;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -55,6 +53,7 @@ public class JwtService {
     public void init() {
         key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
     }
+
     /**
      * AccessToken 생성 메소드
      */
@@ -68,7 +67,8 @@ public class JwtService {
                 .compact();
     }
 
-    private String reIssueRefreshToken(User user) {
+
+    public String reIssueRefreshToken(User user) {
         String reIssuedRefreshToken = this.createRefreshToken();
         user.updateRefreshToken(reIssuedRefreshToken);
         userRepository.saveAndFlush(user);
@@ -82,12 +82,6 @@ public class JwtService {
                 .setExpiration(new Date(now.getTime() + refreshTokenExpirationPeriod))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
-    }
-
-    public Optional<String> extractRefreshToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(refreshHeader))
-                .filter(refreshToken -> refreshToken.startsWith(BEARER))
-                .map(refreshToken -> refreshToken.replace(BEARER, ""));
     }
 
     public Optional<String> extractAccessToken(HttpServletRequest request) {
@@ -106,38 +100,20 @@ public class JwtService {
         }
     }
 
-
     public Object[] extractEmailAndSocialType(String accessToken) {
-        try {
-            Claims claims = decodeAccessToken(accessToken);
-            if (claims != null) {
-                String email = claims.get("email", String.class);
-                //SocialType socialType = deserializeSocialType(claims.get("socialType", String.class));
-                return new Object[]{email};
-            }
-        } catch (Exception e) {
-            // 디코딩 실패 시 예외 처리
-            e.printStackTrace();
+        Claims claims = decodeAccessToken(accessToken);
+        if (claims != null) {
+            String email = claims.get("email", String.class);
+            return new Object[]{email};
         }
         return null;
     }
 
-    // Claims에서 추출할 때 문자열을 SocialType으로 변환
-//    private SocialType deserializeSocialType(String socialTypeString) {
-//        // 예시: 문자열을 Enum으로 변환
-//        return SocialType.valueOf(socialTypeString);
-//    }
-
     private Claims decodeAccessToken(String accessToken) {
-        try {
-            return Jwts.parser()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(accessToken)
-                    .getBody();
-        } catch (ExpiredJwtException e) {
-            // 만료된 토큰 예외 처리
-            return e.getClaims();
-        }
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(accessToken)
+                .getBody();
     }
 }
