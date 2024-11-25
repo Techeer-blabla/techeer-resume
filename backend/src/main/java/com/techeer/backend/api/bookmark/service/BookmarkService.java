@@ -8,12 +8,10 @@ import com.techeer.backend.api.bookmark.repository.BookmarkRepository;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
 import com.techeer.backend.api.user.domain.User;
-import com.techeer.backend.api.user.service.UserService;
 import com.techeer.backend.global.error.ErrorStatus;
 import com.techeer.backend.global.error.exception.BusinessException;
 import jakarta.transaction.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +21,6 @@ public class BookmarkService {
 
     private final BookmarkRepository bookmarkRepository;
     private final ResumeRepository resumeRepository;
-    private final UserService userService;
 
     @Transactional
     public Bookmark addBookmark(User user, BookmarkAddRequest bookmarkRequest) {
@@ -54,13 +51,9 @@ public class BookmarkService {
     }
 
     // user_id로 모든 북마크 조회
-    public List<BookmarkResponse> getBookmarksByUserId(Long userId) {
+    public List<Bookmark> getBookmarksByUserId(Long userId) {
 
-        List<Bookmark> bookmarks = bookmarkRepository.findByUserId(userId);
-
-        return bookmarks.stream()
-                .map(BookmarkConverter::toBookmarkResponse)
-                .collect(Collectors.toList());
+        return bookmarkRepository.findAllByUserId(userId);
     }
 
 //    // bookmark_id로 단일 북마크 조회

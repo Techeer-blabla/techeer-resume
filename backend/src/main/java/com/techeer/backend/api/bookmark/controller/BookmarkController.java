@@ -56,8 +56,10 @@ public class BookmarkController {
     public CommonResponse<List<BookmarkResponse>> getBookmarksByUserId(
             @PathVariable("user_id") Long userId) {
         User user = userService.getLoginUser();
-        List<BookmarkResponse> bookmarks = bookmarkService.getBookmarksByUserId(user.getId());
-        return CommonResponse.of(SuccessStatus.OK, bookmarks);
+
+        List<Bookmark> bookmarks = bookmarkService.getBookmarksByUserId(user.getId());
+        List<BookmarkResponse> bookmarkResponses = BookmarkConverter.toBookmarkResponses(bookmarks);
+        return CommonResponse.of(SuccessStatus.OK, bookmarkResponses);
     }
 
 //    @Operation(summary = "단일 북마크 조회", description = "하나의 북마크만 검색해서 조회합니다.")
