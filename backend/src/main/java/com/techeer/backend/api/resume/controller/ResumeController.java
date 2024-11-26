@@ -1,5 +1,9 @@
 package com.techeer.backend.api.resume.controller;
 
+import com.techeer.backend.api.feedback.domain.Feedback;
+import com.techeer.backend.api.feedback.service.FeedbackService;
+import com.techeer.backend.api.resume.converter.ResumeConverter;
+import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.dto.request.CreateResumeRequest;
 import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
 import com.techeer.backend.api.resume.dto.response.PageableResumeResponse;
@@ -7,20 +11,23 @@ import com.techeer.backend.api.resume.dto.response.ResumeDetailResponse;
 import com.techeer.backend.api.resume.dto.response.ResumeResponse;
 import com.techeer.backend.api.resume.service.ResumeService;
 import com.techeer.backend.api.resume.service.facade.ResumeCreateFacade;
+import com.techeer.backend.api.user.domain.User;
+import com.techeer.backend.api.user.service.UserService;
+import com.techeer.backend.global.common.response.CommonResponse;
 import com.techeer.backend.global.error.ErrorStatus;
 import com.techeer.backend.global.error.exception.GeneralException;
-import com.techeer.backend.global.success.SuccessCode;
-import com.techeer.backend.global.success.SuccessResponse;
+import com.techeer.backend.global.success.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,14 +46,15 @@ import org.springframework.web.multipart.MultipartFile;
 public class ResumeController {
     private final ResumeCreateFacade resumeCreateFacade;
     private final ResumeService resumeService;
+    private final FeedbackService feedbackService;
+    private final UserService userService;
 
     // 이력서 등록
-    // todo
     @Operation(summary = "이력서 등록")
     @PostMapping(value = "/resumes", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<SuccessResponse> resumeRegistration(@RequestPart @Valid CreateResumeRequest createResumeReq,
-                                                              @RequestPart(name = "resume_file")
-                                                              @Valid MultipartFile resumeFile) {
+    public CommonResponse<Object> resumeRegistration(@RequestPart @Valid CreateResumeRequest createResumeReq,
+                                                     @RequestPart(name = "resume_file")
+                                                     @Valid MultipartFile resumeFile) {
         // 파일 유효성 검사 -> 나중에 vaildtor로 변경해서 유효성 검사할 예정
         if (resumeFile.isEmpty()) {
             throw new GeneralException(ErrorStatus.RESUME_FILE_EMPTY);
@@ -60,52 +68,65 @@ public class ResumeController {
         //        if (registrars.isPresent()) {registrar = registrars.get();}
 
         resumeCreateFacade.createResume(createResumeReq, resumeFile);
-        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS));
+        return CommonResponse.of(SuccessStatus.CREATED, null);
     }
 
 
     @Operation(summary = "회원 이름으로 이력서 조회")
     @GetMapping("/resumes/search")
-    public ResponseEntity<List<ResumeResponse>> searchResumesByUserName(@RequestParam("user_name") String userName) {
-        List<ResumeResponse> resumeResponse = resumeService.searchResumesByUserName(userName);
-        return ResponseEntity.ok(resumeResponse);
+    public CommonResponse<List<ResumeResponse>> searchResumesByUserName(@RequestParam("user_name") String userName) {
+        User user = userService.getLoginUser();
+
+        List<Resume> resumes = resumeService.searchResumesByUserName(userName);
+
+        List<ResumeResponse> resumeResponse = resumes.stream()
+                .map(ResumeConverter::toResumeResponse)
+                .collect(Collectors.toList());
+
+        return CommonResponse.of(SuccessStatus.OK, resumeResponse);
     }
 
 
     @Operation(summary = "이력서 개별 조회")
     @GetMapping("/resumes/{resume_id}")
-    public ResponseEntity<SuccessResponse> searchResumeDetail(@PathVariable("resume_id") Long resumeId) {
+    public CommonResponse<ResumeDetailResponse> searchResumeDetail(@PathVariable("resume_id") Long resumeId) {
 
-        ResumeDetailResponse resumeContent = resumeService.getResumeContent(resumeId);
-        SuccessResponse response = SuccessResponse.of(SuccessCode.SUCCESS, resumeContent);
+        Resume resume = resumeService.getResume(resumeId);
+        List<Feedback> feedbakcs = feedbackService.getFeedbacksByResumeId(resumeId);
 
-        return ResponseEntity.ok(response);
+        ResumeDetailResponse resumeContent = ResumeConverter.toResumeDetailResponse(resume, feedbakcs);
+        return CommonResponse.of(SuccessStatus.OK, resumeContent);
     }
 
 
     @Operation(summary = "여러 이력서 조회(페이지네이션)")
     @GetMapping(value = "/resumes")
-    public ResponseEntity<List<PageableResumeResponse>> searchResumes(@RequestParam int page,
+    public CommonResponse<List<PageableResumeResponse>> searchResumes(@RequestParam int page,
                                                                       @RequestParam int size) {
         //ResumeService를 통해 페이지네이션된 이력서 목록을 가져옵니다.
         final Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
-        final List<PageableResumeResponse> pageableResumeResponses = resumeService.getResumePage(pageable);
+        Page<Resume> resumes = resumeService.getResumePage(pageable);
 
-        if (pageableResumeResponses == null) {
-            // 404 Not Found
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(pageableResumeResponses);
+        List<PageableResumeResponse> resumeResponses = resumes.stream()
+                .map(ResumeConverter::toPageableResumeResponse)
+                .collect(Collectors.toList());
+
+        return CommonResponse.of(SuccessStatus.OK, resumeResponses);
     }
 
 
     @Operation(summary = "이력서 태그 조회")
     @PostMapping("/resumes/search")
-    public ResponseEntity<List<PageableResumeResponse>> searchResumesByTag(@RequestParam int page,
+    public CommonResponse<List<PageableResumeResponse>> searchResumesByTag(@RequestParam int page,
                                                                            @RequestParam int size,
                                                                            @RequestBody ResumeSearchRequest dto) {
         final Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
-        final List<PageableResumeResponse> pageableResumeRespons = resumeService.searchByTages(dto, pageable);
-        return ResponseEntity.ok(pageableResumeRespons);
+        Page<Resume> resumeList = resumeService.searchByTages(dto, pageable);
+
+        List<PageableResumeResponse> pageableResumeResponse = resumeList.stream()
+                .map(ResumeConverter::toPageableResumeResponse)
+                .collect(Collectors.toList());
+
+        return CommonResponse.of(SuccessStatus.OK, pageableResumeResponse);
     }
 }

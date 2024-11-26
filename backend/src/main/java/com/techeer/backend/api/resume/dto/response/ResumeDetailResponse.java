@@ -1,6 +1,6 @@
 package com.techeer.backend.api.resume.dto.response;
 
-import com.techeer.backend.api.feedback.dto.FeedbackResponse;
+import com.techeer.backend.api.feedback.dto.response.FeedbackResponse;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
