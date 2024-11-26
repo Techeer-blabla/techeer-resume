@@ -2,18 +2,19 @@ package com.techeer.backend.api.user.controller;
 
 import com.techeer.backend.api.user.converter.UserConverter;
 import com.techeer.backend.api.user.dto.request.SignUpRequest;
-import com.techeer.backend.api.user.dto.request.UserTokenRequest;
 import com.techeer.backend.api.user.dto.response.UserInfoResponse;
 import com.techeer.backend.api.user.service.UserService;
 import com.techeer.backend.global.common.response.CommonResponse;
 import com.techeer.backend.global.jwt.JwtToken;
 import com.techeer.backend.global.success.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,9 +47,13 @@ public class UserController {
 
     @Operation(summary = "액세스 토큰 재발급")
     @PostMapping("/reissue")
-    public CommonResponse<JwtToken> reGenerateAccessToken(@RequestBody @Valid UserTokenRequest userTokenReq) {
-        JwtToken result = userService.reissueToken(userTokenReq);
-        return CommonResponse.of(SuccessStatus.TOKEN_REISSUE_OK, result);
+    public CommonResponse<Void> reGenerateAccessToken(@RequestHeader("Access-Token") String accessToken,
+                                                      @RequestHeader("Refresh-Token") String refreshToken,
+                                                      HttpServletResponse response) {
+        JwtToken result = userService.reissueToken(accessToken, refreshToken);
+        response.setHeader("Access-Token", result.getAccessToken());
+        response.setHeader("Refresh-Token", result.getRefreshToken());
+        return CommonResponse.of(SuccessStatus.TOKEN_REISSUE_OK, null);
     }
 
 }
