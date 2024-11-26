@@ -55,5 +55,4 @@ public class UserController {
         response.setHeader("Refresh-Token", result.getRefreshToken());
         return CommonResponse.of(SuccessStatus.TOKEN_REISSUE_OK, null);
     }
-
 }
