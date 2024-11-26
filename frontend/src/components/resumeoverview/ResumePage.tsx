@@ -77,14 +77,11 @@ function ResumePage({
     <div className="relative mb-8">
       <div
         ref={pageRef}
-        className="w-full h-[903px] items-center relative cursor-pointer"
+        className="w-full h-[903px] items-center relative cursor-pointer -mt-1"
         onClick={handleClick}
       >
         {/* PDF 미리보기 */}
         <PDFPage pdfUrl={ResumeUrl} />
-
-        {/* <p className="text-black">Resume PDF Page {pageNumber}</p> */}
-        {/* 피드백 마커 렌더링 */}
         <>
           {feedbackPoints.map((point) => (
             <div

@@ -7,7 +7,6 @@ import Login from "./pages/LoginPage";
 import ProtectedRoute from "./utils/Token";
 import MyInfoPage from "./pages/MyInfoPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React from "react";
 
 // QueryClient 생성
 const queryClient = new QueryClient();
@@ -30,7 +29,8 @@ export default function App() {
               </Route>
             </Routes>
           </div>
-        </BrowserRouter>
+        </div>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 }
