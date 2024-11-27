@@ -8,6 +8,8 @@ import PostCard from "../components/common/PostCard.tsx";
 import man1 from "../assets/man1.png";
 import man2 from "../assets/man2.png";
 import { PostCardsType } from "../dataType.ts";
+import { ErrorBoundary } from "react-error-boundary";
+import ResumeErrorFallback from "../components/Error/ResumeErrorFallback.tsx";
 
 function MainPage() {
   // 포스트카드 GET API 요청 함수
@@ -24,7 +26,7 @@ function MainPage() {
   // useInfiniteQuery 사용하여 데이터 가져오기
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
     useInfiniteQuery({
       queryKey: ["postCards"],
       queryFn: async ({ pageParam = 0 }) => {
@@ -116,24 +118,32 @@ function MainPage() {
           {/* 포스트 카드 */}
           <div className="flex justify-center">
             <div className="grid grid-cols-1 min-[700px]:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 p-5">
-              {data?.pages && data.pages.length > 0 ? (
-                data.pages.map((page) =>
-                  page?.map((post: PostCardsType) => (
-                    <PostCard
-                      key={post.resume_id}
-                      name={post.user_name}
-                      role={post.position}
-                      experience={post.career}
-                      education="전공자"
-                      skills={post.tech_stack_names}
-                    />
-                  ))
-                )
-              ) : (
-                <div className="flex justify-center w-screen mt-10">
-                  <p>등록된 이력서가 없습니다.</p>
-                </div>
-              )}
+              <ErrorBoundary
+                FallbackComponent={ResumeErrorFallback}
+                onReset={() => {
+                  console.log("Error boundary reset triggered.");
+                  refetch(); // React Query 재요청 로직
+                }}
+              >
+                {data?.pages && data.pages.length > 0 ? (
+                  data.pages.map((page) =>
+                    page?.map((post: PostCardsType) => (
+                      <PostCard
+                        key={post.resume_id}
+                        name={post.user_name}
+                        role={post.position}
+                        experience={post.career}
+                        education="전공자"
+                        skills={post.tech_stack_names}
+                      />
+                    ))
+                  )
+                ) : (
+                  <div className="flex justify-center w-screen mt-10">
+                    <p>등록된 이력서가 없습니다.</p>
+                  </div>
+                )}
+              </ErrorBoundary>
             </div>
           </div>
 
