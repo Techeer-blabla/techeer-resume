@@ -22,10 +22,10 @@ function MainContainer({
   return (
     <div className="w-full flex flex-col bg-white h-[90vh] ">
       {/* Scrollable Content with space for the fixed NavBar and Footer */}
-      <div className="flex-grow overflow-y-auto mt-16 mb-6 px-6">
+      <div className="flex-grow overflow-y-scroll mt-10 mb-6 px-6">
         {/* Adjusted margin */}
         <ResumePageGroup
-          pages={3} // Adjust 'pages' to the number of resume pages
+          // pages={1} // Adjust 'pages' to the number of resume pages
           feedbackPoints={feedbackPoints}
           addFeedbackPoint={addFeedbackPoint}
           deleteFeedbackPoint={deleteFeedbackPoint}
