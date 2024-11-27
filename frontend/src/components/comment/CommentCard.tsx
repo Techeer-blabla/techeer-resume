@@ -89,7 +89,7 @@ function CommentCard({
 
       {/* Action Buttons */}
       <div className="flex space-x-2 z-10">
-        <button onClick={handleEditToggle} className="text-blue-500 text-xs">
+        <button data-testid="EditButton" onClick={handleEditToggle} className="text-blue-500 text-xs">
           {isEditing ? "취소" : "수정"}
         </button>
         <button onClick={handleDelete} className="text-red-500 text-xs">
