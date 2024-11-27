@@ -1,4 +1,4 @@
-/// <reference types="vitest" />
+// <reference types="vitest" />
 import { vi } from "vitest";
 import { create } from "zustand";
 
