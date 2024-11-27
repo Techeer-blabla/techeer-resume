@@ -10,8 +10,6 @@
     "type-check": "tsc --noEmit",
     "preview": "vite preview",
     "test": "vitest"
-    "preview": "vite preview",
-    "test": "vitest"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
