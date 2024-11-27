@@ -3,7 +3,6 @@ package com.techeer.backend.api.user.service;
 
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.dto.request.SignUpRequest;
-import com.techeer.backend.api.user.dto.request.UserTokenRequest;
 import com.techeer.backend.api.user.repository.UserRepository;
 import com.techeer.backend.global.error.ErrorStatus;
 import com.techeer.backend.global.error.exception.BusinessException;
@@ -47,14 +46,14 @@ public class UserService {
                 .orElseThrow(() -> new BusinessException(ErrorStatus.USER_NOT_FOUND));
     }
 
-    @Transactional(readOnly = true)
-    public JwtToken reissueToken(UserTokenRequest userTokenReq) {
+    @Transactional
+    public JwtToken reissueToken(String accessToken, String refreshToken) {
         // Refresh Token 검증
-        if (!jwtService.isTokenValid(userTokenReq.getRefreshToken())) {
+        if (!jwtService.isTokenValid(refreshToken)) {
             throw new BusinessException(ErrorStatus.INVALID_REFRESH_TOKEN);
         }
 
-        Object[] emailAndSocialType = jwtService.extractEmailAndSocialType(userTokenReq.getAccessToken());
+        Object[] emailAndSocialType = jwtService.extractEmailAndSocialType(accessToken);
 
         if (emailAndSocialType.length < 1) {
             throw new BusinessException(ErrorStatus.USER_NOT_AUTHENTICATED);
@@ -67,10 +66,10 @@ public class UserService {
             throw new BusinessException(ErrorStatus.USER_NOT_AUTHENTICATED);
         }
 
-        String refreshToken = user.get().getRefreshToken();
+        String userRefreshToken = user.get().getRefreshToken();
 
         // db에 리프레시 토큰 없을 경우(logout)
-        if (refreshToken == null || !refreshToken.equals(userTokenReq.getRefreshToken())) {
+        if (userRefreshToken == null || !userRefreshToken.equals(refreshToken)) {
             throw new BusinessException(ErrorStatus.USER_NOT_AUTHENTICATED);
         }
 
