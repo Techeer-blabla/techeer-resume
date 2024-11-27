@@ -2,7 +2,6 @@ package com.techeer.backend.api.bookmark.service;
 
 import com.techeer.backend.api.bookmark.converter.BookmarkConverter;
 import com.techeer.backend.api.bookmark.domain.Bookmark;
-import com.techeer.backend.api.bookmark.dto.BookmarkAddRequest;
 import com.techeer.backend.api.bookmark.repository.BookmarkRepository;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
@@ -22,9 +21,9 @@ public class BookmarkService {
     private final ResumeRepository resumeRepository;
 
     @Transactional
-    public Bookmark addBookmark(User user, BookmarkAddRequest bookmarkRequest) {
+    public Bookmark addBookmark(User user, Long resumeId) {
 
-        Resume resume = resumeRepository.findById(bookmarkRequest.getResumeId())
+        Resume resume = resumeRepository.findById(resumeId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.RESUME_NOT_FOUND));
 
         Bookmark bookmark = BookmarkConverter.toBookmarkEntity(user, resume);

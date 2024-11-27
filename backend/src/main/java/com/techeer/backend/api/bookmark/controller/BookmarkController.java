@@ -2,7 +2,6 @@ package com.techeer.backend.api.bookmark.controller;
 
 import com.techeer.backend.api.bookmark.converter.BookmarkConverter;
 import com.techeer.backend.api.bookmark.domain.Bookmark;
-import com.techeer.backend.api.bookmark.dto.BookmarkAddRequest;
 import com.techeer.backend.api.bookmark.dto.BookmarkResponse;
 import com.techeer.backend.api.bookmark.service.BookmarkService;
 import com.techeer.backend.api.user.domain.User;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,11 +31,11 @@ public class BookmarkController {
     @Operation(summary = "북마크 등록", description = "관심있는 이력서를 북마크로 등록합니다.")
     @PostMapping
     public CommonResponse<BookmarkResponse> addBookmark(
-            @RequestBody BookmarkAddRequest bookmarkRequest) {
+            @PathVariable("resume_id") Long resumeId) {
 
         User user = userService.getLoginUser();
 
-        Bookmark bookmark = bookmarkService.addBookmark(user, bookmarkRequest);
+        Bookmark bookmark = bookmarkService.addBookmark(user, resumeId);
         BookmarkResponse bookmarkResponse = BookmarkConverter.toBookmarkResponse(bookmark);
 
         return CommonResponse.of(SuccessStatus.CREATED, bookmarkResponse);
