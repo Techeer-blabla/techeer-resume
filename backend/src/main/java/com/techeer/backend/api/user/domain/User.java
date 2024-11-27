@@ -70,6 +70,14 @@ public class User extends BaseEntity {
         this.socialType = socialType;
     }
 
+    public User(String email, String refreshToken, Role role, String username, SocialType socialType) {
+        this.email = email;
+        this.username = username;
+        this.refreshToken = refreshToken;
+        this.role = role;
+        this.socialType = socialType;
+    }
+
     public void updateUser(SignUpRequest req) {
         this.username = req.getUsername();
         this.role = req.getRole();
