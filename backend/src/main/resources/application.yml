@@ -34,12 +34,14 @@ spring:
             client-secret: ${GOOGLE_CLIENT_SECRET}
             scope:
               - email
+              - profile
             redirect-uri: ${GOOGLE_REDIRECT_URI}
           github:
             client-id: ${GITHUB_CLIENT_ID}
             client-secret: ${GITHUB_CLIENT_SECRET}
             scope:
               - user:email
+              - read:user
             redirect-uri: ${GITHUB_REDIRECT_URI}
 
 logging:
