@@ -1,8 +1,7 @@
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import CommentCard from "../components/comment/CommentCard";
-import { it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("일반 코멘트 카드 테스트", () => {
   const mockComment = {
