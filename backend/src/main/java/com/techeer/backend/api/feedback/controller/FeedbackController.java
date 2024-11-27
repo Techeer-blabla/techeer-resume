@@ -61,7 +61,7 @@ public class FeedbackController {
     public CommonResponse<AllFeedbackResponse> getFeedbackWithAIFeedback(@PathVariable("resume_id") Long resumeId) {
 
         // 엔티티, 리스트 반환
-        List<Feedback> feedbacks = feedbackService.getFeedbacksByResumeId(resumeId);
+        List<Feedback> feedbacks = feedbackService.getFeedbackByResumeId(resumeId);
         AIFeedback aiFeedback = feedbackService.getAIFeedbackByResumeId(resumeId);
 
         AllFeedbackResponse response = FeedbackConverter.toAllFeedbackResponse(feedbacks, aiFeedback);

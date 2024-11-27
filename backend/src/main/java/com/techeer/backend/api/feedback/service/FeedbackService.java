@@ -10,7 +10,7 @@ import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.global.error.ErrorStatus;
-import com.techeer.backend.global.error.exception.BusinessException;
+import com.techeer.backend.global.error.exception.GeneralException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ public class FeedbackService {
     public Feedback createFeedback(User user, Long resumeId, FeedbackCreateRequest feedbackCreateRequest) {
 
         Resume resume = resumeRepository.findByIdAndDeletedAtIsNull(resumeId)
-                .orElseThrow(() -> new BusinessException(ErrorStatus.RESUME_NOT_FOUND));
+                .orElseThrow(() -> new GeneralException(ErrorStatus.RESUME_NOT_FOUND));
 
         Feedback feedback = FeedbackConverter.toFeedbackEntity(user, resume, feedbackCreateRequest);
         feedbackRepository.save(feedback);
@@ -41,17 +41,17 @@ public class FeedbackService {
     public void deleteFeedbackById(User user, Long resumeId, Long feedbackId) {
 
         Resume resume = resumeRepository.findById(resumeId)
-                .orElseThrow(() -> new BusinessException(ErrorStatus.RESUME_NOT_FOUND));
+                .orElseThrow(() -> new GeneralException(ErrorStatus.RESUME_NOT_FOUND));
 
         Feedback feedback = feedbackRepository.findById(feedbackId)
-                .orElseThrow(() -> new BusinessException(ErrorStatus.FEEDBACK_NOT_FOUND));
+                .orElseThrow(() -> new GeneralException(ErrorStatus.FEEDBACK_NOT_FOUND));
 
         if (!feedback.getResume().getId().equals(resume.getId())) {
-            throw new BusinessException(ErrorStatus.INVALID_FEEDBACK_FOR_RESUME);
+            throw new GeneralException(ErrorStatus.INVALID_FEEDBACK_FOR_RESUME);
         }
 
         if (!feedback.getUser().getId().equals(user.getId())) {
-            throw new BusinessException(ErrorStatus.UNAUTHORIZED);
+            throw new GeneralException(ErrorStatus.UNAUTHORIZED);
         }
 
         log.info("피드백 삭제 중: 피드백 ID {} (이력서 ID {})", feedbackId, resumeId);
@@ -60,11 +60,16 @@ public class FeedbackService {
     }
 
     public List<Feedback> getFeedbackByResumeId(Long resumeId) {
+        // 이력서 존재 확인
+        if (!resumeRepository.existsById(resumeId)) {
+            throw new GeneralException(ErrorStatus.RESUME_NOT_FOUND);
+        }
         // 이력서 id에 해당하는 모든 일반 피드백 가져옴
         List<Feedback> feedbacks = feedbackRepository.findAllByResumeId(resumeId);
         if (feedbacks.isEmpty()) {
-            throw new BusinessException(ErrorStatus.FEEDBACK_NOT_FOUND);
+            throw new GeneralException(ErrorStatus.FEEDBACK_NOT_FOUND);
         }
+
         return feedbacks;
     }
 
@@ -77,5 +82,4 @@ public class FeedbackService {
     public List<Feedback> getFeedbacksByResumeId(Long resumeId) {
         return feedbackRepository.findAllByResumeId(resumeId);
     }
-
 }
