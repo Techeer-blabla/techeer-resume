@@ -2,13 +2,13 @@
 import { vi } from "vitest";
 import { create } from "zustand";
 
-
 // 1. CategoryStore 모킹
 vi.mock("../../store/CategoryStore", () => {
   const useMockStore = create((set) => ({
     positionCategory: [],
     careerCategory: [],
-    setPositionCategory: (positions: string[]) => set({ positionCategory: positions }),
+    setPositionCategory: (positions: string[]) =>
+      set({ positionCategory: positions }),
     setCareerCategory: (career: string[]) => set({ careerCategory: career }),
     deleteCareer: () => set({ careerCategory: [] }),
     deletePosition: () => set({ positionCategory: [] }),
@@ -42,7 +42,7 @@ describe("PositionModal 컴포넌트 테스트", () => {
     // Given : 사용자가 모달을 사용하고 싶음
     render(<PositionModal isOpen={true} onClose={onClose} />);
 
-    //  Then: 모달 타이틀과 모든 포지션이 렌더링 
+    //  Then: 모달 타이틀과 모든 포지션이 렌더링
     expect(screen.getByText("포지션")).toBeInTheDocument();
 
     const positions = [
@@ -109,7 +109,9 @@ describe("PositionModal 컴포넌트 테스트", () => {
     fireEvent.click(applyButton);
 
     // Then: Zustand 스토어에 선택된 포지션이 저장되고 onClose가 호출되었는지 확인
-    expect(useCategoryStore.getState().positionCategory).toContain(positionToSelect);
+    expect(useCategoryStore.getState().positionCategory).toContain(
+      positionToSelect
+    );
     expect(onClose).toHaveBeenCalled();
   });
 
