@@ -2,7 +2,7 @@ import ResumePage from "./ResumePage";
 import { AddFeedbackPoint, FeedbackPoint } from "../../types.ts";
 
 type ResumePageGroupProps = {
-  pages: number;
+  // pages: number;
   feedbackPoints: FeedbackPoint[];
   addFeedbackPoint: (point: Omit<AddFeedbackPoint, "id" | "type">) => void;
   deleteFeedbackPoint: (id: number) => void;
@@ -12,7 +12,7 @@ type ResumePageGroupProps = {
 };
 
 function ResumePageGroup({
-  pages,
+  // pages,
   feedbackPoints,
   addFeedbackPoint,
   deleteFeedbackPoint,
@@ -20,24 +20,19 @@ function ResumePageGroup({
   hoveredCommentId,
   setHoveredCommentId,
 }: ResumePageGroupProps) {
-  const pageComponents = [];
-
-  for (let i = 1; i <= pages; i++) {
-    pageComponents.push(
-      <ResumePage
-        key={i}
-        pageNumber={i}
-        feedbackPoints={feedbackPoints}
-        addFeedbackPoint={addFeedbackPoint}
-        deleteFeedbackPoint={deleteFeedbackPoint}
-        editFeedbackPoint={editFeedbackPoint}
-        hoveredCommentId={hoveredCommentId}
-        setHoveredCommentId={setHoveredCommentId}
-      />
-    );
-  }
-
-  return <div>{pageComponents}</div>;
+  // 단일 페이지만 렌더링
+  return (
+    <ResumePage
+      key={1}
+      pageNumber={1}
+      feedbackPoints={feedbackPoints}
+      addFeedbackPoint={addFeedbackPoint}
+      deleteFeedbackPoint={deleteFeedbackPoint}
+      editFeedbackPoint={editFeedbackPoint}
+      hoveredCommentId={hoveredCommentId}
+      setHoveredCommentId={setHoveredCommentId}
+    />
+  );
 }
 
 export default ResumePageGroup;

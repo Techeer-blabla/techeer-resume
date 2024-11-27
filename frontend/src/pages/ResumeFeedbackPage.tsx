@@ -10,7 +10,10 @@ import {
   deleteFeedbackApi,
   getResumeApi,
 } from "../api/feedbackApi.ts";
+// import { viewResume } from "../api/resumeApi.ts";
 import { AddFeedbackPoint, FeedbackPoint, ResumeData } from "../types.ts";
+// import { useParams } from "react-router-dom";
+import useResumeStore from "../store/ResumeStore.ts";
 
 function ResumeFeedbackPage() {
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
@@ -18,16 +21,18 @@ function ResumeFeedbackPage() {
   const [hoveredCommentId, setHoveredCommentId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const resumeId = 1;
+  const { resumeId, setResumeUrl } = useResumeStore();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await getResumeApi(resumeId);
+        const data = await getResumeApi(Number(resumeId));
         setResumeData(data);
-        setFeedbackPoints(data.feedbacks || []);
+
+        setResumeUrl(data.fileUrl);
+        setFeedbackPoints(data.feedbackResponses || []);
       } catch (error) {
         console.error("Failed to fetch resume data", error);
         setError("Failed to fetch resume data. Please try again later.");
@@ -36,7 +41,7 @@ function ResumeFeedbackPage() {
       }
     };
     fetchData();
-  }, [resumeId]);
+  }, [resumeId, setResumeUrl]);
 
   // 피드백 점 추가
   const addFeedbackPoint = async (point: Omit<AddFeedbackPoint, "id">) => {
@@ -57,9 +62,10 @@ function ResumeFeedbackPage() {
         content: point.content,
         pageNumber: 1,
       };
-      await addFeedbackApi(resumeId, newPoint);
-      const updatedData = await getResumeApi(resumeId);
-      setFeedbackPoints(updatedData.feedbacks);
+      await addFeedbackApi(Number(resumeId), newPoint);
+      const updatedData = await getResumeApi(Number(resumeId));
+      console.log("업데이트 데이터: ", updatedData);
+      setFeedbackPoints(updatedData.feedbackResponses);
     } catch (error) {
       console.error("Failed to add feedback point", error);
       setError("Failed to add feedback point. Please try again later.");
@@ -76,7 +82,7 @@ function ResumeFeedbackPage() {
       setError(null);
 
       // Call the API to delete the feedback point
-      await deleteFeedbackApi(resumeId, id);
+      await deleteFeedbackApi(Number(resumeId), id);
 
       // After successful deletion, update the local state to remove the feedback
       setFeedbackPoints((prevComments) =>

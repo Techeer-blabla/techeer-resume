@@ -20,7 +20,7 @@ export const formAxios = axios.create({
   },
 });
 
-export const formAxiosjson = axios.create({
+export const jsonFormAxios = axios.create({
   baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",

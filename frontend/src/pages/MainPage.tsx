@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { getResumeList } from "../api/resumeApi.ts";
+import { getResumeList, viewResume } from "../api/resumeApi.ts";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/common/Navbar.tsx";
 import BannerCard from "../components/MainPage/BannerCard";
 import Category from "../components/MainPage/Category";
@@ -10,8 +11,23 @@ import man2 from "../assets/man2.png";
 import { PostCardsType } from "../dataType.ts";
 import { ErrorBoundary } from "react-error-boundary";
 import ResumeErrorFallback from "../components/Error/ResumeErrorFallback.tsx";
+import useResumeStore from "../store/ResumeStore.ts";
 
 function MainPage() {
+  const navigate = useNavigate();
+  const { setResumeId } = useResumeStore();
+  const moveToResume = async (resumeId: number) => {
+    try {
+      const response = await viewResume(resumeId);
+      setResumeId(response.data.resume_id);
+      navigate(`/feedback?${response.data.resume_id}`);
+      return response;
+    } catch (error) {
+      console.error("이력서 조회 오류:", error);
+      throw error;
+    }
+  };
+
   // 포스트카드 GET API 요청 함수
   const fetchPostCards = async (page: number, size = 8) => {
     try {
@@ -46,8 +62,6 @@ function MainPage() {
       },
       initialPageParam: 0,
     });
-
-  console.log("resumeList: ", data);
 
   useEffect(() => {
     if (!hasNextPage || isFetchingNextPage) return;
@@ -135,6 +149,7 @@ function MainPage() {
                         experience={post.career}
                         education="전공자"
                         skills={post.tech_stack_names}
+                        onClick={() => moveToResume(Number(post.resume_id))}
                       />
                     ))
                   )
