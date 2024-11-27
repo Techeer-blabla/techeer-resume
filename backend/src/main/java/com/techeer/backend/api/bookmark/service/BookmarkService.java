@@ -8,7 +8,7 @@ import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.global.error.ErrorStatus;
-import com.techeer.backend.global.error.exception.BusinessException;
+import com.techeer.backend.global.error.exception.GeneralException;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class BookmarkService {
     public Bookmark addBookmark(User user, BookmarkAddRequest bookmarkRequest) {
 
         Resume resume = resumeRepository.findById(bookmarkRequest.getResumeId())
-                .orElseThrow(() -> new BusinessException(ErrorStatus.RESUME_NOT_FOUND));
+                .orElseThrow(() -> new GeneralException(ErrorStatus.RESUME_NOT_FOUND));
 
         Bookmark bookmark = BookmarkConverter.toBookmarkEntity(user, resume);
 
@@ -37,28 +37,24 @@ public class BookmarkService {
 
         // bookmark_id로 북마크 조회
         Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
-                .orElseThrow(() -> new BusinessException(ErrorStatus.BOOKMARK_NOT_FOUND));
+                .orElseThrow(() -> new GeneralException(ErrorStatus.BOOKMARK_NOT_FOUND));
 
         if (!bookmark.getUser().getId().equals(user.getId())) {
-            throw new BusinessException(ErrorStatus.UNAUTHORIZED);
+            throw new GeneralException(ErrorStatus.UNAUTHORIZED);
         }
 
         // 북마크 삭제
         bookmarkRepository.delete(bookmark);
-
     }
 
     // user_id로 모든 북마크 조회
     public List<Bookmark> getBookmarksByUserId(Long userId) {
-
         return bookmarkRepository.findAllByUserId(userId);
     }
 
-//    // bookmark_id로 단일 북마크 조회
-//    public BookmarkResponse getBookmarkById(Long bookmarkId) {
-//        Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
-//                .orElseThrow(() -> new BusinessException(ErrorStatus.BOOKMARK_NOT_FOUND));
-//
-//        return BookmarkConverter.toBookmarkResponse(bookmark);
+//    // bookmark_id로 단일 북마크 조회 (주석 해제)
+//    public Bookmark getBookmarkById(Long bookmarkId) {
+//        return bookmarkRepository.findById(bookmarkId)
+//                .orElseThrow(() -> new GeneralException(ErrorStatus.BOOKMARK_NOT_FOUND));
 //    }
 }
