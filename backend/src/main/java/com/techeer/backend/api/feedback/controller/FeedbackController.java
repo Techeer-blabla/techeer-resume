@@ -1,5 +1,8 @@
 package com.techeer.backend.api.feedback.controller;
 
+import com.techeer.backend.api.aifeedback.domain.AIFeedback;
+import com.techeer.backend.api.feedback.converter.FeedbackConverter;
+import com.techeer.backend.api.feedback.domain.Feedback;
 import com.techeer.backend.api.feedback.dto.request.FeedbackCreateRequest;
 import com.techeer.backend.api.feedback.dto.response.AllFeedbackResponse;
 import com.techeer.backend.api.feedback.dto.response.FeedbackResponse;
@@ -11,6 +14,7 @@ import com.techeer.backend.global.success.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,7 +45,11 @@ public class FeedbackController {
 
         User user = userService.getLoginUser();
 
-        FeedbackResponse feedbackResponse = feedbackService.createFeedback(user, resumeId, feedbackRequest);
+        // feedback 엔티티 반환
+        Feedback feedback = feedbackService.createFeedback(user, resumeId, feedbackRequest);
+
+        // feedbackresponse로 변환
+        FeedbackResponse feedbackResponse = FeedbackConverter.toFeedbackResponse(feedback);
 
         log.info("피드백 생성 완료: {}", feedbackResponse);
 
@@ -51,7 +59,13 @@ public class FeedbackController {
     @Operation(summary = "AI 피드백, 일반 피드백 조회", description = "해당 이력서에 대한 AI 피드백과 일반 피드백 조회")
     @GetMapping("/{resume_id}/feedbacks")
     public CommonResponse<AllFeedbackResponse> getFeedbackWithAIFeedback(@PathVariable("resume_id") Long resumeId) {
-        AllFeedbackResponse response = feedbackService.getFeedbackWithAIFeedback(resumeId);
+
+        // 엔티티, 리스트 반환
+        List<Feedback> feedbacks = feedbackService.getFeedbackByResumeId(resumeId);
+        AIFeedback aiFeedback = feedbackService.getAIFeedbackByResumeId(resumeId);
+
+        AllFeedbackResponse response = FeedbackConverter.toAllFeedbackResponse(feedbacks, aiFeedback);
+
         return CommonResponse.of(SuccessStatus.FEEDBACK_FETCH_OK, response);
     }
 
