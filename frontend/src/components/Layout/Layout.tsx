@@ -8,7 +8,7 @@ interface LayoutProps {
 
 function Layout({ children, sidebar }: LayoutProps): React.ReactElement {
   return (
-    <div>
+    <div className="pt-5 bg-white">
       <Navbar />
       <div className="flex flex-row w-full">
         {/* Left Column: Main Content */}
