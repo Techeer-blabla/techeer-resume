@@ -97,7 +97,7 @@ function Navbar() {
           )}
         </div>
       </div>
-      <div className="mt-3 w-full h-[1px] bg-gray-300" />
+      <div className="absolute mt-4 left-0 w-full h-[1px] bg-gray-300" />
     </div>
   );
 }

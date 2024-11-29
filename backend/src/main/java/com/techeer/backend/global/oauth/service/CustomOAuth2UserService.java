@@ -1,5 +1,9 @@
 package com.techeer.backend.global.oauth.service;
 
+import com.techeer.backend.api.user.domain.SocialType;
+import com.techeer.backend.api.user.repository.UserRepository;
+import com.techeer.backend.api.user.service.UserService;
+import com.techeer.backend.global.error.exception.ExceptionAdvice;
 import com.techeer.backend.global.oauth.OAuthAttributes;
 import com.techeer.backend.global.oauth.oauth2user.CustomOAuth2User;
 import java.util.Collections;
@@ -18,9 +22,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
+    final private UserRepository userRepository;
+    final private UserService userService;
+    private final ExceptionAdvice exceptionAdvice;
+
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-
+        OAuthAttributes extractAttributes;
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
@@ -33,16 +41,21 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // 소셜 로그인에서 API가 제공하는 userInfo의 Json 값(유저 정보들)
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        OAuthAttributes extractAttributes;
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-
         extractAttributes = OAuthAttributes.of(registrationId, userNameAttributeName, attributes);
+        String username = extractAttributes.getSocialType().equals(SocialType.GITHUB) ? (String) attributes.get("login")
+                : (String) attributes.get("name");
+
+        if (userRepository.findByUsernameAndSocialType(username, extractAttributes.getSocialType()).isEmpty()) {
+            userService.CreateRegularUser(attributes, username, extractAttributes.getSocialType());
+        }
 
         // DefaultOAuth2User를 구현한 CustomOAuth2User 객체를 생성해서 반환
         return CustomOAuth2User.builder()
                 .authorities(Collections.emptyList())
                 .attributes(attributes)
                 .nameAttributeKey(userNameAttributeName)
+                .name(extractAttributes.getOauth2UserInfo().getName())
                 .email(extractAttributes.getOauth2UserInfo().getEmail())
                 .socialType(extractAttributes.getSocialType())
                 .build();
