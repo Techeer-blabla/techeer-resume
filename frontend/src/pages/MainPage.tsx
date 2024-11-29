@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { getResumeList, postFilter } from "../api/resumeApi";
+import { getResumeList, viewResume, postFilter } from "../api/resumeApi";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/common/Navbar";
 import BannerCard from "../components/MainPage/BannerCard";
 import Category from "../components/MainPage/Category";
@@ -11,8 +12,23 @@ import PositionModal from "../components/Search/PositionModal";
 import CareerModal from "../components/Search/CareerModal";
 import useFilterStore from "../store/useFilterStore";
 import { PostCardsType } from "../dataType.ts";
+import useResumeStore from "../store/ResumeStore.ts";
 
 function MainPage() {
+  const navigate = useNavigate();
+  const { setResumeId } = useResumeStore();
+  const moveToResume = async (resumeId: number) => {
+    try {
+      const response = await viewResume(resumeId);
+      setResumeId(response.data.resume_id);
+      navigate(`/feedback?${response.data.resume_id}`);
+      return response;
+    } catch (error) {
+      console.error("이력서 조회 오류:", error);
+      throw error;
+    }
+  };
+
   const [isPositionOpen, setIsPositionOpen] = useState(false);
   const [isCareerOpen, setIsCareerOpen] = useState(false);
   const [filteredData, setFilteredData] = useState<PostCardsType[] | null>(
@@ -173,6 +189,7 @@ function MainPage() {
                       experience={post.career}
                       education="전공자"
                       skills={post.tech_stack_names}
+                      onClick={() => moveToResume(Number(post.resume_id))}
                     />
                   ))
                 : data?.pages.map((page) =>
