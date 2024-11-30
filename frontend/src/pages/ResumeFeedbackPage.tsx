@@ -13,7 +13,30 @@ import {
 // import { viewResume } from "../api/resumeApi.ts";
 import { AddFeedbackPoint, FeedbackPoint, ResumeData } from "../types.ts";
 // import { useParams } from "react-router-dom";
+
+import ResumeErrorFallback from "../components/Error/ResumeErrorFallback.tsx";
+import { ErrorBoundary } from "react-error-boundary";
 import useResumeStore from "../store/ResumeStore.ts";
+
+// class ErrorBoundary extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = { hasError: false };
+//   }
+
+//   static getDerivedStateFromError(error) {
+//     return { hasError: true };
+//   }
+
+//   render() {
+//     if (this.state.hasError) {
+//       // 폴백 UI를 커스텀하여 렌더링할 수 있습니다.
+//       return <h1>Something went wrong.</h1>;
+//     }
+
+//     return this.props.children;
+//   }
+// }
 
 function ResumeFeedbackPage() {
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
@@ -115,38 +138,47 @@ function ResumeFeedbackPage() {
   }
 
   return (
-    <div className="flex flex-col flex-grow ">
-      <Layout
-        sidebar={
-          <div className="flex flex-col justify-between bg-white p-2 mt-10">
-            {/* Resume Overview */}
-            <ResumeOverview />
+    <ErrorBoundary
+      FallbackComponent={ResumeErrorFallback}
+      onReset={() => console.log("ErrorBoundary Reset")}
+      onError={(error, info) => {
+        console.error("Error in ResumePage", error, info);
+      }}
+    >
+      <div className="flex flex-col flex-grow ">
+        {/* <ErrorBoundary> */}
+        <Layout
+          sidebar={
+            <div className="flex flex-col justify-between bg-white p-2 mt-10">
+              {/* Resume Overview */}
+              <ResumeOverview />
 
-            {/* Comment Section */}
-            <div className="overflow-y-auto mt-2">
-              <CommentSection
-                feedbackPoints={feedbackPoints}
-                addFeedbackPoint={addFeedbackPoint}
-                deleteFeedbackPoint={deleteFeedbackPoint}
-                editFeedbackPoint={editFeedbackPoint}
-                hoveredCommentId={hoveredCommentId}
-                setHoveredCommentId={setHoveredCommentId}
-              />
+              {/* Comment Section */}
+              <div className="overflow-y-auto mt-2">
+                <CommentSection
+                  feedbackPoints={feedbackPoints}
+                  addFeedbackPoint={addFeedbackPoint}
+                  deleteFeedbackPoint={deleteFeedbackPoint}
+                  editFeedbackPoint={editFeedbackPoint}
+                  hoveredCommentId={hoveredCommentId}
+                  setHoveredCommentId={setHoveredCommentId}
+                />
+              </div>
             </div>
-          </div>
-        }
-      >
-        {/* Main Content */}
-        <MainContainer
-          feedbackPoints={feedbackPoints}
-          addFeedbackPoint={addFeedbackPoint}
-          deleteFeedbackPoint={deleteFeedbackPoint}
-          editFeedbackPoint={editFeedbackPoint}
-          hoveredCommentId={hoveredCommentId}
-          setHoveredCommentId={setHoveredCommentId}
-        />
-      </Layout>
-    </div>
+          }
+        >
+          {/* Main Content */}
+          <MainContainer
+            feedbackPoints={feedbackPoints}
+            addFeedbackPoint={addFeedbackPoint}
+            deleteFeedbackPoint={deleteFeedbackPoint}
+            editFeedbackPoint={editFeedbackPoint}
+            hoveredCommentId={hoveredCommentId}
+            setHoveredCommentId={setHoveredCommentId}
+          />
+        </Layout>
+      </div>
+    </ErrorBoundary>
   );
 }
 

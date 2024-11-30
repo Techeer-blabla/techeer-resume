@@ -21,7 +21,7 @@ function PostCard({
   return (
     <div
       onClick={onClick}
-      className="w-80 h-48 relative bg-white rounded-[7.01px] border border-[#aabdeb] p-6 "
+      className="w-80 h-48 relative bg-white rounded-[7.01px] border border-[#aabdeb] p-6 hover:cursor-pointer"
     >
       {/* Name & Role Section */}
       <div className="flex items-center space-x-4">

@@ -1,5 +1,13 @@
-function ResumeErrorFallback() {
-// { click }: { click: () => void }
+import React from "react";
+import { ErrorBoundary } from "react-error-boundary";
+
+function ResumeErrorFallback({
+  click,
+  resetErrorBoundary,
+}: {
+  click: () => void;
+  resetErrorBoundary: () => void;
+}) {
   return (
     <div className="flex justify-center items-center flex-col w-full my-3">
       <p className="text-center text-black text-2xl font-semibold mb-5 mt-5">
@@ -12,7 +20,10 @@ function ResumeErrorFallback() {
       </p>
       <button
         className="w-80 h-14 bg-[#4177ff] rounded-lg hover:shadow flex items-center justify-center"
-        // onClick={click}
+        onClick={() => {
+          click(); // Retry the request
+          resetErrorBoundary(); // Reset the error boundary and trigger a re-render
+        }}
       >
         <p className="text-center text-white text-lg font-medium">다시 시도</p>
       </button>

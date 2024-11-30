@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getResumeList, viewResume } from "../api/resumeApi.ts";
 import { useNavigate } from "react-router-dom";
@@ -9,9 +9,12 @@ import PostCard from "../components/common/PostCard.tsx";
 import man1 from "../assets/man1.png";
 import man2 from "../assets/man2.png";
 import { PostCardsType } from "../dataType.ts";
-import { ErrorBoundary } from "react-error-boundary";
+
 import ResumeErrorFallback from "../components/Error/ResumeErrorFallback.tsx";
+import { ErrorBoundary } from "react-error-boundary";
 import useResumeStore from "../store/ResumeStore.ts";
+
+import NetworkErrorButton from "../components/Error/NetworkErrorButton.tsx"; // 버튼 컴포넌트 추가
 
 function MainPage() {
   const navigate = useNavigate();
@@ -24,7 +27,7 @@ function MainPage() {
       return response;
     } catch (error) {
       console.error("이력서 조회 오류:", error);
-      throw error;
+      throw error; // 이 부분에서 에러가 발생하면 ErrorBoundary가 처리합니다.
     }
   };
 
@@ -35,7 +38,7 @@ function MainPage() {
       return resumeList;
     } catch (error) {
       console.error("포스트카드 조회 오류:", error);
-      throw error;
+      throw error; // 이 부분에서도 에러가 발생하면 ErrorBoundary가 처리합니다.
     }
   };
 
@@ -132,13 +135,30 @@ function MainPage() {
           {/* 포스트 카드 */}
           <div className="flex justify-center">
             <div className="grid grid-cols-1 min-[700px]:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 p-5">
-              <ErrorBoundary
+              {/* <ErrorBoundary
                 FallbackComponent={ResumeErrorFallback}
                 onReset={() => {
                   console.log("Error boundary reset triggered.");
                   refetch(); // React Query 재요청 로직
                 }}
+              > */}
+              {/* <ErrorBoundary
+                FallbackComponent={ResumeErrorFallback}
+                onError={errorHandler}
+              > */}
+              <ErrorBoundary
+                FallbackComponent={(props) => (
+                  <ResumeErrorFallback
+                    click={refetch}
+                    resetErrorBoundary={props.resetErrorBoundary}
+                  />
+                )}
+                onReset={() => {
+                  console.log("Error boundary reset triggered.");
+                  refetch(); // React Query re-fetch logic
+                }}
               >
+                <NetworkErrorButton />
                 {data?.pages && data.pages.length > 0 ? (
                   data.pages.map((page) =>
                     page?.map((post: PostCardsType) => (

@@ -4,6 +4,10 @@ import { AddFeedbackPoint, FeedbackPoint } from "../../types.ts";
 import PDFPage from "./PDFPage.tsx";
 import useResumeStore from "../../store/ResumeStore.ts";
 
+import NetworkErrorButton from "../Error/NetworkErrorButton.tsx";
+// import ResumeErrorFallback from "../Error/ResumeErrorFallback.tsx";
+// import { ErrorBoundary } from "react-error-boundary";
+
 type ResumePageProps = {
   pageNumber: number;
   feedbackPoints: FeedbackPoint[];
@@ -75,6 +79,13 @@ function ResumePage({
 
   return (
     <div className="relative mb-8">
+      {/* <ErrorBoundary
+        FallbackComponent={ResumeErrorFallback}
+        onReset={() => console.log("ErrorBoundary Reset")}
+        onError={(error, info) => {
+          console.error("Error in ResumePage", error, info);
+        }}
+      > */}
       <div
         ref={pageRef}
         className="w-full h-[903px] items-center relative cursor-pointer -mt-1"
@@ -102,13 +113,14 @@ function ResumePage({
             ></div>
           ))}
           {/* 피드백 추가 폼 */}
-          {addingFeedback && (
+          {/* {addingFeedback && (
             <CommentForm
               position={{ x: addingFeedback.x, y: addingFeedback.y }}
               onSubmit={handleAddSubmit}
               onCancel={handleCancel}
             />
-          )}
+          )} */}
+          <NetworkErrorButton />
           {/* 피드백 수정 폼 */}
           {editingFeedback && (
             <CommentForm
@@ -123,6 +135,7 @@ function ResumePage({
           )}
         </>
       </div>
+      {/* </ErrorBoundary> */}
     </div>
   );
 }
