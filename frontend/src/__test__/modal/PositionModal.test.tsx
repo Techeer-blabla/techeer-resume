@@ -21,7 +21,6 @@ vi.mock("../../store/CategoryStore", () => {
   };
 });
 
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { describe, it, expect, beforeEach } from "vitest";
