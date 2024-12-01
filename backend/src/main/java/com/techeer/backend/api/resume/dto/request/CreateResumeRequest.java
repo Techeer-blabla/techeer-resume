@@ -3,10 +3,12 @@ package com.techeer.backend.api.resume.dto.request;
 import com.techeer.backend.api.tag.position.Position;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
 
 //todo Getter 한번만 사용하기
 @Getter
+@Builder
 public class CreateResumeRequest {
 
     @NotNull(message = "position는 필수입니다.")

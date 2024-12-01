@@ -30,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 @Entity
 @Getter
 @Table(name = "Resume")
+@Builder
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Resume extends BaseEntity {
