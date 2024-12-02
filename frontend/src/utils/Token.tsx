@@ -1,5 +1,4 @@
 import { Outlet, Navigate } from "react-router-dom";
-// import axios from "axios";
 import axios from "./axiosInstance";
 import { useEffect, useState } from "react";
 
