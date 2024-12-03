@@ -1,6 +1,7 @@
 package com.techeer.backend.api.bookmark.controller;
 
-import com.techeer.backend.api.bookmark.dto.BookmarkAddRequest;
+import com.techeer.backend.api.bookmark.converter.BookmarkConverter;
+import com.techeer.backend.api.bookmark.domain.Bookmark;
 import com.techeer.backend.api.bookmark.dto.BookmarkResponse;
 import com.techeer.backend.api.bookmark.service.BookmarkService;
 import com.techeer.backend.api.user.domain.User;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,9 +31,13 @@ public class BookmarkController {
     @Operation(summary = "북마크 등록", description = "관심있는 이력서를 북마크로 등록합니다.")
     @PostMapping
     public CommonResponse<BookmarkResponse> addBookmark(
-            @RequestBody BookmarkAddRequest bookmarkRequest) {
+            @PathVariable("resume_id") Long resumeId) {
+
         User user = userService.getLoginUser();
-        BookmarkResponse bookmarkResponse = bookmarkService.addBookmark(user, bookmarkRequest);
+
+        Bookmark bookmark = bookmarkService.addBookmark(user, resumeId);
+        BookmarkResponse bookmarkResponse = BookmarkConverter.toBookmarkResponse(bookmark);
+
         return CommonResponse.of(SuccessStatus.CREATED, bookmarkResponse);
     }
 
@@ -50,8 +54,10 @@ public class BookmarkController {
     public CommonResponse<List<BookmarkResponse>> getBookmarksByUserId(
             @PathVariable("user_id") Long userId) {
         User user = userService.getLoginUser();
-        List<BookmarkResponse> bookmarks = bookmarkService.getBookmarksByUserId(user.getId());
-        return CommonResponse.of(SuccessStatus.OK, bookmarks);
+
+        List<Bookmark> bookmarks = bookmarkService.getBookmarksByUserId(user.getId());
+        List<BookmarkResponse> bookmarkResponses = BookmarkConverter.toBookmarkResponses(bookmarks);
+        return CommonResponse.of(SuccessStatus.OK, bookmarkResponses);
     }
 
 //    @Operation(summary = "단일 북마크 조회", description = "하나의 북마크만 검색해서 조회합니다.")
