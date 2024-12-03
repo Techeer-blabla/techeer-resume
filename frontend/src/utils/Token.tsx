@@ -1,11 +1,13 @@
 import { Outlet, Navigate } from "react-router-dom";
 import axios from "./axiosInstance";
 import { useEffect, useState } from "react";
+import useLoginStatus from "../store/LoginStore";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function ProtectedRoute() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const { setLoginStatus } = useLoginStatus();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -20,13 +22,16 @@ function ProtectedRoute() {
         if (response.data?.message === "USER_200") {
           console.log("성공: ", response.data?.message);
           setIsAuthenticated(true);
+          setLoginStatus(1);
         } else {
           console.log("실패: ", response.data?.message);
           setIsAuthenticated(false);
+          setLoginStatus(0);
         }
       } catch (error) {
         console.error("인증 요청 실패: ", error);
         setIsAuthenticated(false);
+        setLoginStatus(0);
       }
     };
 
@@ -34,7 +39,7 @@ function ProtectedRoute() {
   }, []);
 
   if (isAuthenticated === null) {
-    return <div>Loading...</div>; // 상태 확인 중 로딩 UI
+    return <div>Loading...</div>;
   }
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
