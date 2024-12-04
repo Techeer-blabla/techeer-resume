@@ -16,14 +16,13 @@ function Navbar() {
   const { loginStatus, setLoginStatus } = useLoginStatus();
   const [userName, setUserName] = useState<string>("");
 
+  // 네비바에 useEffect로 인증 상태 관리하면 성능 부답있을 것 같은데. 흠,,
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const response = await axios.get(`${BASE_URL}/user`, {
           withCredentials: true, // HTTP-Only 쿠키 포함
         });
-
-        console.log("응답 데이터: ", response.data);
 
         // 응답이 성공적일 경우 사용자 정보와 상태 설정
         if (response.data?.message === "USER_200") {

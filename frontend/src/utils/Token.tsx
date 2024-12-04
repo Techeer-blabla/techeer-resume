@@ -16,8 +16,6 @@ function ProtectedRoute() {
           withCredentials: true, // HTTP-Only 쿠키 포함
         });
 
-        console.log("응답 데이터: ", response.data);
-
         // 응답 코드가 USER_200일 경우 인증 성공
         if (response.data?.message === "USER_200") {
           console.log("성공: ", response.data?.message);

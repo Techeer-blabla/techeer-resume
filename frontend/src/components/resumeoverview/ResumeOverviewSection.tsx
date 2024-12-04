@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { ResumeData } from "../../types.ts";
 import { getResumeApi } from "../../api/feedbackApi.ts";
+import useResumeStore from "../../store/ResumeStore.ts";
 
-function ResumeOverviewSection({ resumeId = 1 }: { resumeId?: number }) {
+function ResumeOverviewSection() {
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
+  const { resumeId } = useResumeStore();
 
   useEffect(() => {
     if (resumeId === undefined) {
