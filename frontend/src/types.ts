@@ -16,7 +16,7 @@ export type ResumeData = {
   career: number;
   techStack: string[];
   fileUrl: string;
-  feedbacks: FeedbackPoint[];
+  feedbackResponses: FeedbackPoint[];
 };
 
 export type AddFeedbackPoint = {

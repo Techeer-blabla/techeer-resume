@@ -30,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 @Entity
 @Getter
 @Table(name = "Resume")
+@Builder
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Resume extends BaseEntity {
@@ -51,9 +52,11 @@ public class Resume extends BaseEntity {
     @Column(name = "position")
     private Position position;
 
+    @Builder.Default
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL)
     private List<ResumeTechStack> resumeTechStacks = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL)
     private List<ResumeCompany> resumeCompanies = new ArrayList<>();
 
