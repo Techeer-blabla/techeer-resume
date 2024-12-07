@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +31,6 @@ public class ResumeCreateFacade {
     private final TechStackService techStackService;
     private final ResumePdfService resumePdfService;
     private final UserService userService;
-    private final HttpRequestHandlerAdapter httpRequestHandlerAdapter;
 
     // 이력서 생성
     @Transactional
