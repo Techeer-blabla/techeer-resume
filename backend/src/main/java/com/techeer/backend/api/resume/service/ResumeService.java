@@ -4,6 +4,7 @@ import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
 import com.techeer.backend.api.resume.repository.GetResumeRepository;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
+import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.global.error.ErrorStatus;
 import com.techeer.backend.global.error.exception.GeneralException;
 import com.techeer.backend.global.error.exception.NotFoundException;
@@ -78,5 +79,9 @@ public class ResumeService {
         }
 
         return resumes;
+    }
+
+    public Resume findLaterByUser(User user) {
+        return resumeRepository.findFirstByUserOrderByCreatedAtDesc(user);
     }
 }

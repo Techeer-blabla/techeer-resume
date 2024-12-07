@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +32,7 @@ public class ResumeCreateFacade {
     private final TechStackService techStackService;
     private final ResumePdfService resumePdfService;
     private final UserService userService;
+    private final HttpRequestHandlerAdapter httpRequestHandlerAdapter;
 
     // 이력서 생성
     @Transactional
@@ -42,15 +44,22 @@ public class ResumeCreateFacade {
         // 타겟 회사 처리
         List<Company> companies = companyService.findOrCreateCompanies(req.getCompanyNames());
 
+        Resume previousResume = resumeService.findLaterByUser(user);
+
         // 이력서 엔티티 생성
         Resume resume = Resume.builder()
                 .user(user)
                 .position(req.getPosition())
                 .career(req.getCareer())
                 .name("Resume of " + user.getUsername() + " - " + LocalDate.now(ZoneId.of("Asia/Seoul")))
+                .previousResumeId(previousResume != null ? previousResume.getId() : null)
                 .build();
 
         resumeService.saveResume(resume);
+
+        if (previousResume != null) {
+            previousResume.updateLaterResumeId(resume.getId());
+        }
 
         // ResumeTechStack, ResumeCompany 생성 및 이력서에 추가
         addResumeTechStacks(resume, techStacks);
