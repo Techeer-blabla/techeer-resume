@@ -7,6 +7,7 @@ import com.techeer.backend.api.resume.dto.response.PageableResumeResponse;
 import com.techeer.backend.api.resume.dto.response.ResumeDetailResponse;
 import com.techeer.backend.api.resume.dto.response.ResumeResponse;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ResumeConverter {
@@ -44,8 +45,8 @@ public class ResumeConverter {
                         .map(resumeCompany -> resumeCompany.getCompany().getName()).collect(Collectors.toList()))
                 .fileUrl(resume.getResumePdf().getPdf().getPdfUrl())
                 .feedbackResponses(feedbacks.stream().map(FeedbackConverter::toFeedbackResponse).collect(Collectors.toList()))
-                .previousResumeId(resume.getPreviousResumeId() != null ? resume.getPreviousResumeId() : null)
-                .laterResumeId(resume.getLaterResumeId() != null ? resume.getLaterResumeId() : null)
+                .previousResumeId(Optional.ofNullable(resume.getPreviousResumeId()).orElse(null))
+                .laterResumeId(Optional.ofNullable(resume.getLaterResumeId()).orElse(null))
                 .build();
     }
 
