@@ -44,6 +44,8 @@ public class ResumeConverter {
                         .map(resumeCompany -> resumeCompany.getCompany().getName()).collect(Collectors.toList()))
                 .fileUrl(resume.getResumePdf().getPdf().getPdfUrl())
                 .feedbackResponses(feedbacks.stream().map(FeedbackConverter::toFeedbackResponse).collect(Collectors.toList()))
+                .previousResumeId(resume.getPreviousResumeId() != null ? resume.getPreviousResumeId() : null)
+                .laterResumeId(resume.getLaterResumeId() != null ? resume.getLaterResumeId() : null)
                 .build();
     }
 
