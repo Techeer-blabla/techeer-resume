@@ -1,6 +1,7 @@
 package com.techeer.backend.api.resume.repository;
 
 import com.techeer.backend.api.resume.domain.Resume;
+import com.techeer.backend.api.user.domain.User;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,6 @@ public interface ResumeRepository extends JpaRepository<Resume, Long> {
     List<Resume> findResumesByUsername(@Param("username") String username);
 
     Optional<Resume> findByIdAndDeletedAtIsNull(Long resumeId);
+
+    Resume findFirstByUserOrderByCreatedAtDesc(User user);
 }
