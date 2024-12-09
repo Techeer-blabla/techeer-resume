@@ -2,12 +2,16 @@ package com.techeer.backend.global.jwt;
 
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.repository.UserRepository;
+import com.techeer.backend.global.error.ErrorStatus;
+import com.techeer.backend.global.error.exception.BusinessException;
 import com.techeer.backend.global.jwt.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,34 +40,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response,
                                                   FilterChain filterChain) throws ServletException, IOException {
         log.info("checkAccessTokenAndAuthentication() 호출");
-        jwtService.extractAccessTokenFromCookie(request)
-                .filter(jwtService::isTokenValid)
-                .ifPresent(accessToken -> {
-                    log.info("유효한 Access Token이 발견되었습니다: {}", accessToken);
+        Optional<String> accessToken = jwtService.extractAccessTokenFromCookie(request);
 
-                    // 이메일 및 소셜 타입 추출
-                    Object[] emailAndSocialType = jwtService.extractEmailAndSocialType(accessToken);
-                    if (emailAndSocialType.length >= 1) {
-                        String email = (String) emailAndSocialType[0];
-                        log.info("이메일이 추출되었습니다: {}", email);
+        if (accessToken.isPresent()) {
 
-                        // 사용자 정보 조회
-                        userRepository.findByEmail(email)
-                                .ifPresent(user -> {
-                                    log.info("사용자 정보가 발견되었습니다: {}", user);
-                                    saveAuthentication(user);
-                                    log.info("사용자 인증 정보가 저장되었습니다: {}", user);
-                                });
-                    } else {
-                        log.warn("이메일 추출 실패. 반환된 배열 길이: {}", emailAndSocialType.length);
-                    }
-                });
+            // Access Token 유효성 검사
+            if (jwtService.isTokenValid(accessToken.get())) {
+                Object[] emailAndSocialType = jwtService.extractEmailAndSocialType(accessToken.get());
 
+                // todo 구글/github에 따라서 email로 할지 name으로 할지 결정
+                if (Arrays.stream(emailAndSocialType).isParallel()) {
+                    String email = (String) emailAndSocialType[0];
+                    log.info("이메일이 추출되었습니다: {}", email);
+
+                    // 사용자 정보 조회
+                    userRepository.findByEmail(email).ifPresent(user -> {
+                        log.info("사용자 정보가 발견되었습니다: {}", user);
+                        saveAuthentication(user);
+                        log.info("사용자 인증 정보가 저장되었습니다: {}", user);
+                    });
+                }
+
+            } else {
+                log.warn("이메일이 존재 하지 않습니다.");
+                throw new BusinessException(ErrorStatus.INVALID_ACCESS_TOKEN);
+            }
+        }
         filterChain.doFilter(request, response);
     }
 
     public void saveAuthentication(User user) {
-
         UserDetails userDetailsUser = org.springframework.security.core.userdetails.User.builder()
                 .username(user.getEmail())
                 .password("Google")
@@ -77,3 +83,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }
+

@@ -2,12 +2,15 @@ package com.techeer.backend.global.jwt.service;
 
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.repository.UserRepository;
+import com.techeer.backend.global.error.ErrorStatus;
+import com.techeer.backend.global.error.exception.BusinessException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Date;
@@ -17,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import jakarta.servlet.http.Cookie;
 
 @Service
 @RequiredArgsConstructor
@@ -85,18 +87,6 @@ public class JwtService {
                 .compact();
     }
 
-    public Optional<String> extractRefreshToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(refreshHeader))
-                .filter(refreshToken -> refreshToken.startsWith(BEARER))
-                .map(refreshToken -> refreshToken.replace(BEARER, ""));
-    }
-
-    public Optional<String> extractAccessToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(accessHeader))
-                .filter(refreshToken -> refreshToken.startsWith(BEARER))
-                .map(refreshToken -> refreshToken.replace(BEARER, ""));
-    }
-
     public Optional<String> extractAccessTokenFromCookie(HttpServletRequest request) {
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
@@ -109,14 +99,14 @@ public class JwtService {
         log.warn("Access Token이 쿠키에서 발견되지 않았습니다.");
         return Optional.empty();
     }
-    
+
     public boolean isTokenValid(String token) {
         try {
             Jwts.parser().setSigningKey(secretKey).build().parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             log.error("유효하지 않은 토큰입니다. {}", e.getMessage());
-            return false;
+            throw new BusinessException(ErrorStatus.INVALID_ACCESS_TOKEN);
         }
     }
 
@@ -125,8 +115,9 @@ public class JwtService {
         if (claims != null) {
             String email = claims.get("email", String.class);
             return new Object[]{email};
+        } else {
+            throw new BusinessException(ErrorStatus.INVALID_ACCESS_TOKEN);
         }
-        return null;
     }
 
     private Claims decodeAccessToken(String accessToken) {

@@ -34,6 +34,7 @@ public enum ErrorStatus implements BaseStatus {
 
     // Token Error
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "TOKEN_401", "리프레시 토큰이 유효하지 않습니다."),
+    INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "TOKEN_401", "엑세스 토큰이 유효하지 않습니다."),
 
     // BOOKMARK Error
     BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKMARK_404", "북마크를 찾을 수 없습니다."),
