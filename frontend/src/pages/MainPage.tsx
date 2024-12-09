@@ -17,8 +17,8 @@ function MainPage() {
   const moveToResume = async (resumeId: number) => {
     try {
       const response = await viewResume(resumeId);
-      setResumeId(response.data.resume_id);
-      navigate(`/feedback?${response.data.resume_id}`);
+      setResumeId(response.resume_id);
+      navigate(`/feedback?${response.resume_id}`);
       return response;
     } catch (error) {
       console.error("이력서 조회 오류:", error);
@@ -46,16 +46,12 @@ function MainPage() {
       queryFn: async ({ pageParam = 0 }) => {
         return fetchPostCards(pageParam);
       },
-      getNextPageParam: (lastPage) => {
-        console.log(
-          "Current page and total pages:",
-          lastPage[0].current_page,
-          lastPage[0].total_page
-        );
-        if (lastPage[0].current_page + 1 < lastPage[0].total_page) {
-          return lastPage[0].current_page + 1;
+      getNextPageParam: (lastPage, allPages) => {
+        // 응답 데이터가 빈 배열이 아니면 다음 페이지를 요청
+        if (lastPage.length > 0) {
+          return allPages.length; // 다음 페이지 번호
         } else {
-          return undefined;
+          return undefined; // 더 이상 요청할 페이지 없음
         }
       },
       initialPageParam: 0,
@@ -132,7 +128,7 @@ function MainPage() {
             <div className="grid grid-cols-1 min-[700px]:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 p-5">
               {data?.pages && data.pages.length > 0 ? (
                 data.pages.map((page) =>
-                  page?.map((post: PostCardsType) => (
+                  page.map((post: PostCardsType) => (
                     <PostCard
                       key={post.resume_id}
                       name={post.user_name}
