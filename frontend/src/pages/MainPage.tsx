@@ -31,9 +31,7 @@ function MainPage() {
 
   const [isPositionOpen, setIsPositionOpen] = useState(false);
   const [isCareerOpen, setIsCareerOpen] = useState(false);
-  const [, setFilteredData] = useState<PostCardsType[] | null>(
-    null
-  ); // 필터링된 데이터를 저장
+  const [, setFilteredData] = useState<PostCardsType[] | null>(null); // 필터링된 데이터를 저장
   const [positionTitle, setPositionTitle] = useState("포지션"); // 카테고리에 표시될 포지션 제목
   const [careerTitle, setCareerTitle] = useState("경력"); // 경력 카테고리 제목
   const { positions, min_career, max_career, setCareerRange, setPositions } =
@@ -186,21 +184,21 @@ function MainPage() {
 
           <div className="flex justify-center">
             <div className="grid grid-cols-1 min-[700px]:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 p-5">
-              {data?.pages && data.pages.length > 0 ? (
-                data.pages.map((page) =>
-                  page.map((post: PostCardsType) => (
-                    <PostCard
-                      key={post.resume_id}
-                      name={post.user_name}
-                      role={post.position}
-                      experience={post.career}
-                      education="전공자"
-                      skills={post.tech_stack_names}
-                      onClick={() => moveToResume(Number(post.resume_id))}
-                    />
-                  ))
-                )
-              ): data?.pages.map((page) =>
+              {data?.pages && data.pages.length > 0
+                ? data.pages.map((page) =>
+                    page.map((post: PostCardsType) => (
+                      <PostCard
+                        key={post.resume_id}
+                        name={post.user_name}
+                        role={post.position}
+                        experience={post.career}
+                        education="전공자"
+                        skills={post.tech_stack_names}
+                        onClick={() => moveToResume(Number(post.resume_id))}
+                      />
+                    ))
+                  )
+                : data?.pages.map((page) =>
                     page.map((post: PostCardsType) => (
                       <PostCard
                         key={post.resume_id}
