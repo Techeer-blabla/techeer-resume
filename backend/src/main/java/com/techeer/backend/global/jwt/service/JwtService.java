@@ -3,7 +3,7 @@ package com.techeer.backend.global.jwt.service;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.repository.UserRepository;
 import com.techeer.backend.global.error.ErrorStatus;
-import com.techeer.backend.global.error.exception.BusinessException;
+import com.techeer.backend.global.error.exception.GeneralException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -97,6 +97,7 @@ public class JwtService {
             }
         }
         log.warn("Access Token이 쿠키에서 발견되지 않았습니다.");
+
         return Optional.empty();
     }
 
@@ -106,7 +107,7 @@ public class JwtService {
             return true;
         } catch (Exception e) {
             log.error("유효하지 않은 토큰입니다. {}", e.getMessage());
-            throw new BusinessException(ErrorStatus.INVALID_ACCESS_TOKEN);
+            throw new GeneralException(ErrorStatus.INVALID_ACCESS_TOKEN);
         }
     }
 
@@ -116,7 +117,7 @@ public class JwtService {
             String email = claims.get("email", String.class);
             return new Object[]{email};
         } else {
-            throw new BusinessException(ErrorStatus.INVALID_ACCESS_TOKEN);
+            throw new GeneralException(ErrorStatus.INVALID_ACCESS_TOKEN);
         }
     }
 

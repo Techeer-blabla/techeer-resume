@@ -3,14 +3,13 @@ package com.techeer.backend.global.jwt;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.repository.UserRepository;
 import com.techeer.backend.global.error.ErrorStatus;
-import com.techeer.backend.global.error.exception.BusinessException;
+import com.techeer.backend.global.error.exception.GeneralException;
 import com.techeer.backend.global.jwt.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,17 +38,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     public void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response,
                                                   FilterChain filterChain) throws ServletException, IOException {
+        String requestURI = request.getRequestURI();
+        // 특정 경로 이외에는 필터를 건너뜀
+        if (!requestURI.startsWith("/api/v1/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         log.info("checkAccessTokenAndAuthentication() 호출");
         Optional<String> accessToken = jwtService.extractAccessTokenFromCookie(request);
 
         if (accessToken.isPresent()) {
-
             // Access Token 유효성 검사
             if (jwtService.isTokenValid(accessToken.get())) {
                 Object[] emailAndSocialType = jwtService.extractEmailAndSocialType(accessToken.get());
 
                 // todo 구글/github에 따라서 email로 할지 name으로 할지 결정
-                if (Arrays.stream(emailAndSocialType).isParallel()) {
+                if (emailAndSocialType.length > 0) {
                     String email = (String) emailAndSocialType[0];
                     log.info("이메일이 추출되었습니다: {}", email);
 
@@ -60,11 +65,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         log.info("사용자 인증 정보가 저장되었습니다: {}", user);
                     });
                 }
-
             } else {
+                // todo 삭제 예
                 log.warn("이메일이 존재 하지 않습니다.");
-                throw new BusinessException(ErrorStatus.INVALID_ACCESS_TOKEN);
             }
+        } else {
+            throw new GeneralException(ErrorStatus.ACCESS_TOKEN_NOT_FOUND);
         }
         filterChain.doFilter(request, response);
     }

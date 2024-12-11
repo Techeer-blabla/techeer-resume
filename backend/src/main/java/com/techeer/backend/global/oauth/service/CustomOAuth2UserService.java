@@ -29,7 +29,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuthAttributes extractAttributes;
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
-        log.info("Access Token이 쿠키에서 발견되었습니다.");
         // OAuth2 로그인 시 키(PK)가 되는 값
         String userNameAttributeName = userRequest.getClientRegistration()
                 .getProviderDetails()
@@ -43,7 +42,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         extractAttributes = OAuthAttributes.of(registrationId, userNameAttributeName, attributes);
         String username = extractAttributes.getSocialType().equals(SocialType.GITHUB) ? (String) attributes.get("login")
                 : (String) attributes.get("name");
-        log.info("Access Token이 쿠키에서 발견되었습니다.");
+
         if (userRepository.findByUsernameAndSocialType(username, extractAttributes.getSocialType()).isEmpty()) {
             userService.CreateRegularUser(attributes, username, extractAttributes.getSocialType());
         }

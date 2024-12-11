@@ -77,22 +77,17 @@ public class SecurityConfig {
 //                          "/swagger-ui/index.html/**",
 //                          "/api-docs/**",
 //                          "/signup.html",
+//                          "/login/**",
 //                          "/api/v1/reissue"
 //                  ).permitAll()
 //                  .anyRequest().authenticated()
 //          )
-                // 로그아웃 성공 시 / 주소로 이동
-//          .logout((logoutConfig) -> logoutConfig.logoutSuccessUrl("/"))
                 .oauth2Login(oauth2Login -> oauth2Login
                         .userInfoEndpoint(endpoint -> endpoint
                                 .userService(customOAuth2UserService))
                         .successHandler(oAuth2LoginSuccessHandler) // 2.
                         .failureHandler(oAuth2LoginFailureHandler) // 3.
                 )
-//          .exceptionHandling(authenticationManager ->authenticationManager
-//                  .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-//                  .accessDeniedHandler(jwtAccessDeniedHandler)
-//          )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtService, userRepository),
                         UsernamePasswordAuthenticationFilter.class);
         return http.build();

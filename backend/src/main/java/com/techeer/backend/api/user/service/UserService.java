@@ -1,7 +1,6 @@
 package com.techeer.backend.api.user.service;
 
 
-import com.techeer.backend.api.user.converter.UserConverter;
 import com.techeer.backend.api.user.domain.Role;
 import com.techeer.backend.api.user.domain.SocialType;
 import com.techeer.backend.api.user.domain.User;
@@ -9,6 +8,7 @@ import com.techeer.backend.api.user.dto.request.SignUpRequest;
 import com.techeer.backend.api.user.repository.UserRepository;
 import com.techeer.backend.global.error.ErrorStatus;
 import com.techeer.backend.global.error.exception.BusinessException;
+import com.techeer.backend.global.error.exception.GeneralException;
 import com.techeer.backend.global.jwt.JwtToken;
 import com.techeer.backend.global.jwt.service.JwtService;
 import java.util.Map;
@@ -57,7 +57,7 @@ public class UserService {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // 유저 정보 조회
         return userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new BusinessException(ErrorStatus.USER_NOT_FOUND));
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
     }
 
     @Transactional
