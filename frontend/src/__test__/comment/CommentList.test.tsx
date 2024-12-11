@@ -5,8 +5,24 @@ import { FeedbackPoint } from "../../types";
 
 describe("CommentList 테스트 ", () => {
   const mockFeedbackPoints: FeedbackPoint[] = [
-    { id: 1, content: "첫번째 댓글", xCoordinate: 10, yCoordinate: 20, pageNumber: 1, createdAt: "2024-12-10T10:00:00Z", updatedAt: "2024-12-10T12:00:00Z" },
-    { id: 2, content: "두번쨰 댓글", xCoordinate: 15, yCoordinate: 25, pageNumber: 1, createdAt: "2024-12-11T10:00:00Z", updatedAt: "2024-12-11T12:00:00Z" },
+    {
+      id: 1,
+      content: "첫번째 댓글",
+      xCoordinate: 10,
+      yCoordinate: 20,
+      pageNumber: 1,
+      createdAt: "2024-12-10T10:00:00Z",
+      updatedAt: "2024-12-10T12:00:00Z",
+    },
+    {
+      id: 2,
+      content: "두번쨰 댓글",
+      xCoordinate: 15,
+      yCoordinate: 25,
+      pageNumber: 1,
+      createdAt: "2024-12-11T10:00:00Z",
+      updatedAt: "2024-12-11T12:00:00Z",
+    },
   ];
 
   const deleteFeedbackPoint = vi.fn();
@@ -43,7 +59,6 @@ describe("CommentList 테스트 ", () => {
         setHoveredCommentId={vi.fn()}
       />
     );
-  
 
     //When: 삭제 버튼을 클릭했을 떄
     const deleteButtons = screen.getAllByText("Delete");
@@ -51,7 +66,7 @@ describe("CommentList 테스트 ", () => {
     // getAllByText를 사용하는 것이  data-testid="EditButton"를 사용하는 것보다 더 좋을까?
     //-> 텍스트에 변동이 생기는 경우가 아니면 getAllByText를 사용하는 것이 덜 번거롭다고 생각됨
     fireEvent.click(deleteButtons[0]);
-    
+
     //Then: deleteFeedbackPoint 함수가 호출
     expect(deleteFeedbackPoint).toHaveBeenCalledWith(mockFeedbackPoints[0].id);
   });
@@ -92,4 +107,3 @@ describe("CommentList 테스트 ", () => {
     expect(firstComment).toHaveClass("bg-blue-100");
   });
 });
-
