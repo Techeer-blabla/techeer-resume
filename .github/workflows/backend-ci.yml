@@ -47,3 +47,12 @@ jobs:
 
       - name: Run tests
         run: ./gradlew test
+	
+      - name: Generate JaCoCo report
+        run: ./gradlew jacocoTestReport --no-daemon
+
+      - name: Upload JaCoCo report
+        uses: actions/upload-artifact@v3
+        with:
+          name: jacoco-report
+          path: build/reports/jacoco/test/html/  # HTML 리포트 경로
