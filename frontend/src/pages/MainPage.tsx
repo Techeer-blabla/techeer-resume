@@ -31,7 +31,7 @@ function MainPage() {
 
   const [isPositionOpen, setIsPositionOpen] = useState(false);
   const [isCareerOpen, setIsCareerOpen] = useState(false);
-  const [filteredData, setFilteredData] = useState<PostCardsType[] | null>(
+  const [, setFilteredData] = useState<PostCardsType[] | null>(
     null
   ); // 필터링된 데이터를 저장
   const [positionTitle, setPositionTitle] = useState("포지션"); // 카테고리에 표시될 포지션 제목
@@ -199,7 +199,8 @@ function MainPage() {
                       onClick={() => moveToResume(Number(post.resume_id))}
                     />
                   ))
-                : data?.pages.map((page) =>
+                )
+              ): data?.pages.map((page) =>
                     page.map((post: PostCardsType) => (
                       <PostCard
                         key={post.resume_id}
