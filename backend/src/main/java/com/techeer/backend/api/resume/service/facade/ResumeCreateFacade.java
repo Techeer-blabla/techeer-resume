@@ -42,15 +42,22 @@ public class ResumeCreateFacade {
         // 타겟 회사 처리
         List<Company> companies = companyService.findOrCreateCompanies(req.getCompanyNames());
 
+        Resume previousResume = resumeService.findLaterByUser(user);
+
         // 이력서 엔티티 생성
         Resume resume = Resume.builder()
                 .user(user)
                 .position(req.getPosition())
                 .career(req.getCareer())
                 .name("Resume of " + user.getUsername() + " - " + LocalDate.now(ZoneId.of("Asia/Seoul")))
+                .previousResumeId(previousResume != null ? previousResume.getId() : null)
                 .build();
 
         resumeService.saveResume(resume);
+
+        if (previousResume != null) {
+            previousResume.updateLaterResumeId(resume.getId());
+        }
 
         // ResumeTechStack, ResumeCompany 생성 및 이력서에 추가
         addResumeTechStacks(resume, techStacks);
