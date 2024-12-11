@@ -79,7 +79,7 @@ tasks.named('test') {
     useJUnitPlatform()
     dependsOn test // 테스트 후 실행
     reports {
-        junitXml.enabled = true  // JUnit XML 보고서 활성화
-        html.enabled = true // 필요에 따라 HTML 보고서도 활성화
+        junitXml.required.set(true) // enabled 대신 required.set(true) 사용
+        html.required.set(true)
     }
 }
