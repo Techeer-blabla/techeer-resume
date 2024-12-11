@@ -83,4 +83,3 @@ tasks.named('test') {
         html.required = true // HTML 리포트 생성
     }
 }
-cd
