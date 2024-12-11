@@ -23,6 +23,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleRuntimeException(BusinessException e) {
         ErrorStatus errorStatus = e.getErrorStatus();
         ErrorResponse errorResponse = new ErrorResponse(errorStatus);
+        log.error(e.getMessage(), e);
         return new ResponseEntity<>(errorResponse, errorStatus.getHttpStatus());
     }
 
