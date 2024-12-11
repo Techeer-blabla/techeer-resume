@@ -64,7 +64,7 @@ export const editFeedbackApi = async (
  */
 export const getResumeApi = async (resumeId: number): Promise<ResumeData> => {
   const response = await axiosInstance.get(`/resumes/${resumeId}`);
-  return response.data.data;
+  return response.data.result;
 };
 
 /**

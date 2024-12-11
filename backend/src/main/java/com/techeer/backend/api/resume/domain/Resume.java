@@ -52,9 +52,17 @@ public class Resume extends BaseEntity {
     @Column(name = "position")
     private Position position;
 
+    // 이전 버전(더 오래된 버전)
+    private Long previousResumeId;
+
+    // 이후 버전(더 최신 버전)
+    private Long laterResumeId;
+
+    @Builder.Default
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL)
     private List<ResumeTechStack> resumeTechStacks = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL)
     private List<ResumeCompany> resumeCompanies = new ArrayList<>();
 
@@ -81,5 +89,9 @@ public class Resume extends BaseEntity {
 
     public void addResumePdf(ResumePdf resumePdf) {
         this.resumePdf = resumePdf;
+    }
+
+    public void updateLaterResumeId(Long id) {
+        this.laterResumeId = id;
     }
 }

@@ -11,7 +11,6 @@ import {
   getResumeApi,
   postAiFeedback,
 } from "../api/feedbackApi.ts";
-// import { viewResume } from "../api/resumeApi.ts";
 import { AddFeedbackPoint, FeedbackPoint, ResumeData } from "../types.ts";
 // import { useParams } from "react-router-dom";
 import useResumeStore from "../store/ResumeStore.ts";
@@ -31,7 +30,6 @@ function ResumeFeedbackPage() {
         setError(null);
         const data = await getResumeApi(Number(resumeId));
         setResumeData(data);
-
         setResumeUrl(data.fileUrl);
         setFeedbackPoints(data.feedbackResponses || []);
       } catch (error) {

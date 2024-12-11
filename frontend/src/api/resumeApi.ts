@@ -49,7 +49,7 @@ export const getResumeList = async (page: number, size: number) => {
     const response = await jsonFormAxios.get(
       `/resumes?page=${page}&size=${size}`
     );
-    return response.data;
+    return response.data.result;
   } catch (error) {
     console.log("이력서 조회 오류", error);
     throw error;
@@ -108,7 +108,7 @@ export const postFilter = async (filterParams: FilterParams) => {
 export const viewResume = async (resumeId: number) => {
   try {
     const response = await jsonAxios.get(`/resumes/${resumeId}`);
-    return response.data;
+    return response.data.result;
   } catch (error) {
     console.log("이력서 조회 오류", error);
     throw error;
