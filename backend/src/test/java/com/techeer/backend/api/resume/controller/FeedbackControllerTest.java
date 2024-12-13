@@ -1,4 +1,4 @@
-package com.techeer.backend;
+package com.techeer.backend.api.resume.controller;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
