@@ -1,19 +1,21 @@
 package com.techeer.backend.api.resume.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.techeer.backend.api.resume.domain.Resume;
+import com.techeer.backend.api.resume.exception.ResumeNotFoundException;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
 import com.techeer.backend.api.tag.position.Position;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.repository.UserRepository;
 import com.techeer.backend.api.user.service.UserService;
-import com.techeer.backend.global.error.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -67,7 +69,7 @@ class ResumeServiceIntegrationTest {
         Long invalidResumeId = 999L;
 
         // Act & Assert
-        assertThrows(NotFoundException.class, () -> resumeService.getResume(invalidResumeId));
+        assertThrows(ResumeNotFoundException.class, () -> resumeService.getResume(invalidResumeId));
     }
 
     @Test

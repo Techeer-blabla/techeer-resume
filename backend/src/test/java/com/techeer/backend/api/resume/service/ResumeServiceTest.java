@@ -11,9 +11,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.techeer.backend.api.resume.domain.Resume;
+import com.techeer.backend.api.resume.exception.ResumeNotFoundException;
 import com.techeer.backend.api.resume.repository.GetResumeRepository;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
-import com.techeer.backend.global.error.exception.BusinessException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -63,7 +63,7 @@ class ResumeServiceTest {
         when(resumeRepository.findById(resumeId)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(BusinessException.class, () -> resumeService.getResume(resumeId));
+        assertThrows(ResumeNotFoundException.class, () -> resumeService.getResume(resumeId));
         verify(resumeRepository, times(1)).findById(resumeId);
     }
 
