@@ -2,19 +2,26 @@
 
 package com.techeer.backend.api.resume.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.repository.GetResumeRepository;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
-import com.techeer.backend.global.error.exception.NotFoundException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import com.techeer.backend.global.error.exception.BusinessException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 class ResumeServiceTest {
 
@@ -56,7 +63,7 @@ class ResumeServiceTest {
         when(resumeRepository.findById(resumeId)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(NotFoundException.class, () -> resumeService.getResume(resumeId));
+        assertThrows(BusinessException.class, () -> resumeService.getResume(resumeId));
         verify(resumeRepository, times(1)).findById(resumeId);
     }
 
