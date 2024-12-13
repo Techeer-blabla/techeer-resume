@@ -16,7 +16,7 @@ public class ErrorResponse {
     private HttpStatus httpStatus;
     private String code;
     private String errorMessage;
-    private List<FieldError> errors = new ArrayList<>();
+    private List<FieldError> errors;
 
 
     public ErrorResponse(ErrorCode ErrorCode) {
@@ -25,7 +25,7 @@ public class ErrorResponse {
         this.code = ErrorCode.getCode();
     }
 
-    public ErrorResponse(ErrorCode ErrorCode, List<FieldError> fieldErrors) {
+    public ErrorResponse(ErrorCode ErrorCode, final List<FieldError> fieldErrors) {
         this.httpStatus = ErrorCode.getHttpStatus();
         this.code = ErrorCode.getCode();
         this.errorMessage = ErrorCode.getMessage();
@@ -78,17 +78,15 @@ public class ErrorResponse {
         }
 
         private static List<FieldError> of(final BindingResult bindingResult) {
-            final List<org.springframework.validation.FieldError> fieldErrors =
-                    bindingResult.getFieldErrors();
+            final List<org.springframework.validation.FieldError> fieldErrors = bindingResult.getFieldErrors();
             return fieldErrors.stream()
-                    .map(
-                            error ->
-                                    new FieldError(
-                                            error.getField(),
-                                            error.getRejectedValue() == null ? "" : error.getRejectedValue().toString(),
-                                            error.getDefaultMessage()))
+                    .map(error -> new FieldError(
+                            error.getField(),
+                            error.getRejectedValue() == null ? "" : error.getRejectedValue().toString(),
+                            error.getDefaultMessage()))
                     .collect(Collectors.toList());
         }
+
 
         private static List<FieldError> of(final Set<ConstraintViolation<?>> constraintViolations) {
             final List<ConstraintViolation<?>> lists = new ArrayList<>(constraintViolations);
