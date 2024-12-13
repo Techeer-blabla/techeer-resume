@@ -1,14 +1,12 @@
 package com.techeer.backend.global.error;
 
-import com.techeer.backend.global.common.response.ReasonDto;
-import com.techeer.backend.global.common.status.BaseStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum ErrorStatus implements BaseStatus {
+public enum ErrorCode {
     // Common Error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON_500", "서버 에러입니다. 관리자에게 문의하세요."),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON_400", "잘못된 요청입니다."),
@@ -17,7 +15,7 @@ public enum ErrorStatus implements BaseStatus {
     NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON_404", "찾을 수 없는 요청입니다."),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "COMMON_405", "허용되지 않은 메소드입니다."),
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "COMMON_400", "잘못된 요청입니다."),
-
+    INPUT_VALUE_INVALID(HttpStatus.BAD_REQUEST, "REQUEST_400", "요청사항에 필수 인자가 누락되었습니다"),
 
     // Resume Error
     RESUME_FILE_EMPTY(HttpStatus.BAD_REQUEST, "RESUME_400", "이력서 파일이 비어있습니다"),
@@ -53,20 +51,4 @@ public enum ErrorStatus implements BaseStatus {
     private final String code;
     private final String message;
 
-    @Override
-    public ReasonDto getReason() {
-        return ReasonDto.builder()
-                .message(message)
-                .code(code)
-                .build();
-    }
-
-    @Override
-    public ReasonDto getReasonHttpStatus() {
-        return ReasonDto.builder()
-                .status(httpStatus)
-                .message(message)
-                .code(code)
-                .build();
-    }
 }
