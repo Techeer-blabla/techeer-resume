@@ -18,4 +18,7 @@ public class ResumeDetailResponse {
     private List<String> techStackNames;
     private List<String> companyNames;
     private final List<FeedbackResponse> feedbackResponses;
+
+    private final Long previousResumeId;
+    private final Long laterResumeId;
 }
