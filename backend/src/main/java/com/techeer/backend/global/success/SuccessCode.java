@@ -44,13 +44,4 @@ public enum SuccessCode implements BaseStatus {
                 .code(code)
                 .build();
     }
-
-    @Override
-    public ReasonDto getReasonHttpStatus() {
-        return ReasonDto.builder()
-                .status(httpStatus)
-                .message(message)
-                .code(code)
-                .build();
-    }
 }
