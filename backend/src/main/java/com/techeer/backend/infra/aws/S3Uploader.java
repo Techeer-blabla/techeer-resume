@@ -4,8 +4,8 @@ package com.techeer.backend.infra.aws;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.techeer.backend.global.error.ErrorStatus;
-import com.techeer.backend.global.error.exception.GeneralException;
+import com.techeer.backend.global.error.ErrorCode;
+import com.techeer.backend.global.error.exception.BusinessException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -43,7 +43,7 @@ public class S3Uploader {
             return amazonS3.getUrl(bucket, s3Key).toString();
         } catch (IOException e) {
             log.error("Failed to upload file to S3", e);
-            throw new GeneralException(ErrorStatus.INTERNAL_SERVER_ERROR);
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -60,7 +60,7 @@ public class S3Uploader {
             fos.write(multipartFile.getBytes());
         } catch (IOException e) {
             log.error("Failed to convert MultipartFile to File", e);
-            throw new GeneralException(ErrorStatus.INTERNAL_SERVER_ERROR);
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
         return file;
     }
