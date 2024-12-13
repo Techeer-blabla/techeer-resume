@@ -7,7 +7,7 @@ import com.techeer.backend.api.bookmark.service.BookmarkService;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.service.UserService;
 import com.techeer.backend.global.common.response.CommonResponse;
-import com.techeer.backend.global.success.SuccessStatus;
+import com.techeer.backend.global.success.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -38,7 +38,7 @@ public class BookmarkController {
         Bookmark bookmark = bookmarkService.addBookmark(user, resumeId);
         BookmarkResponse bookmarkResponse = BookmarkConverter.toBookmarkResponse(bookmark);
 
-        return CommonResponse.of(SuccessStatus.CREATED, bookmarkResponse);
+        return CommonResponse.of(SuccessCode.CREATED, bookmarkResponse);
     }
 
     @Operation(summary = "북마크 삭제", description = "북마크를 해제합니다.")
@@ -46,7 +46,7 @@ public class BookmarkController {
     public CommonResponse<Void> removeBookmark(@PathVariable("bookmark_id") Long bookmarkId) {
         User user = userService.getLoginUser();
         bookmarkService.removeBookmark(user, bookmarkId);
-        return CommonResponse.of(SuccessStatus.NO_CONTENT, null);
+        return CommonResponse.of(SuccessCode.NO_CONTENT, null);
     }
 
     @Operation(summary = "북마크 조회", description = "사용자와 관련된 북마크를 모두 조회합니다.")
@@ -57,7 +57,7 @@ public class BookmarkController {
 
         List<Bookmark> bookmarks = bookmarkService.getBookmarksByUserId(user.getId());
         List<BookmarkResponse> bookmarkResponses = BookmarkConverter.toBookmarkResponses(bookmarks);
-        return CommonResponse.of(SuccessStatus.OK, bookmarkResponses);
+        return CommonResponse.of(SuccessCode.OK, bookmarkResponses);
     }
 
 //    @Operation(summary = "단일 북마크 조회", description = "하나의 북마크만 검색해서 조회합니다.")
@@ -65,6 +65,6 @@ public class BookmarkController {
 //    public CommonResponse<BookmarkResponse> getBookmarkById(
 //            @PathVariable("bookmark_id") Long bookmarkId) {
 //        BookmarkResponse bookmark = bookmarkService.getBookmarkById(bookmarkId);
-//        return CommonResponse.of(SuccessStatus.OK, bookmark);
+//        return CommonResponse.of(SuccessCode.OK, bookmark);
 //    }
 }
