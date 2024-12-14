@@ -15,22 +15,16 @@ export const jsonAxios = axios.create({
 
 export const formAxios = axios.create({
   baseURL: BASE_URL,
+  withCredentials: true, // 필요에 따라 설정
   headers: {
     "Content-Type": "multipart/form-data",
-  },
-});
-
-export const jsonFormAxios = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
   },
 });
 
 export const axiosInstance = axios.create({
   baseURL: AXIOS_BASE_URL,
   timeout: NETWORK.TIMEOUT,
-  withCredentials: false, // CORS 설정에 따라 true 또는 false
+  withCredentials: true, // CORS 설정에 따라 true 또는 false
   // useAuth는 Axios의 기본 설정에 포함되지 않으므로 제거
 });
 

@@ -1,4 +1,4 @@
-import { formAxios, jsonAxios, jsonFormAxios } from "./axios.config.ts";
+import { formAxios, jsonAxios } from "./axios.config.ts";
 
 // 이력서 업로드 API
 export const postResume = async (
@@ -46,7 +46,7 @@ export const getResumeList = async (page: number, size: number) => {
     formData.append("page", page.toString());
     formData.append("size", size.toString());
 
-    const response = await jsonFormAxios.get(
+    const response = await jsonAxios.get(
       `/resumes?page=${page}&size=${size}`
     );
     return response.data.result;
