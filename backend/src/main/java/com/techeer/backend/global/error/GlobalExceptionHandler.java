@@ -26,11 +26,21 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleRuntimeException(BusinessException e) {
-        ErrorCode ErrorCode = e.getErrorCode();
-        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode, e.getErrors());
-        log.error(e.getMessage(), e);
-        return new ResponseEntity<>(errorResponse, ErrorCode.getHttpStatus());
+        ErrorCode errorCode = e.getErrorCode();
+        ErrorResponse errorResponse = ErrorResponse.of(errorCode, e.getErrors());
+
+        // 상태 코드에 따라 로그 레벨 설정
+        if (errorCode.getHttpStatus().is5xxServerError()) {
+            log.error(e.getMessage(), e); // 5xx 상태 코드일 경우 error 로그
+        } else if (errorCode.getHttpStatus().is4xxClientError()) {
+            log.warn(e.getMessage(), e); // 4xx 상태 코드일 경우 warn 로그
+        } else {
+            log.info(e.getMessage(), e); // 기타 상태 코드일 경우 info 로그
+        }
+
+        return new ResponseEntity<>(errorResponse, errorCode.getHttpStatus());
     }
+
 
     @ExceptionHandler
     protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
