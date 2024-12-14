@@ -46,9 +46,7 @@ export const getResumeList = async (page: number, size: number) => {
     formData.append("page", page.toString());
     formData.append("size", size.toString());
 
-    const response = await jsonAxios.get(
-      `/resumes?page=${page}&size=${size}`
-    );
+    const response = await jsonAxios.get(`/resumes?page=${page}&size=${size}`);
     return response.data.result;
   } catch (error) {
     console.log("이력서 조회 오류", error);
