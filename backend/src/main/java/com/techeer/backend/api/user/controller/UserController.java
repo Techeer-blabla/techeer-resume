@@ -6,7 +6,7 @@ import com.techeer.backend.api.user.dto.response.UserInfoResponse;
 import com.techeer.backend.api.user.service.UserService;
 import com.techeer.backend.global.common.response.CommonResponse;
 import com.techeer.backend.global.jwt.JwtToken;
-import com.techeer.backend.global.success.SuccessStatus;
+import com.techeer.backend.global.success.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -28,21 +28,21 @@ public class UserController {
     @GetMapping("/user")
     public CommonResponse<UserInfoResponse> getUserInfo() {
         UserInfoResponse result = UserConverter.ofUserInfoResponse(userService.getLoginUser());
-        return CommonResponse.of(SuccessStatus.USER_FETCH_OK, result);
+        return CommonResponse.of(SuccessCode.USER_FETCH_OK, result);
     }
 
     @Operation(summary = "추가정보 입력")
     @PostMapping("/user")
     public CommonResponse<Void> signupUser(@RequestBody @Valid SignUpRequest req) {
         userService.signup(req);
-        return CommonResponse.of(SuccessStatus.USER_ADDITIONAL_INFO_OK, null);
+        return CommonResponse.of(SuccessCode.USER_ADDITIONAL_INFO_OK, null);
     }
 
     @Operation(summary = "로그아웃")
     @PostMapping("/logout")
     public CommonResponse<Void> logoutUser() {
         userService.logout();
-        return CommonResponse.of(SuccessStatus.USER_LOGOUT_OK, null);
+        return CommonResponse.of(SuccessCode.USER_LOGOUT_OK, null);
     }
 
     @Operation(summary = "액세스 토큰 재발급")
@@ -53,6 +53,6 @@ public class UserController {
         JwtToken result = userService.reissueToken(accessToken, refreshToken);
         response.setHeader("Access-Token", result.getAccessToken());
         response.setHeader("Refresh-Token", result.getRefreshToken());
-        return CommonResponse.of(SuccessStatus.TOKEN_REISSUE_OK, null);
+        return CommonResponse.of(SuccessCode.TOKEN_REISSUE_OK, null);
     }
 }

@@ -6,7 +6,7 @@ import com.techeer.backend.api.user.domain.SocialType;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.dto.request.SignUpRequest;
 import com.techeer.backend.api.user.repository.UserRepository;
-import com.techeer.backend.global.error.ErrorStatus;
+import com.techeer.backend.global.error.ErrorCode;
 import com.techeer.backend.global.error.exception.BusinessException;
 import com.techeer.backend.global.error.exception.GeneralException;
 import com.techeer.backend.global.jwt.JwtToken;
@@ -57,34 +57,34 @@ public class UserService {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // 유저 정보 조회
         return userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 
     @Transactional
     public JwtToken reissueToken(String accessToken, String refreshToken) {
         // Refresh Token 검증
         if (!jwtService.isTokenValid(refreshToken)) {
-            throw new BusinessException(ErrorStatus.INVALID_REFRESH_TOKEN);
+            throw new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
         Object[] emailAndSocialType = jwtService.extractEmailAndSocialType(accessToken);
 
         if (emailAndSocialType.length < 1) {
-            throw new BusinessException(ErrorStatus.USER_NOT_AUTHENTICATED);
+            throw new BusinessException(ErrorCode.USER_NOT_AUTHENTICATED);
         }
 
         String email = (String) emailAndSocialType[0];
 
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isEmpty()) {
-            throw new BusinessException(ErrorStatus.USER_NOT_AUTHENTICATED);
+            throw new BusinessException(ErrorCode.USER_NOT_AUTHENTICATED);
         }
 
         String userRefreshToken = user.get().getRefreshToken();
 
         // db에 리프레시 토큰 없을 경우(logout)
         if (userRefreshToken == null || !userRefreshToken.equals(refreshToken)) {
-            throw new BusinessException(ErrorStatus.USER_NOT_AUTHENTICATED);
+            throw new BusinessException(ErrorCode.USER_NOT_AUTHENTICATED);
         }
 
         return JwtToken.builder()

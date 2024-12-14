@@ -10,7 +10,7 @@ import com.techeer.backend.api.aifeedback.repository.AIFeedbackRepository;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.domain.ResumePdf;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
-import com.techeer.backend.global.error.ErrorStatus;
+import com.techeer.backend.global.error.ErrorCode;
 import com.techeer.backend.global.error.exception.BusinessException;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
@@ -39,12 +39,12 @@ public class AIFeedbackService {
     public AIFeedbackResponse generateAIFeedbackFromS3(Long resumeId) {
         // 1. 이력서 정보 데이터베이스에서 조회
         Resume resume = resumeRepository.findById(resumeId)
-                .orElseThrow(() -> new BusinessException(ErrorStatus.RESUME_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESUME_NOT_FOUND));
 
         // 2. ResumePdf 객체에서 S3 버킷 이름과 키 가져오기
         ResumePdf resumePdf = resume.getResumePdf();
         if (resumePdf == null) {
-            throw new BusinessException(ErrorStatus.RESUME_PDF_NOT_FOUND);
+            throw new BusinessException(ErrorCode.RESUME_PDF_NOT_FOUND);
         }
 
         String bucketName = resumePdf.getPdf().getPdfUrl(); // Assuming pdfUrl contains the bucket name
@@ -62,7 +62,7 @@ public class AIFeedbackService {
             fullResponse = openAiService.getAIFeedback(resumeText);
         } catch (IOException e) {
             // IOException 발생 시 처리 로직
-            throw new BusinessException(ErrorStatus.OPENAI_SERVER_ERROR);
+            throw new BusinessException(ErrorCode.OPENAI_SERVER_ERROR);
         }
 
         // 6. ai피드백에서 content만 추출
@@ -85,7 +85,7 @@ public class AIFeedbackService {
             S3Object s3Object = amazonS3.getObject(bucketName, key);
             return s3Object.getObjectContent();
         } catch (Exception e) {
-            throw new BusinessException(ErrorStatus.RESUME_UPLOAD_ERROR);
+            throw new BusinessException(ErrorCode.RESUME_UPLOAD_ERROR);
         }
     }
 
@@ -95,7 +95,7 @@ public class AIFeedbackService {
             PDFTextStripper pdfStripper = new PDFTextStripper();
             return pdfStripper.getText(document);
         } catch (IOException e) {
-            throw new BusinessException(ErrorStatus.INTERNAL_SERVER_ERROR);
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
