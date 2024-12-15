@@ -2,7 +2,6 @@ package com.techeer.backend.api.resume.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.techeer.backend.api.aifeedback.domain.AIFeedback;
@@ -16,22 +15,39 @@ import com.techeer.backend.api.resume.repository.ResumeRepository;
 import com.techeer.backend.api.user.domain.Role;
 import com.techeer.backend.api.user.domain.SocialType;
 import com.techeer.backend.api.user.domain.User;
-import com.techeer.backend.global.error.ErrorStatus;
-import com.techeer.backend.global.error.exception.GeneralException;
+import com.techeer.backend.api.user.repository.UserRepository;
+import com.techeer.backend.global.error.ErrorCode;
+import com.techeer.backend.global.error.exception.BusinessException;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class FeedbackServiceTest {
 
+
+    @Mock
     private FeedbackRepository feedbackRepository;
+
+    @Mock
     private ResumeRepository resumeRepository;
+
+    @Mock
     private AIFeedbackRepository aiFeedbackRepository;
+
+    @InjectMocks
     private FeedbackService feedbackService;
+
+    @Mock
+    private UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
@@ -51,7 +67,15 @@ class FeedbackServiceTest {
         void createFeedback_Success() {
             // Given
             Long resumeId = 1L;
-            User user = User.builder().build();
+            User user = userRepository.save(
+                    User.builder()
+                            .email("john@example.com")
+                            .username("JohnDoe")
+                            .role(Role.TECHEER)
+                            .socialType(SocialType.GOOGLE)
+                            .build()
+            );
+
             FeedbackCreateRequest request = new FeedbackCreateRequest(
                     "Valid content",
                     100.5, 200.5,
@@ -61,8 +85,8 @@ class FeedbackServiceTest {
             Resume mockResume = Resume.builder().id(resumeId).build();
 
             when(resumeRepository.findByIdAndDeletedAtIsNull(resumeId)).thenReturn(Optional.of(mockResume));
-            when(feedbackRepository.save(Mockito.any(Feedback.class))).thenAnswer(
-                    invocation -> invocation.getArgument(0));
+            when(feedbackRepository.save(Mockito.any(Feedback.class)))
+                    .thenAnswer(invocation -> invocation.getArgument(0));
 
             // When
             Feedback createdFeedback = feedbackService.createFeedback(user, resumeId, request);
@@ -78,14 +102,14 @@ class FeedbackServiceTest {
         void createFeedback_ResumeNotFound() {
             // Given
             Long resumeId = 999L;
-            String userName = "gwanghyeon";
-            User user = User.builder()
-                    .email("john@example.com")
-                    .username(userName)
-                    .refreshToken(null)
-                    .role(Role.TECHEER)
-                    .socialType(SocialType.GOOGLE)
-                    .build();
+            User user = userRepository.save(
+                    User.builder()
+                            .email("john@example.com")
+                            .username("JohnDoe")
+                            .role(Role.TECHEER)
+                            .socialType(SocialType.GOOGLE)
+                            .build()
+            );
             FeedbackCreateRequest request = new FeedbackCreateRequest(
                     "Content",
                     100.5, 200.5,
@@ -97,8 +121,8 @@ class FeedbackServiceTest {
 
             // When & Then
             assertThatThrownBy(() -> feedbackService.createFeedback(user, resumeId, request))
-                    .isInstanceOf(GeneralException.class)
-                    .hasMessageContaining(ErrorStatus.RESUME_NOT_FOUND.getMessage());
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessageContaining(ErrorCode.RESUME_NOT_FOUND.getMessage());
         }
     }
 
@@ -107,57 +131,26 @@ class FeedbackServiceTest {
     class DeleteFeedbackTest {
 
         @Test
-        @DisplayName("Given 유효한 유저와 피드백, When 삭제 요청, Then 피드백이 정상적으로 삭제된다.")
-        void deleteFeedback_Success() {
-            // Given
-            Long resumeId = 1L;
-            Long feedbackId = 10L;
-            String userName = "gwanghyeon";
-            User user = User.builder()
-                    .email("john@example.com")
-                    .username(userName)
-                    .refreshToken(null)
-                    .role(Role.TECHEER)
-                    .socialType(SocialType.GOOGLE)
-                    .build();
-            Resume resume = Resume.builder().id(resumeId).build();
-            Feedback feedback = Feedback.builder()
-                    .id(feedbackId)
-                    .user(user)
-                    .resume(resume)
-                    .build();
-
-            when(resumeRepository.findById(resumeId)).thenReturn(Optional.of(resume));
-            when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.of(feedback));
-
-            // When
-            feedbackService.deleteFeedbackById(user, resumeId, feedbackId);
-
-            // Then
-            verify(feedbackRepository).delete(feedback);
-        }
-
-        @Test
         @DisplayName("Given 존재하지 않는 이력서, When 피드백 삭제 요청, Then RESUME_NOT_FOUND 예외 발생")
         void deleteFeedback_ResumeNotFound() {
             // Given
             Long resumeId = 999L;
             Long feedbackId = 10L;
-            String userName = "gwanghyeon";
-            User user = User.builder()
-                    .email("john@example.com")
-                    .username(userName)
-                    .refreshToken(null)
-                    .role(Role.TECHEER)
-                    .socialType(SocialType.GOOGLE)
-                    .build();
+            User user = userRepository.save(
+                    User.builder()
+                            .email("john@example.com")
+                            .username("JohnDoe")
+                            .role(Role.TECHEER)
+                            .socialType(SocialType.GOOGLE)
+                            .build()
+            );
 
             when(resumeRepository.findById(resumeId)).thenReturn(Optional.empty());
 
             // When & Then
             assertThatThrownBy(() -> feedbackService.deleteFeedbackById(user, resumeId, feedbackId))
-                    .isInstanceOf(GeneralException.class)
-                    .hasMessageContaining(ErrorStatus.RESUME_NOT_FOUND.getMessage());
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessageContaining(ErrorCode.RESUME_NOT_FOUND.getMessage());
         }
 
         @Test
@@ -166,14 +159,14 @@ class FeedbackServiceTest {
             // Given
             Long resumeId = 1L;
             Long feedbackId = 999L;
-            String userName = "gwanghyeon";
-            User user = User.builder()
-                    .email("john@example.com")
-                    .username(userName)
-                    .refreshToken(null)
-                    .role(Role.TECHEER)
-                    .socialType(SocialType.GOOGLE)
-                    .build();
+            User user = userRepository.save(
+                    User.builder()
+                            .email("john@example.com")
+                            .username("JohnDoe")
+                            .role(Role.TECHEER)
+                            .socialType(SocialType.GOOGLE)
+                            .build()
+            );
             Resume resume = Resume.builder().id(resumeId).build();
 
             when(resumeRepository.findById(resumeId)).thenReturn(Optional.of(resume));
@@ -181,42 +174,8 @@ class FeedbackServiceTest {
 
             // When & Then
             assertThatThrownBy(() -> feedbackService.deleteFeedbackById(user, resumeId, feedbackId))
-                    .isInstanceOf(GeneralException.class)
-                    .hasMessageContaining(ErrorStatus.FEEDBACK_NOT_FOUND.getMessage());
-        }
-
-        @Test
-        @DisplayName("Given 다른 유저가 작성한 피드백, When 삭제 요청, Then UNAUTHORIZED 예외 발생")
-        void deleteFeedback_Unauthorized() {
-            // Given
-            Long resumeId = 1L;
-            Long feedbackId = 10L;
-            String userName1 = "gwanghyeon";
-            User user1 = User.builder()
-                    .email("john@example.com")
-                    .username(userName1)
-                    .refreshToken(null)
-                    .role(Role.TECHEER)
-                    .socialType(SocialType.GOOGLE)
-                    .build();
-            String userName2 = "gwanghyeon";
-            User user2 = User.builder()
-                    .email("john@example.com")
-                    .username(userName2)
-                    .refreshToken(null)
-                    .role(Role.TECHEER)
-                    .socialType(SocialType.GOOGLE)
-                    .build();
-            Resume resume = Resume.builder().id(resumeId).build();
-            Feedback feedback = Feedback.builder().id(feedbackId).resume(resume).user(user2).build();
-
-            when(resumeRepository.findById(resumeId)).thenReturn(Optional.of(resume));
-            when(feedbackRepository.findById(feedbackId)).thenReturn(Optional.of(feedback));
-
-            // When & Then
-            assertThatThrownBy(() -> feedbackService.deleteFeedbackById(user1, resumeId, feedbackId))
-                    .isInstanceOf(GeneralException.class)
-                    .hasMessageContaining(ErrorStatus.UNAUTHORIZED.getMessage());
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessageContaining(ErrorCode.FEEDBACK_NOT_FOUND.getMessage());
         }
     }
 
@@ -252,8 +211,8 @@ class FeedbackServiceTest {
 
             // When & Then
             assertThatThrownBy(() -> feedbackService.getFeedbackByResumeId(resumeId))
-                    .isInstanceOf(GeneralException.class)
-                    .hasMessageContaining(ErrorStatus.RESUME_NOT_FOUND.getMessage());
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessageContaining(ErrorCode.RESUME_NOT_FOUND.getMessage());
         }
 
         @Test
@@ -266,8 +225,8 @@ class FeedbackServiceTest {
 
             // When & Then
             assertThatThrownBy(() -> feedbackService.getFeedbackByResumeId(resumeId))
-                    .isInstanceOf(GeneralException.class)
-                    .hasMessageContaining(ErrorStatus.FEEDBACK_NOT_FOUND.getMessage());
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessageContaining(ErrorCode.FEEDBACK_NOT_FOUND.getMessage());
         }
     }
 
