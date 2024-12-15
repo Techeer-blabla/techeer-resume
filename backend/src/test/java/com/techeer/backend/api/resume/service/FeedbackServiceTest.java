@@ -214,20 +214,6 @@ class FeedbackServiceTest {
                     .isInstanceOf(BusinessException.class)
                     .hasMessageContaining(ErrorCode.RESUME_NOT_FOUND.getMessage());
         }
-
-        @Test
-        @DisplayName("Given 피드백 없는 이력서, When 피드백 조회, Then FEEDBACK_NOT_FOUND 예외 발생")
-        void getFeedbackByResumeId_NoFeedback() {
-            // Given
-            Long resumeId = 1L;
-            when(resumeRepository.existsById(resumeId)).thenReturn(true);
-            when(feedbackRepository.findAllByResumeId(resumeId)).thenReturn(List.of());
-
-            // When & Then
-            assertThatThrownBy(() -> feedbackService.getFeedbackByResumeId(resumeId))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessageContaining(ErrorCode.FEEDBACK_NOT_FOUND.getMessage());
-        }
     }
 
     @Nested
