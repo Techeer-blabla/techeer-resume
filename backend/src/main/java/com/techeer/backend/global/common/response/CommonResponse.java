@@ -20,15 +20,15 @@ public class CommonResponse<T> {
 
     public static <T> CommonResponse<T> of(BaseStatus status, T result) {
         return new CommonResponse<>(status.getReason().getStatus(),
-                status.getReason().getMessage(),
                 status.getReason().getCode(),
+                status.getReason().getMessage(),
                 result);
     }
 
     public static <T> CommonResponse<T> ok(BaseStatus status) {
         return new CommonResponse(status.getReason().getStatus(),
-                status.getReason().getMessage(),
                 status.getReason().getCode(),
+                status.getReason().getMessage(),
                 null);
     }
 }
