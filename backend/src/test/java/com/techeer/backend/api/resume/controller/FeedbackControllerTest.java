@@ -1,8 +1,5 @@
 package com.techeer.backend.api.resume.controller;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -10,60 +7,96 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.techeer.backend.api.aifeedback.domain.AIFeedback;
-import com.techeer.backend.api.feedback.controller.FeedbackController;
-import com.techeer.backend.api.feedback.domain.Feedback;
 import com.techeer.backend.api.feedback.dto.request.FeedbackCreateRequest;
-import com.techeer.backend.api.feedback.service.FeedbackService;
+import com.techeer.backend.api.feedback.repository.FeedbackRepository;
+import com.techeer.backend.api.resume.domain.Resume;
+import com.techeer.backend.api.resume.repository.ResumeRepository;
+import com.techeer.backend.api.tag.position.Position;
 import com.techeer.backend.api.user.domain.Role;
 import com.techeer.backend.api.user.domain.SocialType;
 import com.techeer.backend.api.user.domain.User;
-import com.techeer.backend.api.user.service.UserService;
+import com.techeer.backend.api.user.repository.UserRepository;
+import com.techeer.backend.global.jwt.service.JwtService;
+import jakarta.persistence.EntityManager;
+import jakarta.servlet.http.Cookie;
+import jakarta.transaction.Transactional;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(FeedbackController.class) // FeedbackController 클래스만 로드하는 WebMvcTest
+@SpringBootTest
+@AutoConfigureMockMvc
+@Transactional
 class FeedbackControllerTest {
 
     @Autowired
-    private MockMvc mockMvc; // MockMvc를 통해 HTTP 요청/응답을 모의
+    private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper; // 객체를 JSON으로 직렬화/역직렬화하기 위한 ObjectMapper
+    private ObjectMapper objectMapper;
 
-    @MockBean
-    private FeedbackService feedbackService; // 서비스 레이어는 Mock 처리하여 컨트롤러 테스트에 집중
+    @Autowired
+    private FeedbackRepository feedbackRepository;
 
-    @MockBean
-    private UserService userService; // 로그인 사용자 정보를 제공하는 UserService도 Mock 처리
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ResumeRepository resumeRepository;
+
+    @Autowired
+    private EntityManager em;
+
+    // JwtService 주입
+    @Autowired
+    private JwtService jwtService;
+
+    private User testUser;
+    private Resume testResume;
+    private String accessToken; // 생성된 토큰을 저장할 변수
+
+    @BeforeEach
+    void setUp() {
+        // Given: 테스트용 User와 Resume를 DB에 저장
+        testUser = User.builder()
+                .email("john@example.com")
+                .username("JohnDoe")
+                .role(Role.TECHEER)
+                .socialType(SocialType.GOOGLE)
+                .build();
+        userRepository.save(testUser);
+
+        testResume = Resume.builder()
+                .user(testUser)
+                .name("John's Resume")
+                .career(5)
+                .position(Position.DEVOPS)
+                .build();
+        resumeRepository.save(testResume);
+
+        em.flush();
+        em.clear();
+
+        // JWT 토큰 생성 - User 객체 대신 이메일 전달
+        accessToken = jwtService.createAccessToken(testUser.getEmail());
+    }
 
     @Nested
     @DisplayName("POST /api/v1/resumes/{resume_id}/feedbacks")
     class CreateFeedback {
 
         @Test
-        @DisplayName("유효한 피드백 데이터로 POST 요청하면 CREATED 상태(201)와 올바른 응답 반환")
+        @DisplayName("Given 유효한 피드백 데이터, When 피드백 생성 요청, Then 201 상태코드와 생성된 피드백 반환")
         void createFeedback_Success() throws Exception {
-            // Given: 이력서 ID와 유저 세팅
-            Long resumeId = 1L;
-            String userName = "JohnDoe";
-            User mockUser = User.builder()
-                    .email("john@example.com")
-                    .username(userName)
-                    .refreshToken(null)
-                    .role(Role.TECHEER)
-                    .socialType(SocialType.GOOGLE)
-                    .build();
-
-            // 요청용 DTO 생성: content와 좌표 등이 유효한 데이터
+            // Given: 유효한 요청 바디
+            Long resumeId = testResume.getId();
             FeedbackCreateRequest request = new FeedbackCreateRequest(
                     "This is feedback",
                     100.5,
@@ -73,49 +106,28 @@ class FeedbackControllerTest {
                     1
             );
 
-            // 서비스에서 반환할 Mock Feedback 엔티티 세팅
-            Feedback mockFeedback = Feedback.builder()
-                    .id(10L)
-                    .content(request.getContent())
-                    .xCoordinate(request.getXCoordinate())
-                    .yCoordinate(request.getYCoordinate())
-                    .pageNumber(request.getPageNumber())
-                    .build();
-
-            // userService, feedbackService에 대한 Mock 동작 정의
-            Mockito.when(userService.getLoginUser()).thenReturn(mockUser);
-            Mockito.when(feedbackService.createFeedback(eq(mockUser), eq(resumeId), any(FeedbackCreateRequest.class)))
-                    .thenReturn(mockFeedback);
-
-            // When & Then: POST 요청을 보내고, 기대하는 JSON 응답 필드를 검증
-            // 응답: code: "피드백 생성 성공", message: "FEEDBACK_201" 등을 가정
+            // When: POST 요청에 JWT 토큰을 포함
             mockMvc.perform(post("/api/v1/resumes/{resume_id}/feedbacks", resumeId)
-                            .contentType(MediaType.APPLICATION_JSON) // JSON 요청
-                            .content(objectMapper.writeValueAsString(request))) // Body에 request JSON 직렬화
-                    .andExpect(status().isCreated()) // HTTP 201 상태 기대
-                    .andExpect(jsonPath("$.code").value("피드백 생성 성공"))
-                    .andExpect(jsonPath("$.message").value("FEEDBACK_201"))
-                    .andExpect(jsonPath("$.result.id").value(mockFeedback.getId()))
-                    .andExpect(jsonPath("$.result.content").value(mockFeedback.getContent()))
-                    .andExpect(jsonPath("$.result.xCoordinate").value(mockFeedback.getXCoordinate()))
-                    .andExpect(jsonPath("$.result.yCoordinate").value(mockFeedback.getYCoordinate()))
-                    .andExpect(jsonPath("$.result.pageNumber").value(mockFeedback.getPageNumber()));
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request))
+                            .cookie(new Cookie("accessToken", accessToken))) // JWT 토큰을 쿠키에 추가
+                    // Then: 기대한 응답 상태/필드 검증
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.http_status").value("CREATED"))
+                    .andExpect(jsonPath("$.code").value("COMMON_201"))
+                    .andExpect(jsonPath("$.message").value("성공적으로 생성되었습니다."))
+                    .andExpect(jsonPath("$.result.feedback_id").exists())
+                    .andExpect(jsonPath("$.result.content").value("This is feedback"))
+                    .andExpect(jsonPath("$.result.xcoordinate").value(100.5))
+                    .andExpect(jsonPath("$.result.ycoordinate").value(200.5))
+                    .andExpect(jsonPath("$.result.page_number").value(1));
         }
 
         @Test
-        @DisplayName("유효하지 않은 피드백 데이터로 POST 요청하면 BAD_REQUEST(400) 반환")
+        @DisplayName("Given 잘못된 피드백 데이터, When 피드백 생성 요청, Then 400 상태코드 반환")
         void createFeedback_InvalidData() throws Exception {
-            // Given: 유효하지 않은 데이터, 예: content가 빈 문자열
-            Long resumeId = 1L;
-            String userName = "JohnDoe";
-            User mockUser = User.builder()
-                    .email("john@example.com")
-                    .username(userName)
-                    .refreshToken(null)
-                    .role(Role.TECHEER)
-                    .socialType(SocialType.GOOGLE)
-                    .build();
-
+            // Given: content가 비어있는 유효하지 않은 요청
+            Long resumeId = testResume.getId();
             FeedbackCreateRequest invalidRequest = new FeedbackCreateRequest(
                     "",
                     100.0,
@@ -125,13 +137,19 @@ class FeedbackControllerTest {
                     1
             );
 
-            Mockito.when(userService.getLoginUser()).thenReturn(mockUser);
-
-            // When & Then: 빈 content로 요청 시 검증 실패 -> 400 오류 기대
+            // When: POST 요청에 JWT 토큰을 포함
             mockMvc.perform(post("/api/v1/resumes/{resume_id}/feedbacks", resumeId)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(invalidRequest)))
-                    .andExpect(status().isBadRequest());
+                            .content(objectMapper.writeValueAsString(invalidRequest))
+                            .cookie(new Cookie("accessToken", accessToken))) // JWT 토큰을 쿠키에 추가
+                    // Then: 400 Bad Request 기대
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.http_status").value("BAD_REQUEST"))
+                    .andExpect(jsonPath("$.code").value("COMMON_400")) // 실제 예외 코드에 맞게 수정
+                    .andExpect(jsonPath("$.error_message").value("잘못된 요청입니다."))
+                    .andExpect(jsonPath("$.errors[0].field").value("content"))
+                    .andExpect(jsonPath("$.errors[0].value").value(""))
+                    .andExpect(jsonPath("$.errors[0].reason").value("content는 필수입니다."));
         }
     }
 
@@ -140,72 +158,59 @@ class FeedbackControllerTest {
     class GetFeedbacks {
 
         @Test
-        @DisplayName("AI 및 일반 피드백이 있을 경우 OK와 해당 피드백 정보 반환")
+        @DisplayName("Given 일반 피드백 존재, When 피드백 조회 요청, Then 200 상태코드와 피드백 리스트 반환")
         void getFeedbackWithAIFeedback_Success() throws Exception {
-            // Given: resumeId에 해당하는 일반 피드백 2개와 AI 피드백 1개가 존재한다고 가정
-            Long resumeId = 1L;
+            // Given: 이력서에 피드백 2개 저장
+            Long resumeId = testResume.getId();
+            feedbackRepository.saveAll(List.of(
+                    com.techeer.backend.api.feedback.domain.Feedback.builder()
+                            .content("Good structure")
+                            .xCoordinate(50.0)
+                            .yCoordinate(60.0)
+                            .pageNumber(1)
+                            .user(testUser)
+                            .resume(testResume)
+                            .build(),
+                    com.techeer.backend.api.feedback.domain.Feedback.builder()
+                            .content("Improve formatting")
+                            .xCoordinate(70.0)
+                            .yCoordinate(80.0)
+                            .pageNumber(2)
+                            .user(testUser)
+                            .resume(testResume)
+                            .build()
+            ));
+            em.flush();
+            em.clear();
 
-            Feedback feedback1 = Feedback.builder()
-                    .id(10L)
-                    .content("Good structure")
-                    .xCoordinate(50.0)
-                    .yCoordinate(60.0)
-                    .pageNumber(1)
-                    .build();
-
-            Feedback feedback2 = Feedback.builder()
-                    .id(11L)
-                    .content("Improve formatting")
-                    .xCoordinate(70.0)
-                    .yCoordinate(80.0)
-                    .pageNumber(2)
-                    .build();
-
-            AIFeedback aiFeedback = AIFeedback.builder()
-                    .resumeId(resumeId)
-                    .feedback("AI recommended: add more detail")
-                    .build();
-
-            // Mock 설정: 서비스에서 resumeId에 대한 피드백 리스트와 AI 피드백 반환
-            Mockito.when(feedbackService.getFeedbackByResumeId(resumeId)).thenReturn(List.of(feedback1, feedback2));
-            Mockito.when(feedbackService.getAIFeedbackByResumeId(resumeId)).thenReturn(aiFeedback);
-
-            // When & Then: GET 요청 시, JSON 응답의 필드 확인
-            mockMvc.perform(get("/api/v1/resumes/{resume_id}/feedbacks", resumeId))
-                    .andExpect(status().isOk()) // 200 상태 기대
-                    .andExpect(jsonPath("$.code").value("피드백 조회 성공"))
-                    .andExpect(jsonPath("$.message").value("FEEDBACK_200"))
-                    .andExpect(jsonPath("$.result.ai_feedback_content").value(aiFeedback.getFeedback()))
-                    .andExpect(jsonPath("$.result.ai_feedback_id").value(
-                            aiFeedback.getId())) // aiFeedback.getId()는 실제 구현에 따라 null일 수도 있으니 테스트 상황에 맞게 수정 필요
-                    .andExpect(jsonPath("$.result.feedback_responses", hasSize(2))) // 피드백 2개
-                    .andExpect(jsonPath("$.result.feedback_responses[0].content").value(feedback1.getContent()))
-                    .andExpect(jsonPath("$.result.feedback_responses[0].xCoordinate").value(feedback1.getXCoordinate()))
-                    .andExpect(jsonPath("$.result.feedback_responses[0].yCoordinate").value(feedback1.getYCoordinate()))
-                    .andExpect(jsonPath("$.result.feedback_responses[0].pageNumber").value(feedback1.getPageNumber()))
-                    .andExpect(jsonPath("$.result.feedback_responses[1].content").value(feedback2.getContent()))
-                    .andExpect(jsonPath("$.result.feedback_responses[1].xCoordinate").value(feedback2.getXCoordinate()))
-                    .andExpect(jsonPath("$.result.feedback_responses[1].yCoordinate").value(feedback2.getYCoordinate()))
-                    .andExpect(jsonPath("$.result.feedback_responses[1].pageNumber").value(feedback2.getPageNumber()));
+            // When: GET 요청에 JWT 토큰을 포함
+            mockMvc.perform(get("/api/v1/resumes/{resume_id}/feedbacks", resumeId)
+                            .cookie(new Cookie("accessToken", accessToken))) // JWT 토큰을 쿠키에 추가
+                    // Then: 200 OK와 피드백 2개 반환 검증
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.http_status").value("OK"))
+                    .andExpect(jsonPath("$.code").value("FEEDBACK_200"))
+                    .andExpect(jsonPath("$.message").value("피드백 조회 성공"))
+                    .andExpect(jsonPath("$.result.feedback_responses.length()").value(2));
         }
 
         @Test
-        @DisplayName("피드백이 없을 경우 OK 상태와 빈 리스트 응답")
+        @DisplayName("Given 피드백 없음, When 피드백 조회 요청, Then 200 상태코드와 빈 리스트 반환")
         void getFeedbackWithAIFeedback_Empty() throws Exception {
-            // Given: 해당 resumeId에 대해 피드백 및 AI 피드백이 없는 상황
-            Long resumeId = 1L;
-            Mockito.when(feedbackService.getFeedbackByResumeId(resumeId)).thenReturn(List.of());
-            Mockito.when(feedbackService.getAIFeedbackByResumeId(resumeId)).thenReturn(null);
+            // Given: 피드백 없는 상태
+            Long resumeId = 3L; // 하드코딩된 ID
 
-            // When & Then: 빈 리스트 기대
-            mockMvc.perform(get("/api/v1/resumes/{resume_id}/feedbacks", resumeId))
+            // When: GET 요청에 JWT 토큰을 포함 (아무 피드백도 없음)
+            mockMvc.perform(get("/api/v1/resumes/{resume_id}/feedbacks", resumeId)
+                            .cookie(new Cookie("accessToken", accessToken))) // JWT 토큰을 쿠키에 추가
+                    // Then: 200 OK 기대
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.code").value("피드백 조회 성공"))
-                    .andExpect(jsonPath("$.message").value("FEEDBACK_200"))
-                    .andExpect(jsonPath("$.result.feedback_responses", hasSize(0))) // 빈 배열
-                    .andExpect(jsonPath("$.result.ai_feedback_content").doesNotExist()) // AI 피드백 없음
-                    .andExpect(jsonPath("$.result.ai_feedback_id").doesNotExist());
+                    .andExpect(jsonPath("$.http_status").value("OK"))
+                    .andExpect(jsonPath("$.code").value("FEEDBACK_200"))
+                    .andExpect(jsonPath("$.message").value("피드백 조회 성공"))
+                    .andExpect(jsonPath("$.result.feedback_responses.length()").value(0));
         }
+
     }
 
     @Nested
@@ -213,50 +218,47 @@ class FeedbackControllerTest {
     class DeleteFeedback {
 
         @Test
-        @DisplayName("삭제할 피드백이 존재하면 NO_CONTENT(204) 반환")
+        @DisplayName("Given 삭제 대상 피드백 존재, When 삭제 요청, Then 204 NO_CONTENT 반환")
         void deleteFeedback_Success() throws Exception {
-            // Given: 특정 resumeId와 feedbackId에 대한 피드백 삭제 요청
-            Long resumeId = 1L;
-            Long feedbackId = 10L;
-            String userName = "JohnDoe";
-            User mockUser = User.builder()
-                    .email("john@example.com")
-                    .username(userName)
-                    .refreshToken(null)
-                    .role(Role.TECHEER)
-                    .socialType(SocialType.GOOGLE)
-                    .build();
+            // Given: 피드백 1개 저장
+            Long resumeId = testResume.getId();
+            var feedback = feedbackRepository.save(
+                    com.techeer.backend.api.feedback.domain.Feedback.builder()
+                            .content("To delete")
+                            .xCoordinate(10.0)
+                            .yCoordinate(20.0)
+                            .pageNumber(1)
+                            .user(testUser)
+                            .resume(testResume)
+                            .build()
+            );
+            em.flush();
+            em.clear();
 
-            Mockito.when(userService.getLoginUser()).thenReturn(mockUser);
-            Mockito.doNothing().when(feedbackService).deleteFeedbackById(mockUser, resumeId, feedbackId);
-
-            // When & Then: 삭제 성공 시 204 반환
-            mockMvc.perform(delete("/api/v1/resumes/{resume_id}/feedbacks/{feedback_id}", resumeId, feedbackId))
+            // When: DELETE 요청에 JWT 토큰을 포함
+            mockMvc.perform(delete("/api/v1/resumes/{resume_id}/feedbacks/{feedback_id}",
+                            resumeId, feedback.getId())
+                            .cookie(new Cookie("accessToken", accessToken))) // JWT 토큰을 쿠키에 추가
+                    // Then: 성공적으로 삭제되며 204 반환
                     .andExpect(status().isNoContent());
         }
 
         @Test
-        @DisplayName("존재하지 않는 피드백 삭제 요청시 BAD_REQUEST(400) 반환")
+        @DisplayName("Given 존재하지 않는 피드백, When 삭제 요청, Then 404 NOT_FOUND 반환")
         void deleteFeedback_NotFound() throws Exception {
-            // Given: 없는 feedbackId 삭제 요청 -> 예외 발생 가정
-            Long resumeId = 1L;
-            Long feedbackId = 999L;
-            String userName = "JohnDoe";
-            User mockUser = User.builder()
-                    .email("john@example.com")
-                    .username(userName)
-                    .refreshToken(null)
-                    .role(Role.TECHEER)
-                    .socialType(SocialType.GOOGLE)
-                    .build();
+            // Given: 존재하지 않는 feedback_id
+            Long resumeId = testResume.getId();
 
-            Mockito.when(userService.getLoginUser()).thenReturn(mockUser);
-            Mockito.doThrow(new IllegalArgumentException("Feedback not found"))
-                    .when(feedbackService).deleteFeedbackById(mockUser, resumeId, feedbackId);
-
-            // When & Then: 존재하지 않는 피드백 -> 400 반환
-            mockMvc.perform(delete("/api/v1/resumes/{resume_id}/feedbacks/{feedback_id}", resumeId, feedbackId))
-                    .andExpect(status().isBadRequest());
+            // When: DELETE 요청에 JWT 토큰을 포함
+            mockMvc.perform(delete("/api/v1/resumes/{resume_id}/feedbacks/{feedback_id}",
+                            resumeId, 99999L)
+                            .cookie(new Cookie("accessToken", accessToken))) // JWT 토큰을 쿠키에 추가
+                    // Then: 404 NOT_FOUND 반환
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.http_status").value("NOT_FOUND"))
+                    .andExpect(jsonPath("$.code").value("FEEDBACK_404"))
+                    .andExpect(jsonPath("$.error_message").value("피드백을 찾을 수 없습니다."))
+                    .andExpect(jsonPath("$.errors").isEmpty());
         }
     }
 }
