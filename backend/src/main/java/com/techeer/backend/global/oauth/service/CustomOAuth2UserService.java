@@ -3,7 +3,6 @@ package com.techeer.backend.global.oauth.service;
 import com.techeer.backend.api.user.domain.SocialType;
 import com.techeer.backend.api.user.repository.UserRepository;
 import com.techeer.backend.api.user.service.UserService;
-import com.techeer.backend.global.error.exception.ExceptionAdvice;
 import com.techeer.backend.global.oauth.OAuthAttributes;
 import com.techeer.backend.global.oauth.oauth2user.CustomOAuth2User;
 import java.util.Collections;
@@ -24,7 +23,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     final private UserRepository userRepository;
     final private UserService userService;
-    private final ExceptionAdvice exceptionAdvice;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {

@@ -10,7 +10,7 @@ import com.techeer.backend.api.feedback.service.FeedbackService;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.service.UserService;
 import com.techeer.backend.global.common.response.CommonResponse;
-import com.techeer.backend.global.success.SuccessStatus;
+import com.techeer.backend.global.success.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -53,7 +53,7 @@ public class FeedbackController {
 
         log.info("피드백 생성 완료: {}", feedbackResponse);
 
-        return CommonResponse.of(SuccessStatus.CREATED, feedbackResponse);
+        return CommonResponse.of(SuccessCode.CREATED, feedbackResponse);
     }
 
     @Operation(summary = "AI 피드백, 일반 피드백 조회", description = "해당 이력서에 대한 AI 피드백과 일반 피드백 조회")
@@ -66,7 +66,7 @@ public class FeedbackController {
 
         AllFeedbackResponse response = FeedbackConverter.toAllFeedbackResponse(feedbacks, aiFeedback);
 
-        return CommonResponse.of(SuccessStatus.FEEDBACK_FETCH_OK, response);
+        return CommonResponse.of(SuccessCode.FEEDBACK_FETCH_OK, response);
     }
 
     @Operation(summary = "피드백 삭제")
@@ -81,6 +81,6 @@ public class FeedbackController {
 
         feedbackService.deleteFeedbackById(user, resumeId, feedbackId);
 
-        return CommonResponse.of(SuccessStatus.NO_CONTENT, null);
+        return CommonResponse.of(SuccessCode.NO_CONTENT, null);
     }
 }

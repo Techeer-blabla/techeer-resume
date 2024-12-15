@@ -5,6 +5,4 @@ import com.techeer.backend.global.common.response.ReasonDto;
 public interface BaseStatus {
 
     public ReasonDto getReason();
-
-    public ReasonDto getReasonHttpStatus();
 }
