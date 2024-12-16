@@ -29,7 +29,7 @@ public class BookmarkController {
     private final UserService userService;
 
     @Operation(summary = "북마크 등록", description = "관심있는 이력서를 북마크로 등록합니다.")
-    @PostMapping
+    @PostMapping("/{resume_id}")
     public CommonResponse<BookmarkResponse> addBookmark(
             @PathVariable("resume_id") Long resumeId) {
 
