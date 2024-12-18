@@ -2,8 +2,8 @@ package com.techeer.backend.global.jwt;
 
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.repository.UserRepository;
-import com.techeer.backend.global.error.ErrorStatus;
-import com.techeer.backend.global.error.exception.GeneralException;
+import com.techeer.backend.global.error.ErrorCode;
+import com.techeer.backend.global.error.exception.BusinessException;
 import com.techeer.backend.global.jwt.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -39,6 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response,
                                                   FilterChain filterChain) throws ServletException, IOException {
         String requestURI = request.getRequestURI();
+        log.info("requestURI: {}", requestURI);
         // 특정 경로 이외에는 필터를 건너뜀
         if (!requestURI.startsWith("/api/v1/")) {
             filterChain.doFilter(request, response);
@@ -66,11 +67,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     });
                 }
             } else {
-                // todo 삭제 예
+                // todo 삭제
                 log.warn("이메일이 존재 하지 않습니다.");
             }
         } else {
-            throw new GeneralException(ErrorStatus.ACCESS_TOKEN_NOT_FOUND);
+            throw new BusinessException(ErrorCode.INVALID_ACCESS_TOKEN);
         }
         filterChain.doFilter(request, response);
     }
