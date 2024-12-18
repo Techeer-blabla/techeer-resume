@@ -10,6 +10,7 @@ export type FeedbackPoint = {
 };
 
 export type ResumeData = {
+  feedbacks: never[];
   bookmarks?: BookmarkData[];
   resumeId: number;
   userName: string;

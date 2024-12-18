@@ -14,36 +14,41 @@ import {
 import { AddFeedbackPoint, FeedbackPoint, ResumeData } from "../types.ts";
 import { Bookmark, BookmarkMinus } from "lucide-react";
 import { postBookmark, deleteBookmarkById } from "../api/bookMarkApi.ts";
-// import { useParams } from "react-router-dom";
-import useResumeStore from "../store/ResumeStore.ts";
+import useResumeStore from "../store/ResumeStore"; // 전역 상태 가져오기
 
 function ResumeFeedbackPage() {
+  const { resumeId } = useResumeStore(); // 전역 상태에서 resumeId만 가져옵니다.
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
   const [feedbackPoints, setFeedbackPoints] = useState<FeedbackPoint[]>([]);
   const [hoveredCommentId, setHoveredCommentId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const { resumeId, setResumeUrl } = useResumeStore();
+  const [isBookmarked, setIsBookmarked] = useState<boolean>(false); // 북마크 상태
+  const [bookmarkId, setBookmarkId] = useState<number | null>(null); // 북마크 ID 저장
 
   useEffect(() => {
+    console.log("resumeId:", resumeId);
     const fetchData = async () => {
+      if (!resumeId) {
+        setError("Resume ID is missing.");
+        return;
+      }
+
       try {
         setLoading(true);
         setError(null);
+
+        // 이력서와 피드백 데이터를 받아옵니다.
         const data = await getResumeApi(Number(resumeId));
         setResumeData(data);
+        setFeedbackPoints(data.feedbacks || []);
 
-        // 데이터에서 북마크 상태와 ID 설정
-        if (data.bookmarks && data.bookmarks.length > 0) {
+        // 북마크 상태 초기화
+        const bookmarkResponse = await postBookmark(Number(resumeId)); // userId 제거, resumeId만 사용
+        if (bookmarkResponse) {
           setIsBookmarked(true);
-          setBookmarkId(data.bookmarks[0].bookmarkId); // 첫 번째 북마크의 ID 설정
-        } else {
-          setIsBookmarked(false);
-          setBookmarkId(null);
+          setBookmarkId(bookmarkResponse);
         }
-
-        setResumeUrl(data.fileUrl);
-        setFeedbackPoints(data.feedbackResponses || []);
       } catch (error) {
         console.error("Failed to fetch resume data", error);
         setError("Failed to fetch resume data. Please try again later.");
@@ -51,13 +56,41 @@ function ResumeFeedbackPage() {
         setLoading(false);
       }
     };
+
     fetchData();
-  }, [resumeId, setResumeUrl]);
+  }, [resumeId]); // resumeId가 변경될 때마다 데이터 로딩
+
+  // 북마크 토글 기능
+  const toggleBookmark = async () => {
+    if (!resumeId) {
+      setError("Resume ID is missing.");
+      return;
+    }
+
+    try {
+      if (isBookmarked) {
+        // 북마크 해제
+        if (bookmarkId !== null) {
+          await deleteBookmarkById(bookmarkId);
+        }
+        setIsBookmarked(false);
+        setBookmarkId(null);
+      } else {
+        // 북마크 추가
+        const response = await postBookmark(Number(resumeId)); // userId 제거, resumeId만 사용
+        setIsBookmarked(true);
+        setBookmarkId(response); // 서버로부터 받은 북마크 ID 저장
+      }
+    } catch (error) {
+      console.error("Failed to toggle bookmark", error);
+      alert("북마크 상태를 변경할 수 없습니다. 다시 시도해주세요.");
+    }
+  };
 
   const handleAiFeedback = async () => {
     setLoading(true);
     try {
-      const aiFeedback = await postAiFeedback(resumeId);
+      const aiFeedback = await postAiFeedback(Number(resumeId));
       setFeedbackPoints((prevPoints) => [
         ...prevPoints,
         ...aiFeedback.feedbacks,
@@ -90,8 +123,7 @@ function ResumeFeedbackPage() {
       };
       await addFeedbackApi(Number(resumeId), newPoint);
       const updatedData = await getResumeApi(Number(resumeId));
-      console.log("업데이트 데이터: ", updatedData);
-      setFeedbackPoints(updatedData.feedbackResponses);
+      setFeedbackPoints(updatedData.feedbacks);
     } catch (error) {
       console.error("Failed to add feedback point", error);
       setError("Failed to add feedback point. Please try again later.");
@@ -100,29 +132,25 @@ function ResumeFeedbackPage() {
     }
   };
 
+  // 피드백 점 삭제
   const deleteFeedbackPoint = async (id: number) => {
     try {
       setLoading(true);
       setError(null);
 
-      // Call the API to delete the feedback point
+      // 피드백 점 삭제 API 호출
       await deleteFeedbackApi(Number(resumeId), id);
 
-      // After successful deletion, update the local state to remove the feedback
-      setFeedbackPoints((prevComments) =>
-        (prevComments || []).filter((item) => item.id !== id)
+      // 삭제 후 상태 갱신
+      setFeedbackPoints(
+        (prevComments) => prevComments.filter((item) => item.id !== id) // 상태에서 삭제된 피드백 제거
       );
-      console.log("Deleted feedback point: ", id);
     } catch (error) {
       console.error("Failed to delete feedback point", error);
       setError("Failed to delete feedback point. Please try again later.");
     } finally {
       setLoading(false);
     }
-  };
-
-  const editFeedbackPoint = (updatedItem: AddFeedbackPoint) => {
-    console.log("Edit feedback point: ", updatedItem);
   };
 
   if (loading) {
@@ -138,7 +166,7 @@ function ResumeFeedbackPage() {
   }
 
   return (
-    <div className="flex flex-col flex-grow ">
+    <div className="flex flex-col flex-grow">
       <Layout
         sidebar={
           <div className="flex flex-col justify-between bg-white p-2 mt-10">
@@ -172,10 +200,12 @@ function ResumeFeedbackPage() {
                 feedbackPoints={feedbackPoints}
                 addFeedbackPoint={addFeedbackPoint}
                 deleteFeedbackPoint={deleteFeedbackPoint}
-                editFeedbackPoint={editFeedbackPoint}
-                hoveredCommentId={hoveredCommentId}
                 handleAiFeedback={handleAiFeedback}
+                hoveredCommentId={hoveredCommentId}
                 setHoveredCommentId={setHoveredCommentId}
+                editFeedbackPoint={() => {
+                  throw new Error("Function not implemented.");
+                }}
               />
             </div>
           </div>
@@ -185,9 +215,11 @@ function ResumeFeedbackPage() {
           feedbackPoints={feedbackPoints}
           addFeedbackPoint={addFeedbackPoint}
           deleteFeedbackPoint={deleteFeedbackPoint}
-          editFeedbackPoint={editFeedbackPoint}
           hoveredCommentId={hoveredCommentId}
           setHoveredCommentId={setHoveredCommentId}
+          editFeedbackPoint={() => {
+            throw new Error("Function not implemented.");
+          }}
         />
       </Layout>
     </div>

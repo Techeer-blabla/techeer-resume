@@ -16,18 +16,26 @@ import useResumeStore from "../store/ResumeStore.ts";
 
 function MainPage() {
   const navigate = useNavigate();
-  const { setResumeId } = useResumeStore();
+  const { setResumeId } = useResumeStore(); // 이제 resumeId만 설정합니다.
+
   const moveToResume = async (resumeId: number) => {
     try {
-      const response = await viewResume(resumeId);
-      setResumeId(response.resume_id);
-      navigate(`/feedback?${response.resume_id}`);
-      return response;
+      const response = await viewResume(resumeId);  // 이력서를 조회합니다.
+      console.log("Full response:", response); // 응답 구조 확인
+
+      if (response && response.resume_id) {
+        setResumeId(response.resume_id); // resumeId만 설정합니다.
+        navigate(`/feedback`);  // 피드백 페이지로 이동
+      } else {
+        console.error("Invalid response structure:", response);
+        throw new Error("Invalid response structure");
+      }
     } catch (error) {
       console.error("이력서 조회 오류:", error);
-      throw error;
+      alert("이력서를 불러오는 중 오류가 발생했습니다.");
     }
   };
+
 
   const [isPositionOpen, setIsPositionOpen] = useState(false);
   const [isCareerOpen, setIsCareerOpen] = useState(false);
@@ -194,7 +202,7 @@ function MainPage() {
                         experience={post.career}
                         education="전공자"
                         skills={post.tech_stack_names}
-                        onClick={() => moveToResume(Number(post.resume_id))}
+                        onClick={() => moveToResume(Number(post.resume_id))} // 전역 상태로 resumeId와 userId 설정
                       />
                     ))
                   )

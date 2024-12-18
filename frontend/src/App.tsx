@@ -5,7 +5,6 @@ import SearchPage from "./pages/SearchPage";
 import Upload from "./pages/Upload";
 import Login from "./pages/LoginPage";
 import ProtectedRoute from "./utils/Token";
-import MyInfoPage from "./pages/MyInfoPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // QueryClient 생성
@@ -19,19 +18,13 @@ export default function App() {
           <div className="flex-grow">
             <Routes>
               <Route path="/" element={<MainPage />} />
-              <Route
-                path="/feedback/resumeId"
-                element={<ResumeFeedbackPage />}
-              />
-
+              {/* resumeId와 userId는 전역 상태에서 관리되므로 URL로 넘길 필요 없음 */}
+              <Route path="/feedback" element={<ResumeFeedbackPage />} />
               <Route path="/search" element={<SearchPage />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/search" element={<SearchPage />} />
-
               <Route element={<ProtectedRoute />}>
-                <Route path="/feedback" element={<ResumeFeedbackPage />} />
                 <Route path="/upload" element={<Upload />} />
-                <Route path="/myInfo" element={<MyInfoPage />} />
+                {/* <Route path="/myInfo" element={<MyInfoPage />} /> */}
               </Route>
             </Routes>
           </div>
