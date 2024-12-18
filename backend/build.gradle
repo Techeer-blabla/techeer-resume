@@ -79,7 +79,8 @@ tasks.named('test') {
     useJUnitPlatform()
     dependsOn test // 테스트 후 실행
     reports {
-        junitXml.required.set(true) // enabled 대신 required.set(true) 사용
-        html.required.set(true)
+        jhtml.required.set(true)
+        xml.required.set(true)
+        csv.required.set(false)
     }
 }
