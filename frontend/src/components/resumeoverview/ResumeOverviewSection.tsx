@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { ResumeData } from "../../types.ts";
-import { getResumeApi } from "../../api/feedbackApi.ts";
-import useResumeStore from "../../store/ResumeStore.ts";
+// import { useEffect, useState } from "react";
+// import { ResumeData } from "../../types.ts";
+// import { getResumeApi } from "../../api/feedbackApi.ts";
+// import useResumeStore from "../../store/ResumeStore.ts";
 
 interface ResumeOverviewProps {
   userName: string;
@@ -22,9 +22,6 @@ function ResumeOverviewSection({
 }: ResumeOverviewProps): React.ReactElement {
   // const [resumeData, setResumeData] = useState<ResumeData | null>(null);
   // const { resumeId } = useResumeStore();
-
-  console.log(techStackNames)
-
   // useEffect(() => {
   //   if (resumeId === undefined) {
   //     console.error("Invalid resumeId: undefined");
@@ -63,7 +60,7 @@ function ResumeOverviewSection({
         </div>
         <div>
           <p className="font-medium">Tech Stack:</p>
-          {techStackNames.map((stack,index) => (
+          {techStackNames.map((stack, index) => (
             <p key={index}>{stack}</p>
           ))}
         </div>
