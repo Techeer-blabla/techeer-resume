@@ -12,6 +12,7 @@ interface CommentSectionProps {
   editFeedbackPoint: (item: FeedbackPoint) => void;
   hoveredCommentId: number | null;
   setHoveredCommentId: (id: number | null) => void;
+  handleAiFeedback: () => void;
   loading?: boolean;
   error?: string;
 }
@@ -23,6 +24,7 @@ function CommentSection({
   editFeedbackPoint,
   hoveredCommentId,
   setHoveredCommentId,
+  handleAiFeedback,
   loading = false,
   error = "",
 }: CommentSectionProps): React.ReactElement {
@@ -62,7 +64,11 @@ function CommentSection({
 
       {/* 댓글 추가 입력 */}
       <div className="mt-4">
-        <CommentForm onAdd={handleAddComment} disabled={loading} />
+        <CommentForm
+          onAdd={handleAddComment}
+          onAiFeedback={handleAiFeedback}
+          disabled={loading}
+        />
       </div>
     </div>
   );

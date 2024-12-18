@@ -2,13 +2,12 @@ package com.techeer.backend.api.resume.service;
 
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
+import com.techeer.backend.api.resume.exception.ResumeNotFoundException;
 import com.techeer.backend.api.resume.repository.GetResumeRepository;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.global.error.ErrorCode;
-import com.techeer.backend.global.error.ErrorStatus;
-import com.techeer.backend.global.error.exception.GeneralException;
-import com.techeer.backend.global.error.exception.NotFoundException;
+import com.techeer.backend.global.error.exception.BusinessException;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +32,7 @@ public class ResumeService {
     // 이력서 개별 조회
     public Resume getResume(Long resumeId) {
         return resumeRepository.findById(resumeId)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(ResumeNotFoundException::new);
     }
 
     // 유저 이름으로 이력서 조회
@@ -76,9 +75,13 @@ public class ResumeService {
 
         // Resume가 없을 경우 빈 결과를 처리
         if (resume == null) {
-            throw new GeneralException(ErrorCode.RESUME_NOT_FOUND);
+            throw new BusinessException(ErrorCode.RESUME_NOT_FOUND);
         }
 
         return resumes;
+    }
+
+    public Resume findLaterByUser(User user) {
+        return resumeRepository.findFirstByUserOrderByCreatedAtDesc(user);
     }
 }

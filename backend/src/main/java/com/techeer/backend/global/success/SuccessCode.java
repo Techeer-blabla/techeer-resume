@@ -16,6 +16,7 @@ public enum SuccessCode implements BaseStatus {
 
     // Resume Success
     RESUME_CREATED(HttpStatus.CREATED, "RESUME_201", "이력서가 성공적으로 저장되었습니다"),
+    RESUME_FETCH_OK(HttpStatus.OK, "RESUME_200", "이력서 조회 성공"),
 
     // User  Success
     USER_FETCH_OK(HttpStatus.OK, "USER_200", "유저 정보 조회 성공"),
@@ -37,15 +38,6 @@ public enum SuccessCode implements BaseStatus {
 
     @Override
     public ReasonDto getReason() {
-        return ReasonDto.builder()
-                .status(httpStatus)
-                .message(message)
-                .code(code)
-                .build();
-    }
-
-    @Override
-    public ReasonDto getReasonHttpStatus() {
         return ReasonDto.builder()
                 .status(httpStatus)
                 .message(message)

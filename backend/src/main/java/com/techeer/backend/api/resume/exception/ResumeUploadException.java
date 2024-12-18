@@ -1,4 +1,4 @@
-package com.techeer.backend.global.error.exception.resume;
+package com.techeer.backend.api.resume.exception;
 
 import com.techeer.backend.global.error.ErrorCode;
 import com.techeer.backend.global.error.exception.BusinessException;

@@ -15,7 +15,7 @@ import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.service.UserService;
 import com.techeer.backend.global.common.response.CommonResponse;
 import com.techeer.backend.global.error.ErrorCode;
-import com.techeer.backend.global.error.exception.GeneralException;
+import com.techeer.backend.global.error.exception.BusinessException;
 import com.techeer.backend.global.success.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -53,15 +53,15 @@ public class ResumeController {
     // 이력서 등록
     @Operation(summary = "이력서 등록")
     @PostMapping(value = "/resumes", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public CommonResponse<Object> resumeRegistration(@RequestPart @Valid CreateResumeRequest createResumeReq,
-                                                     @RequestPart(name = "resume_file")
-                                                     @Valid MultipartFile resumeFile) {
+    public CommonResponse<?> resumeRegistration(@RequestPart @Valid CreateResumeRequest createResumeReq,
+                                                @RequestPart(name = "resume_file")
+                                                @Valid MultipartFile resumeFile) {
         // 파일 유효성 검사 -> 나중에 vaildtor로 변경해서 유효성 검사할 예정
         if (resumeFile.isEmpty()) {
-            throw new GeneralException(ErrorCode.RESUME_FILE_EMPTY);
+            throw new BusinessException(ErrorCode.RESUME_FILE_EMPTY);
         }
         if (!resumeFile.getContentType().equals("application/pdf")) {
-            throw new GeneralException(ErrorCode.RESUME_FILE_TYPE_NOT_ALLOWED);
+            throw new BusinessException(ErrorCode.RESUME_FILE_TYPE_NOT_ALLOWED);
         }
         // todo 유저 이름으로 객체 탐색
         //        Optional<User> registrars = userService.findUserByName(createResumeReq.getUsername());
@@ -84,7 +84,7 @@ public class ResumeController {
                 .map(ResumeConverter::toResumeResponse)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.
+        return CommonResponse.of(SuccessCode.RESUME_FETCH_OK, resumeResponse);
     }
 
 

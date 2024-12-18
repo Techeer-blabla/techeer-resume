@@ -1,6 +1,8 @@
 package com.techeer.backend.global.error.exception;
 
 
+import com.techeer.backend.global.error.ErrorCode;
+import com.techeer.backend.global.error.ErrorResponse;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;

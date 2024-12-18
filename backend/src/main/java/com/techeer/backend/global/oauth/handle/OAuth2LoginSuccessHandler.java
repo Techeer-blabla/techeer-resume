@@ -64,14 +64,14 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         // Access Token 쿠키 생성
         Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
         accessTokenCookie.setHttpOnly(true); // 클라이언트에서 자바스크립트를 통해 접근하지 못하도록 설정
-        accessTokenCookie.setSecure(true); // HTTPS에서만 전송되도록 설정 (개발 환경에서는 필요에 따라 설정)
+        // accessTokenCookie.setSecure(true); // HTTPS에서만 전송되도록 설정 (개발 환경에서는 필요에 따라 설정)
         accessTokenCookie.setPath("/"); // 쿠키가 모든 경로에 적용되도록 설정
         accessTokenCookie.setMaxAge(60 * 60); // 쿠키의 만료 시간 설정 (예: 1시간)
 
         // Refresh Token 쿠키 생성
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);
+        // refreshTokenCookie.setSecure(true);
         refreshTokenCookie.setPath("/");
         refreshTokenCookie.setMaxAge(60 * 60 * 24 * 7); // 예: 7일
 

@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response,
                                                   FilterChain filterChain) throws ServletException, IOException {
         log.info("checkAccessTokenAndAuthentication() 호출");
-        jwtService.extractAccessToken(request)
+        jwtService.extractAccessTokenFromCookie(request)
                 .filter(jwtService::isTokenValid)
                 .ifPresent(accessToken -> {
                     log.info("유효한 Access Token이 발견되었습니다: {}", accessToken);

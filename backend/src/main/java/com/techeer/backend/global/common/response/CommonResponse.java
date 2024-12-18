@@ -19,11 +19,16 @@ public class CommonResponse<T> {
     private final T result;
 
     public static <T> CommonResponse<T> of(BaseStatus status, T result) {
-        return new CommonResponse<>(status.getReasonHttpStatus().getStatus(), status.getReason().getMessage(), status.getReason().getCode(), result);
+        return new CommonResponse<>(status.getReason().getStatus(),
+                status.getReason().getMessage(),
+                status.getReason().getCode(),
+                result);
     }
 
-    // 실패시 응답 생성
-    public static <T> CommonResponse<T> onFailure(HttpStatus status, String code, String message, T data) {
-        return new CommonResponse<>(status, code, message, data);
+    public static <T> CommonResponse<T> ok(BaseStatus status) {
+        return new CommonResponse(status.getReason().getStatus(),
+                status.getReason().getMessage(),
+                status.getReason().getCode(),
+                null);
     }
 }
