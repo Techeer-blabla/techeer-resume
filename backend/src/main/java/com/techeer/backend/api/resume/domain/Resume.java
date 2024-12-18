@@ -3,15 +3,19 @@ package com.techeer.backend.api.resume.domain;
 import com.techeer.backend.api.tag.company.domain.ResumeCompany;
 import com.techeer.backend.api.tag.position.Position;
 import com.techeer.backend.api.tag.techStack.domain.ResumeTechStack;
+import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.global.common.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -26,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 @Entity
 @Getter
 @Table(name = "Resume")
+@Builder
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Resume extends BaseEntity {
@@ -33,12 +38,9 @@ public class Resume extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 하나의 유저가 다수의 이력서를 가진다.
-    //    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    //    @JoinColumn(name = "user_id", nullable = false)
-    //    private User user;
-    @Column(name = "username")
-    private String username;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(nullable = false)
     private String name;
@@ -50,9 +52,17 @@ public class Resume extends BaseEntity {
     @Column(name = "position")
     private Position position;
 
+    // 이전 버전(더 오래된 버전)
+    private Long previousResumeId;
+
+    // 이후 버전(더 최신 버전)
+    private Long laterResumeId;
+
+    @Builder.Default
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL)
     private List<ResumeTechStack> resumeTechStacks = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL)
     private List<ResumeCompany> resumeCompanies = new ArrayList<>();
 
@@ -61,8 +71,8 @@ public class Resume extends BaseEntity {
 
 
     @Builder
-    public Resume(String username, String name, int career, Position position, ResumePdf resumePdf) {
-        this.username = username;
+    public Resume(User user, String name, int career, Position position, ResumePdf resumePdf) {
+        this.user = user;
         this.name = name;
         this.career = career;
         this.position = position;
@@ -79,5 +89,9 @@ public class Resume extends BaseEntity {
 
     public void addResumePdf(ResumePdf resumePdf) {
         this.resumePdf = resumePdf;
+    }
+
+    public void updateLaterResumeId(Long id) {
+        this.laterResumeId = id;
     }
 }

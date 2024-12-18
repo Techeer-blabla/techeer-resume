@@ -15,13 +15,15 @@ export const jsonAxios = axios.create({
 
 export const formAxios = axios.create({
   baseURL: BASE_URL,
+  withCredentials: true, // 필요에 따라 설정
   headers: {
     "Content-Type": "multipart/form-data",
   },
 });
 
-export const formAxiosjson = axios.create({
+export const jsonFormAxios = axios.create({
   baseURL: BASE_URL,
+  withCredentials: true, // 필요에 따라 설정
   headers: {
     "Content-Type": "application/json",
   },
@@ -30,7 +32,7 @@ export const formAxiosjson = axios.create({
 export const axiosInstance = axios.create({
   baseURL: AXIOS_BASE_URL,
   timeout: NETWORK.TIMEOUT,
-  withCredentials: false, // CORS 설정에 따라 true 또는 false
+  withCredentials: true, // CORS 설정에 따라 true 또는 false
   // useAuth는 Axios의 기본 설정에 포함되지 않으므로 제거
 });
 
@@ -38,16 +40,16 @@ export const axiosInstance = axios.create({
 axiosInstance.interceptors.response.use((response) => response, handleAPIError);
 
 // 요청 인터셉터: 인증 토큰 자동 첨부 (옵션)
-// axiosInstance.interceptors.request.use(
-//   (config) => {
-//     const token = localStorage.getItem("authToken");
-//     if (token && config.headers) {
-//       config.headers.Authorization = `Bearer ${token}`;
-//     }
-//     return config;
-//   },
-//   (error) => Promise.reject(error)
-// );
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("authToken");
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 // 요청 인터셉터 설정
 axiosInstance.interceptors.request.use((config) => {

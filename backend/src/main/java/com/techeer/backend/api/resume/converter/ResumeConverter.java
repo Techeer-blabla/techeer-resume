@@ -7,6 +7,7 @@ import com.techeer.backend.api.resume.dto.response.PageableResumeResponse;
 import com.techeer.backend.api.resume.dto.response.ResumeDetailResponse;
 import com.techeer.backend.api.resume.dto.response.ResumeResponse;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ResumeConverter {
@@ -14,7 +15,8 @@ public class ResumeConverter {
     public static PageableResumeResponse toPageableResumeResponse(Resume resume) {
         return PageableResumeResponse.builder()
                 .resumeId(resume.getId())
-                .userName(resume.getUsername())
+                .resumeName(resume.getName())
+                .userName(resume.getUser().getUsername())
                 .resumeName(resume.getName())
                 .position(resume.getPosition().getValue())
                 .career(resume.getCareer())
@@ -31,7 +33,8 @@ public class ResumeConverter {
     public static ResumeDetailResponse toResumeDetailResponse(Resume resume, List<Feedback> feedbacks) {
         return ResumeDetailResponse.builder()
                 .resumeId(resume.getId())
-                .userName(resume.getUsername())
+                .resumeName(resume.getName())
+                .userName(resume.getUser().getUsername())
                 .position(resume.getPosition().getValue())
                 .career(resume.getCareer())
                 .techStackNames(resume.getResumeTechStacks()
@@ -42,6 +45,8 @@ public class ResumeConverter {
                         .map(resumeCompany -> resumeCompany.getCompany().getName()).collect(Collectors.toList()))
                 .fileUrl(resume.getResumePdf().getPdf().getPdfUrl())
                 .feedbackResponses(feedbacks.stream().map(FeedbackConverter::toFeedbackResponse).collect(Collectors.toList()))
+                .previousResumeId(Optional.ofNullable(resume.getPreviousResumeId()).orElse(null))
+                .laterResumeId(Optional.ofNullable(resume.getLaterResumeId()).orElse(null))
                 .build();
     }
 
@@ -49,7 +54,8 @@ public class ResumeConverter {
     public static ResumeResponse toResumeResponse(Resume resume) {
         return ResumeResponse.builder()
                 .resumeId(resume.getId())
-                .userName(resume.getUsername())
+                .resumeName(resume.getName())
+                .userName(resume.getUser().getUsername())
                 .resumeName(resume.getName())
                 .position(resume.getPosition().getValue())
                 .career(resume.getCareer())

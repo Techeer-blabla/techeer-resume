@@ -17,12 +17,14 @@ interface CommentFormProps {
   onCancel?: () => void; // 메인 영역용
   position?: Position; // 메인 영역용
   initialComment?: string; // 메인 영역용 (수정 시)
+  onAiFeedback?: () => void;
   disabled?: boolean;
 }
 
 function CommentForm({
   onAdd,
   onSubmit,
+  onAiFeedback,
   onCancel,
   position,
   initialComment = "",
@@ -115,6 +117,14 @@ function CommentForm({
             disabled={disabled}
           >
             {onSubmit ? (initialComment ? "수정" : "추가") : "댓글 추가"}
+          </button>
+          <button
+            type="button"
+            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+            onClick={onAiFeedback}
+            disabled={disabled}
+          >
+            AI 피드백
           </button>
         </div>
       </form>

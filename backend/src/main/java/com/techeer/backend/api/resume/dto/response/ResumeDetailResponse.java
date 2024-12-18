@@ -1,6 +1,6 @@
 package com.techeer.backend.api.resume.dto.response;
 
-import com.techeer.backend.api.feedback.dto.FeedbackResponse;
+import com.techeer.backend.api.feedback.dto.response.FeedbackResponse;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,4 +18,7 @@ public class ResumeDetailResponse {
     private List<String> techStackNames;
     private List<String> companyNames;
     private final List<FeedbackResponse> feedbackResponses;
+
+    private final Long previousResumeId;
+    private final Long laterResumeId;
 }

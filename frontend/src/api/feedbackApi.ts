@@ -64,5 +64,15 @@ export const editFeedbackApi = async (
  */
 export const getResumeApi = async (resumeId: number): Promise<ResumeData> => {
   const response = await axiosInstance.get(`/resumes/${resumeId}`);
-  return response.data.data;
+  return response.data.result;
+};
+
+/**
+ * AI 피드백 요청 API
+ * @param resumeId - 이력서 ID
+ * @returns AI 피드백 데이터
+ */
+export const postAiFeedback = async (resumeId: number) => {
+  const response = await axiosInstance.post(`/aifeedbacks/${resumeId}`, {});
+  return response.data;
 };

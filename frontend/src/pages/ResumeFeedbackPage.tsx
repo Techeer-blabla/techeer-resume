@@ -9,10 +9,13 @@ import {
   addFeedbackApi,
   deleteFeedbackApi,
   getResumeApi,
+  postAiFeedback,
 } from "../api/feedbackApi.ts";
 import { AddFeedbackPoint, FeedbackPoint, ResumeData } from "../types.ts";
 import { Bookmark, BookmarkMinus } from "lucide-react";
 import { postBookmark, deleteBookmarkById } from "../api/bookMarkApi.ts";
+// import { useParams } from "react-router-dom";
+import useResumeStore from "../store/ResumeStore.ts";
 
 function ResumeFeedbackPage() {
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
@@ -20,19 +23,14 @@ function ResumeFeedbackPage() {
   const [hoveredCommentId, setHoveredCommentId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const resumeId = 1;
-  const [isBookmarked, setIsBookmarked] = useState<boolean>(false); // 북마크 상태
-  const [bookmarkId, setBookmarkId] = useState<number | null>(null); // 북마크 ID 저장
-
-  const userId = 1; // 임시 사용자 ID
+  const { resumeId, setResumeUrl } = useResumeStore();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await getResumeApi(resumeId);
-
+        const data = await getResumeApi(Number(resumeId));
         setResumeData(data);
 
         // 데이터에서 북마크 상태와 ID 설정
@@ -44,7 +42,8 @@ function ResumeFeedbackPage() {
           setBookmarkId(null);
         }
 
-        setFeedbackPoints(data.feedbacks || []);
+        setResumeUrl(data.fileUrl);
+        setFeedbackPoints(data.feedbackResponses || []);
       } catch (error) {
         console.error("Failed to fetch resume data", error);
         setError("Failed to fetch resume data. Please try again later.");
@@ -53,34 +52,24 @@ function ResumeFeedbackPage() {
       }
     };
     fetchData();
-  }, [resumeId]); // resumeId만 의존, 북마크 변경이 끝난 후에도 데이터 새로고침
+  }, [resumeId, setResumeUrl]);
 
-  // 북마크 토글 기능
-  const toggleBookmark = async () => {
+  const handleAiFeedback = async () => {
+    setLoading(true);
     try {
-      if (isBookmarked) {
-        // 북마크 해제
-        console.log("북마크 해제 요청: ", bookmarkId);
-        if (bookmarkId !== null) {
-          await deleteBookmarkById(bookmarkId); // 삭제 API 호출
-        }
-        setIsBookmarked(false);
-        setBookmarkId(null); // 북마크 해제 후 ID 초기화
-      } else {
-        // 북마크 추가
-        const response = await postBookmark(userId, resumeId);
-        if (response.result?.bookmark_id) {
-          setIsBookmarked(true);
-          setBookmarkId(response.result.bookmark_id); // 서버로부터 받은 북마크 ID 저장
-        }
-      }
+      const aiFeedback = await postAiFeedback(resumeId);
+      setFeedbackPoints((prevPoints) => [
+        ...prevPoints,
+        ...aiFeedback.feedbacks,
+      ]);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error("Failed to toggle bookmark", error);
-      alert("북마크 상태를 변경할 수 없습니다. 다시 시도해주세요.");
+      setError("Failed to retrieve AI feedback.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // 피드백 점 추가
   const addFeedbackPoint = async (point: Omit<AddFeedbackPoint, "id">) => {
     if (
       !point.content ||
@@ -99,9 +88,10 @@ function ResumeFeedbackPage() {
         content: point.content,
         pageNumber: 1,
       };
-      await addFeedbackApi(resumeId, newPoint);
-      const updatedData = await getResumeApi(resumeId);
-      setFeedbackPoints(updatedData.feedbacks);
+      await addFeedbackApi(Number(resumeId), newPoint);
+      const updatedData = await getResumeApi(Number(resumeId));
+      console.log("업데이트 데이터: ", updatedData);
+      setFeedbackPoints(updatedData.feedbackResponses);
     } catch (error) {
       console.error("Failed to add feedback point", error);
       setError("Failed to add feedback point. Please try again later.");
@@ -110,14 +100,13 @@ function ResumeFeedbackPage() {
     }
   };
 
-  // 피드백 점 삭제
   const deleteFeedbackPoint = async (id: number) => {
     try {
       setLoading(true);
       setError(null);
 
       // Call the API to delete the feedback point
-      await deleteFeedbackApi(resumeId, id);
+      await deleteFeedbackApi(Number(resumeId), id);
 
       // After successful deletion, update the local state to remove the feedback
       setFeedbackPoints((prevComments) =>
@@ -132,7 +121,6 @@ function ResumeFeedbackPage() {
     }
   };
 
-  // 댓글 및 피드백 점 수정 (로그만 출력)
   const editFeedbackPoint = (updatedItem: AddFeedbackPoint) => {
     console.log("Edit feedback point: ", updatedItem);
   };
@@ -186,13 +174,13 @@ function ResumeFeedbackPage() {
                 deleteFeedbackPoint={deleteFeedbackPoint}
                 editFeedbackPoint={editFeedbackPoint}
                 hoveredCommentId={hoveredCommentId}
+                handleAiFeedback={handleAiFeedback}
                 setHoveredCommentId={setHoveredCommentId}
               />
             </div>
           </div>
         }
       >
-        {/* Main Content */}
         <MainContainer
           feedbackPoints={feedbackPoints}
           addFeedbackPoint={addFeedbackPoint}

@@ -1,4 +1,4 @@
-package com.techeer.backend.api.feedback.dto;
+package com.techeer.backend.api.feedback.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
