@@ -12,26 +12,28 @@ import {
   postAiFeedback,
 } from "../api/feedbackApi.ts";
 import { AddFeedbackPoint, FeedbackPoint, ResumeData } from "../types.ts";
-// import { useParams } from "react-router-dom";
 import useResumeStore from "../store/ResumeStore.ts";
+import { useParams } from "react-router-dom";
 
 function ResumeFeedbackPage() {
-  const [resumeData, setResumeData] = useState<ResumeData | null>(null);
-  const [feedbackPoints, setFeedbackPoints] = useState<FeedbackPoint[]>([]);
-  const [hoveredCommentId, setHoveredCommentId] = useState<number | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const { resumeId, setResumeUrl } = useResumeStore();
+  const [resumeData, setResumeData] = useState<ResumeData | null>(null); //이력서 데이터를 관리
+  const [feedbackPoints, setFeedbackPoints] = useState<FeedbackPoint[]>([]);//피드백 데이터를 관리
+  const [hoveredCommentId, setHoveredCommentId] = useState<number | null>(null);//마우스 호버시 코멘트 아이디를 관리
+  const [loading, setLoading] = useState<boolean>(true);//로딩 상태를 관리
+  const [error, setError] = useState<string | null>(null);//에러 상태를 관리
+  const { resumeId, setResumeUrl } = useResumeStore();//이력서 아이디와 이력서 URL을 관리 -> 이게 왜 필요한지 모르겠음
+  const { id } = useParams(); // useParams로 URL의 id 파라미터 가져오기
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await getResumeApi(Number(resumeId));
+        const data = await getResumeApi(Number(id));//여기서 레쥬메 아이디로 관리를 해서 데이터를 불러옴
         setResumeData(data);
+        console.log(data);
         setResumeUrl(data.fileUrl);
-        setFeedbackPoints(data.feedbackResponses || []);
+        setFeedbackPoints(data.feedbackResponses || []); // 관련된 설정들
       } catch (error) {
         console.error("Failed to fetch resume data", error);
         setError("Failed to fetch resume data. Please try again later.");
@@ -41,6 +43,7 @@ function ResumeFeedbackPage() {
     };
     fetchData();
   }, [resumeId, setResumeUrl]);
+
 
   const handleAiFeedback = async () => {
     setLoading(true);
@@ -130,8 +133,14 @@ function ResumeFeedbackPage() {
       <Layout
         sidebar={
           <div className="flex flex-col justify-between bg-white p-2 mt-10">
-            <ResumeOverview />
-
+            <ResumeOverview
+              userName={resumeData.userName}
+              position={resumeData.position}
+              career={resumeData.career}
+              techStackNames={resumeData.techStackNames}
+              fileUrl={resumeData.fileUrl}
+              isLoading={loading}
+            />
             {/* Comment Section */}
             <div className="overflow-y-auto mt-2">
               <CommentSection
@@ -154,6 +163,8 @@ function ResumeFeedbackPage() {
           editFeedbackPoint={editFeedbackPoint}
           hoveredCommentId={hoveredCommentId}
           setHoveredCommentId={setHoveredCommentId}
+          laterResumeId={resumeData.laterResumeId}
+          previousResumeId={resumeData.previousResumeId}
         />
       </Layout>
     </div>
