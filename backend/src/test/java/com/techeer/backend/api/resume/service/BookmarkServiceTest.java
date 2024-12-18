@@ -1,7 +1,6 @@
 package com.techeer.backend.api.resume.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -20,7 +19,8 @@ import com.techeer.backend.api.user.domain.SocialType;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.global.error.ErrorCode;
 import com.techeer.backend.global.error.exception.BusinessException;
-import java.util.Collections;
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +32,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(MockitoExtension.class) // Spring 컨텍스트 로딩 없이 Mockito 확장 사용
 class BookmarkServiceTest {
 
     @Mock
@@ -44,183 +44,228 @@ class BookmarkServiceTest {
     @InjectMocks
     private BookmarkService bookmarkService;
 
-    private User testUser;
-    private Resume testResume;
-    private Bookmark testBookmark;
+    private User user;
+    private Resume resume;
+    private Bookmark bookmark;
 
     @BeforeEach
-    void setUp() {
-        // User 객체 생성 (빌더 패턴 사용) - id 설정
-        testUser = User.builder()
-                .id(1L) // id 설정
-                .email("john@example.com")
-                .username("JohnDoe")
+    void setUp() throws Exception {
+        // User 객체 생성
+        user = User.builder()
+                .email("testuser@example.com")
+                .username("testuser")
+                .refreshToken("refreshToken123")
                 .role(Role.TECHEER)
                 .socialType(SocialType.GOOGLE)
                 .build();
 
-        // Resume 객체 생성 (빌더 패턴 사용)
-        testResume = Resume.builder()
-                .id(1L)
-                .user(testUser)
-                .name("John's Resume")
+        // 리플렉션을 사용하여 User의 id 설정
+        setField(user, "id", 1L);
+
+        // Resume 객체 생성
+        resume = Resume.builder()
+                .user(user)
+                .name("Sample Resume")
                 .career(5)
-                .position(Position.DEVOPS)
+                .position(Position.BACKEND)
                 .build();
 
-        // Bookmark 객체 생성 (빌더 패턴 사용)
-        testBookmark = Bookmark.builder()
-                .id(1L)
-                .user(testUser)
-                .resume(testResume)
+        // 리플렉션을 사용하여 Resume의 id 설정
+        setField(resume, "id", 1L);
+
+        // Bookmark 객체 생성
+        bookmark = Bookmark.builder()
+                .resume(resume)
+                .user(user)
                 .build();
+
+        // 리플렉션을 사용하여 Bookmark의 id 설정
+        setField(bookmark, "id", 1L);
+    }
+
+    /**
+     * 리플렉션을 사용하여 private 필드에 값을 설정하는 유틸리티 메서드
+     */
+    private void setField(Object target, String fieldName, Object value) throws Exception {
+        Field field = null;
+        Class<?> clazz = target.getClass();
+        while (clazz != null) {
+            try {
+                field = clazz.getDeclaredField(fieldName);
+                break;
+            } catch (NoSuchFieldException e) {
+                clazz = clazz.getSuperclass();
+            }
+        }
+        if (field == null) {
+            throw new NoSuchFieldException("Field '" + fieldName + "' not found on " + target.getClass());
+        }
+        field.setAccessible(true);
+        field.set(target, value);
     }
 
     @Nested
-    @DisplayName("addBookmark 메서드 테스트")
-    class AddBookmarkTest {
+    @DisplayName("addBookmark() Tests")
+    class AddBookmarkTests {
 
         @Test
-        @DisplayName("Given 유효한 사용자와 이력서 ID로 북마크 추가 요청, When 북마크 생성 요청, Then 북마크가 성공적으로 생성된다.")
+        @DisplayName("Should add a bookmark successfully when resume exists")
         void addBookmark_Success() {
             // Given
-            Long resumeId = testResume.getId();
-            when(resumeRepository.findById(resumeId)).thenReturn(Optional.of(testResume));
-            when(bookmarkRepository.save(any(Bookmark.class))).thenReturn(testBookmark);
+            Long resumeId = resume.getId();
+            when(resumeRepository.findById(resumeId)).thenReturn(Optional.of(resume));
+            when(bookmarkRepository.save(any(Bookmark.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
             // When
-            Bookmark createdBookmark = bookmarkService.addBookmark(testUser, resumeId);
+            Bookmark savedBookmark = bookmarkService.addBookmark(user, resumeId);
 
             // Then
-            assertThat(createdBookmark).isNotNull();
-            assertThat(createdBookmark.getId()).isEqualTo(testBookmark.getId());
-            assertThat(createdBookmark.getUser().getId()).isEqualTo(testUser.getId());
-            assertThat(createdBookmark.getResume().getId()).isEqualTo(testResume.getId());
-
+            assertThat(savedBookmark).isNotNull();
+            assertThat(savedBookmark.getUser()).isEqualTo(user);
+            assertThat(savedBookmark.getResume()).isEqualTo(resume);
             verify(resumeRepository, times(1)).findById(resumeId);
             verify(bookmarkRepository, times(1)).save(any(Bookmark.class));
         }
 
         @Test
-        @DisplayName("Given 존재하지 않는 이력서 ID로 북마크 추가 요청, When 북마크 생성 요청, Then RESUME_NOT_FOUND 예외가 발생한다.")
+        @DisplayName("Should throw BusinessException when resume does not exist")
         void addBookmark_ResumeNotFound() {
             // Given
-            Long invalidResumeId = 999L;
-            when(resumeRepository.findById(invalidResumeId)).thenReturn(Optional.empty());
+            Long resumeId = 99L;
+            when(resumeRepository.findById(resumeId)).thenReturn(Optional.empty());
 
             // When & Then
-            assertThatThrownBy(() -> bookmarkService.addBookmark(testUser, invalidResumeId))
+            assertThatThrownBy(() -> bookmarkService.addBookmark(user, resumeId))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessageContaining(ErrorCode.RESUME_NOT_FOUND.getMessage());
+                    .extracting("errorCode")
+                    .isEqualTo(ErrorCode.RESUME_NOT_FOUND);
 
-            verify(resumeRepository, times(1)).findById(invalidResumeId);
+            verify(resumeRepository, times(1)).findById(resumeId);
             verify(bookmarkRepository, never()).save(any(Bookmark.class));
         }
     }
 
     @Nested
-    @DisplayName("removeBookmark 메서드 테스트")
-    class RemoveBookmarkTest {
+    @DisplayName("removeBookmark() Tests")
+    class RemoveBookmarkTests {
 
         @Test
-        @DisplayName("Given 유효한 사용자와 북마크 ID로 북마크 제거 요청, When 북마크 제거 요청, Then 북마크가 성공적으로 제거된다.")
+        @DisplayName("Should remove bookmark successfully when user is authorized")
         void removeBookmark_Success() {
             // Given
-            Long bookmarkId = testBookmark.getId();
-            when(bookmarkRepository.findById(bookmarkId)).thenReturn(Optional.of(testBookmark));
+            Long bookmarkId = bookmark.getId();
+            when(bookmarkRepository.findById(bookmarkId)).thenReturn(Optional.of(bookmark));
 
-            // When & Then
-            assertThatCode(() -> bookmarkService.removeBookmark(testUser, bookmarkId))
-                    .doesNotThrowAnyException();
+            // When
+            bookmarkService.removeBookmark(user, bookmarkId);
 
+            // Then
             verify(bookmarkRepository, times(1)).findById(bookmarkId);
-            verify(bookmarkRepository, times(1)).delete(testBookmark);
+            verify(bookmarkRepository, times(1)).delete(bookmark);
         }
 
         @Test
-        @DisplayName("Given 존재하지 않는 북마크 ID로 제거 요청, When 북마크 제거 요청, Then BOOKMARK_NOT_FOUND 예외가 발생한다.")
+        @DisplayName("Should throw BusinessException when bookmark does not exist")
         void removeBookmark_BookmarkNotFound() {
             // Given
-            Long invalidBookmarkId = 999L;
-            when(bookmarkRepository.findById(invalidBookmarkId)).thenReturn(Optional.empty());
+            Long bookmarkId = 99L;
+            when(bookmarkRepository.findById(bookmarkId)).thenReturn(Optional.empty());
 
             // When & Then
-            assertThatThrownBy(() -> bookmarkService.removeBookmark(testUser, invalidBookmarkId))
+            assertThatThrownBy(() -> bookmarkService.removeBookmark(user, bookmarkId))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessageContaining(ErrorCode.BOOKMARK_NOT_FOUND.getMessage());
+                    .extracting("errorCode")
+                    .isEqualTo(ErrorCode.BOOKMARK_NOT_FOUND);
 
-            verify(bookmarkRepository, times(1)).findById(invalidBookmarkId);
+            verify(bookmarkRepository, times(1)).findById(bookmarkId);
             verify(bookmarkRepository, never()).delete(any(Bookmark.class));
         }
 
         @Test
-        @DisplayName("Given 다른 사용자의 북마크 ID로 제거 요청, When 북마크 제거 요청, Then UNAUTHORIZED 예외가 발생한다.")
-        void removeBookmark_Unauthorized() {
+        @DisplayName("Should throw BusinessException when user is unauthorized")
+        void removeBookmark_Unauthorized() throws Exception {
             // Given
-            User otherUser = User.builder()
-                    .id(2L) // 다른 사용자 ID 설정
-                    .email("jane@example.com")
-                    .username("JaneDoe")
+            Long bookmarkId = bookmark.getId();
+            User anotherUser = User.builder()
+                    .email("another@example.com")
+                    .username("anotherUser")
+                    .refreshToken("anotherRefreshToken")
                     .role(Role.TECHEER)
                     .socialType(SocialType.GITHUB)
                     .build();
+            setField(anotherUser, "id", 2L);
 
-            Bookmark otherBookmark = Bookmark.builder()
-                    .id(testBookmark.getId())
-                    .user(otherUser)
-                    .resume(testResume)
+            Resume unauthorizedResume = Resume.builder()
+                    .user(anotherUser)
+                    .name("Unauthorized Resume")
+                    .career(3)
+                    .position(Position.DESIGNER)
                     .build();
+            setField(unauthorizedResume, "id", 2L);
 
-            when(bookmarkRepository.findById(testBookmark.getId())).thenReturn(Optional.of(otherBookmark));
+            Bookmark unauthorizedBookmark = Bookmark.builder()
+                    .resume(unauthorizedResume)
+                    .user(anotherUser)
+                    .build();
+            setField(unauthorizedBookmark, "id", 2L);
+
+            when(bookmarkRepository.findById(bookmarkId)).thenReturn(Optional.of(unauthorizedBookmark));
 
             // When & Then
-            assertThatThrownBy(() -> bookmarkService.removeBookmark(testUser, testBookmark.getId()))
+            assertThatThrownBy(() -> bookmarkService.removeBookmark(user, bookmarkId))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessageContaining(ErrorCode.UNAUTHORIZED.getMessage());
+                    .extracting("errorCode")
+                    .isEqualTo(ErrorCode.UNAUTHORIZED);
 
-            verify(bookmarkRepository, times(1)).findById(testBookmark.getId());
+            verify(bookmarkRepository, times(1)).findById(bookmarkId);
             verify(bookmarkRepository, never()).delete(any(Bookmark.class));
         }
     }
 
     @Nested
-    @DisplayName("getBookmarksByUserId 메서드 테스트")
-    class GetBookmarksByUserIdTest {
+    @DisplayName("getBookmarksByUserId() Tests")
+    class GetBookmarksByUserIdTests {
 
         @Test
-        @DisplayName("Given 사용자가 북마크를 가지고 있는 경우, When 북마크 조회 요청, Then 북마크 리스트가 반환된다.")
-        void getBookmarksByUserId_WithBookmarks() {
+        @DisplayName("Should return list of bookmarks for a valid user")
+        void getBookmarksByUserId_Success() throws Exception {
             // Given
-            Long userId = testUser.getId();
-            List<Bookmark> bookmarks = Collections.singletonList(testBookmark);
+            Long userId = user.getId();
+            Bookmark bookmark1 = Bookmark.builder()
+                    .resume(resume)
+                    .user(user)
+                    .build();
+            setField(bookmark1, "id", 1L);
+
+            Bookmark bookmark2 = Bookmark.builder()
+                    .resume(resume)
+                    .user(user)
+                    .build();
+            setField(bookmark2, "id", 2L);
+
+            List<Bookmark> bookmarks = Arrays.asList(bookmark1, bookmark2);
             when(bookmarkRepository.findAllByUserId(userId)).thenReturn(bookmarks);
 
             // When
             List<Bookmark> result = bookmarkService.getBookmarksByUserId(userId);
 
             // Then
-            assertThat(result).isNotNull();
-            assertThat(result).isNotEmpty();
-            assertThat(result).hasSize(1);
-            assertThat(result.get(0)).isEqualTo(testBookmark);
-
+            assertThat(result).isNotNull().hasSize(2).containsExactly(bookmark1, bookmark2);
             verify(bookmarkRepository, times(1)).findAllByUserId(userId);
         }
 
         @Test
-        @DisplayName("Given 사용자가 북마크를 가지고 있지 않은 경우, When 북마크 조회 요청, Then 빈 리스트가 반환된다.")
-        void getBookmarksByUserId_NoBookmarks() {
+        @DisplayName("Should return empty list when user has no bookmarks")
+        void getBookmarksByUserId_Empty() {
             // Given
-            Long userId = testUser.getId();
-            when(bookmarkRepository.findAllByUserId(userId)).thenReturn(Collections.emptyList());
+            Long userId = user.getId();
+            when(bookmarkRepository.findAllByUserId(userId)).thenReturn(List.of());
 
             // When
             List<Bookmark> result = bookmarkService.getBookmarksByUserId(userId);
 
             // Then
-            assertThat(result).isNotNull();
-            assertThat(result).isEmpty();
-
+            assertThat(result).isNotNull().isEmpty();
             verify(bookmarkRepository, times(1)).findAllByUserId(userId);
         }
     }
