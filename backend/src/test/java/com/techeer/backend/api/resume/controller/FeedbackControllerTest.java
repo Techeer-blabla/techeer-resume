@@ -198,7 +198,7 @@ class FeedbackControllerTest {
         @DisplayName("Given 피드백 없음, When 피드백 조회 요청, Then 200 상태코드와 빈 리스트 반환")
         void getFeedbackWithAIFeedback_Empty() throws Exception {
             // Given: 피드백 없는 상태
-            Long resumeId = 3L; // 하드코딩된 ID
+            Long resumeId = testResume.getId(); // 하드코딩된 ID
 
             // When: GET 요청에 JWT 토큰을 포함 (아무 피드백도 없음)
             mockMvc.perform(get("/api/v1/resumes/{resume_id}/feedbacks", resumeId)
