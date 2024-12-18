@@ -68,7 +68,7 @@ public class ResumeController {
         //        if (registrars.isPresent()) {registrar = registrars.get();}
 
         resumeCreateFacade.createResume(createResumeReq, resumeFile);
-        return CommonResponse.of(SuccessCode.CREATED, null);
+        return CommonResponse.of(SuccessCode.RESUME_CREATED, null);
     }
 
 
