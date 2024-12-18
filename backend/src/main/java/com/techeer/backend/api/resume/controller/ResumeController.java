@@ -14,9 +14,9 @@ import com.techeer.backend.api.resume.service.facade.ResumeCreateFacade;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.service.UserService;
 import com.techeer.backend.global.common.response.CommonResponse;
-import com.techeer.backend.global.error.ErrorStatus;
+import com.techeer.backend.global.error.ErrorCode;
 import com.techeer.backend.global.error.exception.GeneralException;
-import com.techeer.backend.global.success.SuccessStatus;
+import com.techeer.backend.global.success.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -28,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,10 +58,10 @@ public class ResumeController {
                                                      @Valid MultipartFile resumeFile) {
         // 파일 유효성 검사 -> 나중에 vaildtor로 변경해서 유효성 검사할 예정
         if (resumeFile.isEmpty()) {
-            throw new GeneralException(ErrorStatus.RESUME_FILE_EMPTY);
+            throw new GeneralException(ErrorCode.RESUME_FILE_EMPTY);
         }
         if (!resumeFile.getContentType().equals("application/pdf")) {
-            throw new GeneralException(ErrorStatus.RESUME_FILE_TYPE_NOT_ALLOWED);
+            throw new GeneralException(ErrorCode.RESUME_FILE_TYPE_NOT_ALLOWED);
         }
         // todo 유저 이름으로 객체 탐색
         //        Optional<User> registrars = userService.findUserByName(createResumeReq.getUsername());
@@ -68,7 +69,7 @@ public class ResumeController {
         //        if (registrars.isPresent()) {registrar = registrars.get();}
 
         resumeCreateFacade.createResume(createResumeReq, resumeFile);
-        return CommonResponse.of(SuccessStatus.CREATED, null);
+        return CommonResponse.of(SuccessCode.CREATED, null);
     }
 
 
@@ -83,8 +84,9 @@ public class ResumeController {
                 .map(ResumeConverter::toResumeResponse)
                 .collect(Collectors.toList());
 
-        return CommonResponse.of(SuccessStatus.OK, resumeResponse);
+        return ResponseEntity.
     }
+
 
 
     @Operation(summary = "이력서 개별 조회")
@@ -95,7 +97,7 @@ public class ResumeController {
         List<Feedback> feedbakcs = feedbackService.getFeedbacksByResumeId(resumeId);
 
         ResumeDetailResponse resumeContent = ResumeConverter.toResumeDetailResponse(resume, feedbakcs);
-        return CommonResponse.of(SuccessStatus.OK, resumeContent);
+        return CommonResponse.of(SuccessCode.OK, resumeContent);
     }
 
 
@@ -111,7 +113,7 @@ public class ResumeController {
                 .map(ResumeConverter::toPageableResumeResponse)
                 .collect(Collectors.toList());
 
-        return CommonResponse.of(SuccessStatus.OK, resumeResponses);
+        return CommonResponse.of(SuccessCode.OK, resumeResponses);
     }
 
 
@@ -127,6 +129,6 @@ public class ResumeController {
                 .map(ResumeConverter::toPageableResumeResponse)
                 .collect(Collectors.toList());
 
-        return CommonResponse.of(SuccessStatus.OK, pageableResumeResponse);
+        return CommonResponse.of(SuccessCode.OK, pageableResumeResponse);
     }
 }

@@ -6,7 +6,7 @@ import com.techeer.backend.api.bookmark.repository.BookmarkRepository;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
 import com.techeer.backend.api.user.domain.User;
-import com.techeer.backend.global.error.ErrorStatus;
+import com.techeer.backend.global.error.ErrorCode;
 import com.techeer.backend.global.error.exception.GeneralException;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -24,7 +24,7 @@ public class BookmarkService {
     public Bookmark addBookmark(User user, Long resumeId) {
 
         Resume resume = resumeRepository.findById(resumeId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.RESUME_NOT_FOUND));
+                .orElseThrow(() -> new GeneralException(ErrorCode.RESUME_NOT_FOUND));
 
         Bookmark bookmark = BookmarkConverter.toBookmarkEntity(user, resume);
 
@@ -36,10 +36,10 @@ public class BookmarkService {
 
         // bookmark_id로 북마크 조회
         Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.BOOKMARK_NOT_FOUND));
+                .orElseThrow(() -> new GeneralException(ErrorCode.BOOKMARK_NOT_FOUND));
 
         if (!bookmark.getUser().getId().equals(user.getId())) {
-            throw new GeneralException(ErrorStatus.UNAUTHORIZED);
+            throw new GeneralException(ErrorCode.UNAUTHORIZED);
         }
 
         // 북마크 삭제
@@ -54,6 +54,6 @@ public class BookmarkService {
 //    // bookmark_id로 단일 북마크 조회 (주석 해제)
 //    public Bookmark getBookmarkById(Long bookmarkId) {
 //        return bookmarkRepository.findById(bookmarkId)
-//                .orElseThrow(() -> new GeneralException(ErrorStatus.BOOKMARK_NOT_FOUND));
+//                .orElseThrow(() -> new GeneralException(ErrorCode.BOOKMARK_NOT_FOUND));
 //    }
 }

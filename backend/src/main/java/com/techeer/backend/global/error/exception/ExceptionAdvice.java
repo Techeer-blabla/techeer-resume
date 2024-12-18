@@ -3,7 +3,7 @@ package com.techeer.backend.global.error.exception;
 
 import com.techeer.backend.global.common.response.CommonResponse;
 import com.techeer.backend.global.common.response.ReasonDto;
-import com.techeer.backend.global.error.ErrorStatus;
+import com.techeer.backend.global.error.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -33,15 +33,15 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "ConstraintViolationException이 ConstraintViolation을 포함하지 않습니다."));
 
-        ErrorStatus errorStatus = ErrorStatus.BAD_REQUEST;
-        for (ErrorStatus value : ErrorStatus.values()) {
+        ErrorCode ErrorCode = ErrorCode.BAD_REQUEST;
+        for (ErrorCode value : ErrorCode.values()) {
             if (value.name().equals(errorMessage)) {
-                errorStatus = value;
+                ErrorCode = value;
                 break;
             }
         }
 
-        return handleExceptionInternalConstraint(e, errorStatus, HttpHeaders.EMPTY, request);
+        return handleExceptionInternalConstraint(e, ErrorCode, HttpHeaders.EMPTY, request);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
                             (existingErrorMessage, newErrorMessage) -> existingErrorMessage + ", " + newErrorMessage);
                 });
 
-        return handleExceptionInternalArgs(e, HttpHeaders.EMPTY, ErrorStatus.BAD_REQUEST, request, errors);
+        return handleExceptionInternalArgs(e, HttpHeaders.EMPTY, ErrorCode.BAD_REQUEST, request, errors);
     }
 
     @ExceptionHandler(value = GeneralException.class)
@@ -73,36 +73,36 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     protected ResponseEntity<?> handleInvalidPropertyException(InvalidPropertyException e,
                                                                WebRequest request) {
 
-        ErrorStatus errorStatus = ErrorStatus.BAD_REQUEST;
-        return handleExceptionInternalConstraint(e, errorStatus, HttpHeaders.EMPTY, request);
+        ErrorCode ErrorCode = ErrorCode.BAD_REQUEST;
+        return handleExceptionInternalConstraint(e, ErrorCode, HttpHeaders.EMPTY, request);
     }
 
     @ExceptionHandler
     public ResponseEntity<Object> handleOthers(Exception e, WebRequest request) {
-        return handleExceptionInternalOthers(e, ErrorStatus.INTERNAL_SERVER_ERROR, HttpHeaders.EMPTY,
-                ErrorStatus.INTERNAL_SERVER_ERROR.getHttpStatus(), request, e.getMessage());
+        return handleExceptionInternalOthers(e, ErrorCode.INTERNAL_SERVER_ERROR, HttpHeaders.EMPTY,
+                ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus(), request, e.getMessage());
     }
 
-    private ResponseEntity<Object> handleExceptionInternalConstraint(Exception e, ErrorStatus errorStatus,
+    private ResponseEntity<Object> handleExceptionInternalConstraint(Exception e, ErrorCode ErrorCode,
                                                                      HttpHeaders headers, WebRequest request) {
-        CommonResponse<Object> body = CommonResponse.onFailure(errorStatus.getHttpStatus(),
-                errorStatus.getCode(),
-                errorStatus.getMessage(),
+        CommonResponse<Object> body = CommonResponse.onFailure(ErrorCode.getHttpStatus(),
+                ErrorCode.getCode(),
+                ErrorCode.getMessage(),
                 null);
 
-        return super.handleExceptionInternal(e, body, headers, errorStatus.getHttpStatus(), request);
+        return super.handleExceptionInternal(e, body, headers, ErrorCode.getHttpStatus(), request);
     }
 
     private ResponseEntity<Object> handleExceptionInternalArgs(Exception e, HttpHeaders headers,
-                                                               ErrorStatus errorStatus,
+                                                               ErrorCode ErrorCode,
                                                                WebRequest request,
                                                                Map<String, String> errorArgs) {
-        CommonResponse<Object> body = CommonResponse.onFailure(errorStatus.getHttpStatus(),
-                errorStatus.getCode(),
-                errorStatus.getMessage(),
+        CommonResponse<Object> body = CommonResponse.onFailure(ErrorCode.getHttpStatus(),
+                ErrorCode.getCode(),
+                ErrorCode.getMessage(),
                 errorArgs);
 
-        return super.handleExceptionInternal(e, body, headers, errorStatus.getHttpStatus(), request);
+        return super.handleExceptionInternal(e, body, headers, ErrorCode.getHttpStatus(), request);
     }
 
     private ResponseEntity<Object> handleExceptionInternalGeneral(Exception e,
@@ -117,12 +117,12 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         return super.handleExceptionInternal(e, body, headers, reason.getStatus(), new ServletWebRequest(request));
     }
 
-    private ResponseEntity<Object> handleExceptionInternalOthers(Exception e, ErrorStatus errorStatus,
+    private ResponseEntity<Object> handleExceptionInternalOthers(Exception e, ErrorCode ErrorCode,
                                                                  HttpHeaders headers, HttpStatus status,
                                                                  WebRequest request, String errorPoint) {
-        CommonResponse<Object> body = CommonResponse.onFailure(errorStatus.getReasonHttpStatus().getStatus(),
-                errorStatus.getCode(),
-                errorStatus.getMessage(),
+        CommonResponse<Object> body = CommonResponse.onFailure(ErrorCode.getReasonHttpStatus().getStatus(),
+                ErrorCode.getCode(),
+                ErrorCode.getMessage(),
                 errorPoint);
 
         return super.handleExceptionInternal(e, body, headers, status, request);

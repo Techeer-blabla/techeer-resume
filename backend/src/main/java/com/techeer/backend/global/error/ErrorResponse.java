@@ -22,21 +22,21 @@ public class ErrorResponse {
         this.httpStatus = status;
     }
 
-    public ErrorResponse(ErrorStatus errorStatus) {
-        this.errorMessage = errorStatus.getMessage();
-        this.httpStatus = errorStatus.getHttpStatus();
-        this.code = errorStatus.getCode();
+    public ErrorResponse(ErrorCode ErrorCode) {
+        this.errorMessage = ErrorCode.getMessage();
+        this.httpStatus = ErrorCode.getHttpStatus();
+        this.code = ErrorCode.getCode();
     }
 
-    public ErrorResponse(ErrorStatus errorStatus, List<FieldError> fieldErrors) {
-        this.httpStatus = errorStatus.getHttpStatus();
-        this.code = errorStatus.getCode();
-        this.errorMessage = errorStatus.getMessage();
+    public ErrorResponse(ErrorCode ErrorCode, List<FieldError> fieldErrors) {
+        this.httpStatus = ErrorCode.getHttpStatus();
+        this.code = ErrorCode.getCode();
+        this.errorMessage = ErrorCode.getMessage();
         this.errors = fieldErrors;
     }
 
-    public static ErrorResponse of(final ErrorStatus errorStatus, final BindingResult bindingResult) {
-        return new ErrorResponse(errorStatus, FieldError.of(bindingResult));
+    public static ErrorResponse of(final ErrorCode ErrorCode, final BindingResult bindingResult) {
+        return new ErrorResponse(ErrorCode, FieldError.of(bindingResult));
     }
 
     @Getter

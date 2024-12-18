@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum ErrorStatus implements BaseStatus {
+public enum ErrorCode implements BaseStatus {
     // Common Error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON_500", "서버 에러입니다. 관리자에게 문의하세요."),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON_400", "잘못된 요청입니다."),
@@ -61,12 +61,4 @@ public enum ErrorStatus implements BaseStatus {
                 .build();
     }
 
-    @Override
-    public ReasonDto getReasonHttpStatus() {
-        return ReasonDto.builder()
-                .status(httpStatus)
-                .message(message)
-                .code(code)
-                .build();
-    }
 }

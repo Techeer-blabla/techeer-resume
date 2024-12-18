@@ -1,9 +1,9 @@
 package com.techeer.backend.global.error.exception;
 
-import com.techeer.backend.global.error.ErrorStatus;
+import com.techeer.backend.global.error.ErrorCode;
 
 public class NotFoundException extends BusinessException {
     public NotFoundException() {
-        super(ErrorStatus.NOT_FOUND);
+        super(ErrorCode.NOT_FOUND);
     }
 }
