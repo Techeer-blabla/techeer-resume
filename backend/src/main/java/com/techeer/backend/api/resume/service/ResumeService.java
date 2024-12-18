@@ -38,30 +38,7 @@ public class ResumeService {
         return resumeRepository.findResumesByUsername(userName);
     }
 
-    // 태그 조회
-//    public Page<Resume> searchByTages(ResumeSearchRequest req, Pageable pageable) {
-//        List<String> techStackNames = req.getTechStackNames();
-//        List<String> companyNames = req.getCompanyNames();
-//
-//        // 빈 리스트를 null로 설정
-//        if (techStackNames == null || techStackNames.isEmpty()) {
-//            techStackNames = null;
-//        }
-//        if (companyNames == null || companyNames.isEmpty()) {
-//            companyNames = null;
-//        }
-//
-//        Page<Resume> resumesByCriteria = getResumeRepository.findResumesByCriteria(
-//                req.getMinCareer(),
-//                req.getMaxCareer(),
-//                req.getPositions(),
-//                techStackNames,
-//                companyNames,
-//                pageable
-//        );
-//
-//        return resumesByCriteria;
-//    }
+
     public Page<Resume> searchByTages(ResumeSearchRequest req, Pageable pageable) {
         return resumeRepository.searchByCriteria(req, pageable);
     }
