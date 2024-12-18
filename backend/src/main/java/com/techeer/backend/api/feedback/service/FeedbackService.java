@@ -67,9 +67,6 @@ public class FeedbackService {
         }
         // 이력서 id에 해당하는 모든 일반 피드백 가져옴
         List<Feedback> feedbacks = feedbackRepository.findAllByResumeId(resumeId);
-        if (feedbacks.isEmpty()) {
-            throw new BusinessException(ErrorCode.FEEDBACK_NOT_FOUND);
-        }
 
         return feedbacks;
     }
