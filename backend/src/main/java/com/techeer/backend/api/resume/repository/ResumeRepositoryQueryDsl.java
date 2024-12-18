@@ -7,6 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ResumeRepositoryCustom {
+public interface ResumeRepositoryQueryDsl {
     Page<Resume> searchByCriteria(ResumeSearchRequest req, Pageable pageable);
 }

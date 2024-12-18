@@ -17,11 +17,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
+public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 
     private final JPAQueryFactory queryFactory;
 
-    public ResumeRepositoryImpl(EntityManager em) {
+    public ResumeRepositoryQueryDslImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
