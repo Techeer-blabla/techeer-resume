@@ -51,9 +51,4 @@ public class BookmarkService {
         return bookmarkRepository.findAllByUserId(userId);
     }
 
-//    // bookmark_id로 단일 북마크 조회 (주석 해제)
-//    public Bookmark getBookmarkById(Long bookmarkId) {
-//        return bookmarkRepository.findById(bookmarkId)
-//                .orElseThrow(() -> new BusinessException(ErrorCode.BOOKMARK_NOT_FOUND));
-//    }
 }
