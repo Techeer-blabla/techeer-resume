@@ -3,7 +3,6 @@ package com.techeer.backend.api.resume.service;
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.dto.request.ResumeSearchRequest;
 import com.techeer.backend.api.resume.exception.ResumeNotFoundException;
-import com.techeer.backend.api.resume.repository.GetResumeRepository;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.global.error.ErrorCode;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ResumeService {
     private final ResumeRepository resumeRepository;
-    private final GetResumeRepository getResumeRepository;
 
     public Resume saveResume(Resume resume) {
         Resume savedResume = resumeRepository.save(resume);
@@ -41,30 +39,32 @@ public class ResumeService {
     }
 
     // 태그 조회
+//    public Page<Resume> searchByTages(ResumeSearchRequest req, Pageable pageable) {
+//        List<String> techStackNames = req.getTechStackNames();
+//        List<String> companyNames = req.getCompanyNames();
+//
+//        // 빈 리스트를 null로 설정
+//        if (techStackNames == null || techStackNames.isEmpty()) {
+//            techStackNames = null;
+//        }
+//        if (companyNames == null || companyNames.isEmpty()) {
+//            companyNames = null;
+//        }
+//
+//        Page<Resume> resumesByCriteria = getResumeRepository.findResumesByCriteria(
+//                req.getMinCareer(),
+//                req.getMaxCareer(),
+//                req.getPositions(),
+//                techStackNames,
+//                companyNames,
+//                pageable
+//        );
+//
+//        return resumesByCriteria;
+//    }
     public Page<Resume> searchByTages(ResumeSearchRequest req, Pageable pageable) {
-        List<String> techStackNames = req.getTechStackNames();
-        List<String> companyNames = req.getCompanyNames();
-
-        // 빈 리스트를 null로 설정
-        if (techStackNames == null || techStackNames.isEmpty()) {
-            techStackNames = null;
-        }
-        if (companyNames == null || companyNames.isEmpty()) {
-            companyNames = null;
-        }
-
-        Page<Resume> resumesByCriteria = getResumeRepository.findResumesByCriteria(
-                req.getMinCareer(),
-                req.getMaxCareer(),
-                req.getPositions(),
-                techStackNames,
-                companyNames,
-                pageable
-        );
-
-        return resumesByCriteria;
+        return resumeRepository.searchByCriteria(req, pageable);
     }
-
 
     public Page<Resume> getResumePage(Pageable pageable) {
         // 페이지네이션을 적용하여 레포지토리에서 데이터를 가져옴
