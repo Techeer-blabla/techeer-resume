@@ -1,13 +1,14 @@
 import { formAxios, jsonAxios, jsonFormAxios } from "./axios.config.ts";
 
+// 이력서 업로드 API
 export const postResume = async (
   resume: File,
   createResumeReq: {
-    username: string;
+    // username: string;
     position: string;
     career: number;
-    applying_company: string[];
-    tech_stack: string[];
+    company_names: string[];
+    tech_stack_names: string[];
   }
 ) => {
   try {
@@ -15,12 +16,10 @@ export const postResume = async (
     formData.append("resume_file", resume);
     formData.append("createResumeReq", JSON.stringify(createResumeReq));
 
-    // API 호출
     const response = await formAxios.post(`/resumes`, formData, {});
 
     return response.data;
   } catch (error) {
-    // error handling
     console.error("이력서 업로드 오류:", error);
     throw error;
   }
@@ -53,6 +52,54 @@ export const getResumeList = async (page: number, size: number) => {
     return response.data.result;
   } catch (error) {
     console.log("이력서 조회 오류", error);
+    throw error;
+  }
+};
+
+interface FilterDTO {
+  positions: string[];
+  min_career: number;
+  max_career: number;
+  tech_stack_names: string[];
+  company_names: string[]; // 추가
+}
+
+interface Pageable {
+  page: number;
+  size: number;
+  sort?: string[];
+}
+
+interface FilterParams {
+  dto: FilterDTO;
+  pageable: Pageable;
+}
+
+export const postFilter = async (filterParams: FilterParams) => {
+  try {
+    // 쿼리 파라미터 구성
+    const queryParams = new URLSearchParams({
+      page: String(filterParams.pageable.page),
+      size: String(filterParams.pageable.size),
+      ...(filterParams.pageable.sort && {
+        sort: filterParams.pageable.sort.join(","),
+      }),
+    }).toString();
+
+    // API 요청
+    const response = await jsonAxios.post(`/resumes/search?${queryParams}`, {
+      positions: filterParams.dto.positions,
+      min_career: filterParams.dto.min_career,
+      max_career: filterParams.dto.max_career,
+      tech_stack_names: filterParams.dto.tech_stack_names,
+      company_names: filterParams.dto.company_names, // 추가
+    });
+
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("필터링 api 오류:", error.message);
+    }
     throw error;
   }
 };
