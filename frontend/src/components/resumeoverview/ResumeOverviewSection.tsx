@@ -22,9 +22,6 @@ function ResumeOverviewSection({
 }: ResumeOverviewProps): React.ReactElement {
   // const [resumeData, setResumeData] = useState<ResumeData | null>(null);
   // const { resumeId } = useResumeStore();
-
-  console.log(techStackNames);
-
   // useEffect(() => {
   //   if (resumeId === undefined) {
   //     console.error("Invalid resumeId: undefined");
