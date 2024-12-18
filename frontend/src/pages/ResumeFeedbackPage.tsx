@@ -17,11 +17,11 @@ import { useParams } from "react-router-dom";
 
 function ResumeFeedbackPage() {
   const [resumeData, setResumeData] = useState<ResumeData | null>(null); //이력서 데이터를 관리
-  const [feedbackPoints, setFeedbackPoints] = useState<FeedbackPoint[]>([]);//피드백 데이터를 관리
-  const [hoveredCommentId, setHoveredCommentId] = useState<number | null>(null);//마우스 호버시 코멘트 아이디를 관리
-  const [loading, setLoading] = useState<boolean>(true);//로딩 상태를 관리
-  const [error, setError] = useState<string | null>(null);//에러 상태를 관리
-  const { resumeId, setResumeUrl } = useResumeStore();//이력서 아이디와 이력서 URL을 관리 -> 이게 왜 필요한지 모르겠음
+  const [feedbackPoints, setFeedbackPoints] = useState<FeedbackPoint[]>([]); //피드백 데이터를 관리
+  const [hoveredCommentId, setHoveredCommentId] = useState<number | null>(null); //마우스 호버시 코멘트 아이디를 관리
+  const [loading, setLoading] = useState<boolean>(true); //로딩 상태를 관리
+  const [error, setError] = useState<string | null>(null); //에러 상태를 관리
+  const { resumeId, setResumeUrl } = useResumeStore(); //이력서 아이디와 이력서 URL을 관리 -> 이게 왜 필요한지 모르겠음
   const { id } = useParams(); // useParams로 URL의 id 파라미터 가져오기
 
   useEffect(() => {
@@ -29,7 +29,7 @@ function ResumeFeedbackPage() {
       try {
         setLoading(true);
         setError(null);
-        const data = await getResumeApi(Number(id));//여기서 레쥬메 아이디로 관리를 해서 데이터를 불러옴
+        const data = await getResumeApi(Number(id)); //여기서 레쥬메 아이디로 관리를 해서 데이터를 불러옴
         setResumeData(data);
         console.log(data);
         setResumeUrl(data.fileUrl);
@@ -42,8 +42,7 @@ function ResumeFeedbackPage() {
       }
     };
     fetchData();
-  }, [resumeId, setResumeUrl]);
-
+  }, [id]);
 
   const handleAiFeedback = async () => {
     setLoading(true);
