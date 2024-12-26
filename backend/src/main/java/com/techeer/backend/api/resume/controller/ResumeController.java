@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -84,6 +85,17 @@ public class ResumeController {
                 .collect(Collectors.toList());
 
         return CommonResponse.of(SuccessCode.RESUME_FETCH_OK, resumeResponse);
+    }
+
+    @Operation(summary = "유저 이력서 조회")
+    @GetMapping("/resumes/user")
+    public CommonResponse<?> searchByUser() {
+        User user = userService.getLoginUser();
+        Slice<Resume> resumes = resumeService.getResumesByUser(user);
+        List<ResumeResponse> resumeResponses = resumes.stream()
+                .map(ResumeConverter::toResumeResponse)
+                .collect(Collectors.toList());
+        return CommonResponse.of(SuccessCode.OK, resumeResponses);
     }
 
 
