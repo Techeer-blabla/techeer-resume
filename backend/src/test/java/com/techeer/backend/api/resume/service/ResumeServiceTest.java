@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 
 import com.techeer.backend.api.resume.domain.Resume;
 import com.techeer.backend.api.resume.exception.ResumeNotFoundException;
-import com.techeer.backend.api.resume.repository.GetResumeRepository;
 import com.techeer.backend.api.resume.repository.ResumeRepository;
 import java.util.Arrays;
 import java.util.List;
@@ -30,9 +29,7 @@ class ResumeServiceTest {
 
     @Mock
     private ResumeRepository resumeRepository;
-
-    @Mock
-    private GetResumeRepository getResumeRepository;
+    
 
     @BeforeEach
     void setUp() {
