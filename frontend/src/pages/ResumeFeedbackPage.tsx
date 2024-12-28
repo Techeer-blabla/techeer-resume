@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Layout from "../components/Layout/Layout";
-import MainContainer from "../components/resumeoverview/MainContainer";
+// import MainContainer from "../components/resumeoverview/MainContainer";
 import ResumeOverview from "../components/resumeoverview/ResumeOverview";
 import CommentSection from "../components/comment/CommentSection.tsx";
 import LoadingSpinner from "../components/UI/LoadingSpinner";
@@ -15,7 +15,7 @@ import { AddFeedbackPoint, FeedbackPoint, ResumeData } from "../types.ts";
 import { Bookmark, BookmarkMinus } from "lucide-react";
 import { postBookmark, deleteBookmarkById } from "../api/bookMarkApi.ts";
 import { useParams } from "react-router-dom";
-import { useResumeStore } from "../store/ResumeStore.ts";
+// import { useResumeStore } from "../store/ResumeStore.ts";
 
 function ResumeFeedbackPage() {
   // const { resumeId } = useResumeStore(); // 전역 상태에서 resumeId만 가져옵니다.
@@ -27,7 +27,7 @@ function ResumeFeedbackPage() {
   const [isBookmarked, setIsBookmarked] = useState<boolean>(false); // 북마크 상태
   const [bookmarkId, setBookmarkId] = useState<number | null>(null); // 북마크 ID 저장
   const { resumeId } = useParams();
-  const { setResumeUrl } = useResumeStore();
+  // const { setResumeUrl } = useResumeStore();
 
   useEffect(() => {
     console.log("resumeId:", resumeId);
@@ -82,8 +82,10 @@ function ResumeFeedbackPage() {
       } else {
         // 북마크 추가
         const response = await postBookmark(Number(resumeId)); // userId 제거, resumeId만 사용
+        console.log("포스트북마크 값", response);
         setIsBookmarked(true);
         setBookmarkId(response); // 서버로부터 받은 북마크 ID 저장
+        console.log("북마크 아이디 생성", response);
       }
     } catch (error) {
       console.error("Failed to toggle bookmark", error);
@@ -170,7 +172,6 @@ function ResumeFeedbackPage() {
   if (!resumeData) {
     return <div>No resume data available.</div>;
   }
-  
 
   return (
     <div className="flex flex-col flex-grow">
@@ -217,8 +218,9 @@ function ResumeFeedbackPage() {
             </div>
           </div>
         }
+        children={undefined}
       >
-        <MainContainer
+        {/* <MainContainer
           feedbackPoints={feedbackPoints}
           addFeedbackPoint={addFeedbackPoint}
           deleteFeedbackPoint={deleteFeedbackPoint}
@@ -227,7 +229,7 @@ function ResumeFeedbackPage() {
           editFeedbackPoint={() => {
             throw new Error("Function not implemented.");
           }}
-        />
+        /> */}
       </Layout>
     </div>
   );
