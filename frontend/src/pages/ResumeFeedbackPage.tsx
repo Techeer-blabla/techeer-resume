@@ -14,10 +14,11 @@ import {
 import { AddFeedbackPoint, FeedbackPoint, ResumeData } from "../types.ts";
 import { Bookmark, BookmarkMinus } from "lucide-react";
 import { postBookmark, deleteBookmarkById } from "../api/bookMarkApi.ts";
-import useResumeStore from "../store/ResumeStore"; // 전역 상태 가져오기
+import { useParams } from "react-router-dom";
+import { useResumeStore } from "../store/ResumeStore.ts";
 
 function ResumeFeedbackPage() {
-  const { resumeId } = useResumeStore(); // 전역 상태에서 resumeId만 가져옵니다.
+  // const { resumeId } = useResumeStore(); // 전역 상태에서 resumeId만 가져옵니다.
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
   const [feedbackPoints, setFeedbackPoints] = useState<FeedbackPoint[]>([]);
   const [hoveredCommentId, setHoveredCommentId] = useState<number | null>(null);
@@ -25,6 +26,8 @@ function ResumeFeedbackPage() {
   const [error, setError] = useState<string | null>(null);
   const [isBookmarked, setIsBookmarked] = useState<boolean>(false); // 북마크 상태
   const [bookmarkId, setBookmarkId] = useState<number | null>(null); // 북마크 ID 저장
+  const { resumeId } = useParams();
+  const { setResumeUrl } = useResumeStore();
 
   useEffect(() => {
     console.log("resumeId:", resumeId);
@@ -40,8 +43,9 @@ function ResumeFeedbackPage() {
 
         // 이력서와 피드백 데이터를 받아옵니다.
         const data = await getResumeApi(Number(resumeId));
+
         setResumeData(data);
-        setFeedbackPoints(data.feedbacks || []);
+        setFeedbackPoints(data?.feedbacks || []);
 
         // 북마크 상태 초기화
         const bookmarkResponse = await postBookmark(Number(resumeId)); // userId 제거, resumeId만 사용
@@ -104,6 +108,7 @@ function ResumeFeedbackPage() {
   };
 
   const addFeedbackPoint = async (point: Omit<AddFeedbackPoint, "id">) => {
+    console.log("try 직전");
     if (
       !point.content ||
       point.xCoordinate === undefined ||
@@ -124,6 +129,7 @@ function ResumeFeedbackPage() {
       await addFeedbackApi(Number(resumeId), newPoint);
       const updatedData = await getResumeApi(Number(resumeId));
       setFeedbackPoints(updatedData.feedbacks);
+      // setResumeUrl(updatedData.file_url);
     } catch (error) {
       console.error("Failed to add feedback point", error);
       setError("Failed to add feedback point. Please try again later.");
@@ -164,6 +170,7 @@ function ResumeFeedbackPage() {
   if (!resumeData) {
     return <div>No resume data available.</div>;
   }
+  
 
   return (
     <div className="flex flex-col flex-grow">

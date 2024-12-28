@@ -25,7 +25,7 @@ function MainContainer({
       <div className="flex-grow overflow-y-scroll mt-10 mb-6 px-6">
         {/* Adjusted margin */}
         <ResumePageGroup
-          // pages={1} // Adjust 'pages' to the number of resume pages
+          pages={2} // Adjust 'pages' to the number of resume pages
           feedbackPoints={feedbackPoints}
           addFeedbackPoint={addFeedbackPoint}
           deleteFeedbackPoint={deleteFeedbackPoint}

@@ -74,7 +74,7 @@ function SearchPage() {
               <p className="font-medium text-black text-xl">포지션</p>
               <div className="relative">
                 <img
-                  className="w-6 h-6 border border-[1.5px] rounded-lg p-1 ml-2 cursor-pointer"
+                  className="w-6 h-6  border-[1.5px] rounded-lg p-1 ml-2 cursor-pointer"
                   src={down}
                   alt="down"
                   onClick={openPositionModal}
@@ -93,7 +93,7 @@ function SearchPage() {
               <p className="font-medium text-black text-xl ml-8">경력</p>
               <div className="relative">
                 <img
-                  className="w-6 h-6 border border-[1.5px] rounded-lg p-1 ml-2 cursor-pointer"
+                  className="w-6 h-6 border-[1.5px] rounded-lg p-1 ml-2 cursor-pointer"
                   src={down}
                   alt="down"
                   onClick={openCareerModal}
