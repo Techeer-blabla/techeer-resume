@@ -20,16 +20,10 @@ function MainPage() {
 
   const moveToResume = async (resumeId: number) => {
     try {
-      const response = await viewResume(resumeId); // 이력서를 조회합니다.
-      console.log("Full response:", response); // 응답 구조 확인
-
-      if (response && response.resume_id) {
-        setResumeId(response.resume_id); // resumeId만 설정합니다.
-        navigate(`/feedback/${resumeId}`); // 피드백 페이지로 이동
-      } else {
-        console.error("Invalid response structure:", response);
-        throw new Error("Invalid response structure");
-      }
+      const response = await viewResume(resumeId);
+      setResumeId(response.resume_id);
+      navigate(`/feedback/${response.resume_id}`);
+      return response;
     } catch (error) {
       console.error("이력서 조회 오류:", error);
       alert("이력서를 불러오는 중 오류가 발생했습니다.");

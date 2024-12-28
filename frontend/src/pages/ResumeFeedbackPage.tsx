@@ -12,22 +12,17 @@ import {
   postAiFeedback,
 } from "../api/feedbackApi.ts";
 import { AddFeedbackPoint, FeedbackPoint, ResumeData } from "../types.ts";
-import { Bookmark, BookmarkMinus } from "lucide-react";
-import { postBookmark, deleteBookmarkById } from "../api/bookMarkApi.ts";
+import useResumeStore from "../store/ResumeStore.ts";
 import { useParams } from "react-router-dom";
-// import { useResumeStore } from "../store/ResumeStore.ts";
 
 function ResumeFeedbackPage() {
-  // const { resumeId } = useResumeStore(); // 전역 상태에서 resumeId만 가져옵니다.
-  const [resumeData, setResumeData] = useState<ResumeData | null>(null);
-  const [feedbackPoints, setFeedbackPoints] = useState<FeedbackPoint[]>([]);
-  const [hoveredCommentId, setHoveredCommentId] = useState<number | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isBookmarked, setIsBookmarked] = useState<boolean>(false); // 북마크 상태
-  const [bookmarkId, setBookmarkId] = useState<number | null>(null); // 북마크 ID 저장
-  const { resumeId } = useParams();
-  // const { setResumeUrl } = useResumeStore();
+  const [resumeData, setResumeData] = useState<ResumeData | null>(null); //이력서 데이터를 관리
+  const [feedbackPoints, setFeedbackPoints] = useState<FeedbackPoint[]>([]); //피드백 데이터를 관리
+  const [hoveredCommentId, setHoveredCommentId] = useState<number | null>(null); //마우스 호버시 코멘트 아이디를 관리
+  const [loading, setLoading] = useState<boolean>(true); //로딩 상태를 관리
+  const [error, setError] = useState<string | null>(null); //에러 상태를 관리
+  const { resumeId, setResumeUrl } = useResumeStore(); //이력서 아이디와 이력서 URL을 관리 -> 이게 왜 필요한지 모르겠음
+  const { id } = useParams(); // useParams로 URL의 id 파라미터 가져오기
 
   useEffect(() => {
     console.log("resumeId:", resumeId);
@@ -40,19 +35,11 @@ function ResumeFeedbackPage() {
       try {
         setLoading(true);
         setError(null);
-
-        // 이력서와 피드백 데이터를 받아옵니다.
-        const data = await getResumeApi(Number(resumeId));
-
+        const data = await getResumeApi(Number(id)); //여기서 레쥬메 아이디로 관리를 해서 데이터를 불러옴
         setResumeData(data);
-        setFeedbackPoints(data?.feedbacks || []);
-
-        // 북마크 상태 초기화
-        const bookmarkResponse = await postBookmark(Number(resumeId)); // userId 제거, resumeId만 사용
-        if (bookmarkResponse) {
-          setIsBookmarked(true);
-          setBookmarkId(bookmarkResponse);
-        }
+        console.log(data);
+        setResumeUrl(data.fileUrl);
+        setFeedbackPoints(data.feedbackResponses || []); // 관련된 설정들
       } catch (error) {
         console.error("Failed to fetch resume data", error);
         setError("Failed to fetch resume data. Please try again later.");
@@ -62,36 +49,7 @@ function ResumeFeedbackPage() {
     };
 
     fetchData();
-  }, [resumeId]); // resumeId가 변경될 때마다 데이터 로딩
-
-  // 북마크 토글 기능
-  const toggleBookmark = async () => {
-    if (!resumeId) {
-      setError("Resume ID is missing.");
-      return;
-    }
-
-    try {
-      if (isBookmarked) {
-        // 북마크 해제
-        if (bookmarkId !== null) {
-          await deleteBookmarkById(bookmarkId);
-        }
-        setIsBookmarked(false);
-        setBookmarkId(null);
-      } else {
-        // 북마크 추가
-        const response = await postBookmark(Number(resumeId)); // userId 제거, resumeId만 사용
-        console.log("포스트북마크 값", response);
-        setIsBookmarked(true);
-        setBookmarkId(response); // 서버로부터 받은 북마크 ID 저장
-        console.log("북마크 아이디 생성", response);
-      }
-    } catch (error) {
-      console.error("Failed to toggle bookmark", error);
-      alert("북마크 상태를 변경할 수 없습니다. 다시 시도해주세요.");
-    }
-  };
+  }, [id]);
 
   const handleAiFeedback = async () => {
     setLoading(true);
@@ -178,30 +136,14 @@ function ResumeFeedbackPage() {
       <Layout
         sidebar={
           <div className="flex flex-col justify-between bg-white p-2 mt-10">
-            {/* 북마크 버튼 */}
-            <button
-              onClick={toggleBookmark}
-              className={`flex items-center px-6 py-3 rounded-lg ${
-                isBookmarked
-                  ? "bg-yellow-100 text-yellow-900"
-                  : "text-gray-500 hover:bg-gray-50"
-              }`}
-            >
-              {isBookmarked ? (
-                <>
-                  <BookmarkMinus className="w-5 h-5 mr-2" />
-                  북마크 제거
-                </>
-              ) : (
-                <>
-                  <Bookmark className="w-5 h-5 mr-2" />
-                  북마크 추가
-                </>
-              )}
-            </button>
-            {/* Resume Overview */}
-            <ResumeOverview />
-
+            <ResumeOverview
+              userName={resumeData.userName}
+              position={resumeData.position}
+              career={resumeData.career}
+              techStackNames={resumeData.techStackNames}
+              fileUrl={resumeData.fileUrl}
+              isLoading={loading}
+            />
             {/* Comment Section */}
             <div className="overflow-y-auto mt-2">
               <CommentSection
@@ -226,10 +168,9 @@ function ResumeFeedbackPage() {
           deleteFeedbackPoint={deleteFeedbackPoint}
           hoveredCommentId={hoveredCommentId}
           setHoveredCommentId={setHoveredCommentId}
-          editFeedbackPoint={() => {
-            throw new Error("Function not implemented.");
-          }}
-        /> */}
+          laterResumeId={resumeData.laterResumeId}
+          previousResumeId={resumeData.previousResumeId}
+        />
       </Layout>
     </div>
   );
