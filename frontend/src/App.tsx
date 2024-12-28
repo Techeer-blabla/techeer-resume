@@ -18,9 +18,9 @@ export default function App() {
           <div className="flex-grow">
             <Routes>
               <Route path="/" element={<MainPage />} />
-              {/* resumeId와 userId는 전역 상태에서 관리되므로 URL로 넘길 필요 없음 */}
-              <Route path="/feedback/:resumeId" element={<ResumeFeedbackPage />} />
+
               <Route path="/search" element={<SearchPage />} />
+              <Route path="/login" element={<Login />} />
               <Route element={<ProtectedRoute />}>
                 <Route path="/feedback/:id" element={<ResumeFeedbackPage />} />
                 <Route path="/upload" element={<Upload />} />
