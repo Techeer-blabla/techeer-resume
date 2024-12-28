@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,7 +53,7 @@ public class ResumeController {
     // 이력서 등록
     @Operation(summary = "이력서 등록")
     @PostMapping(value = "/resumes", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public CommonResponse<?> resumeRegistration(@RequestPart @Valid CreateResumeRequest createResumeReq,
+    public CommonResponse<?> resumeRegistration(@Valid @RequestPart("resume") CreateResumeRequest createResumeReq,
                                                 @RequestPart(name = "resume_file")
                                                 @Valid MultipartFile resumeFile) {
         // 파일 유효성 검사 -> 나중에 vaildtor로 변경해서 유효성 검사할 예정
@@ -68,7 +69,7 @@ public class ResumeController {
         //        if (registrars.isPresent()) {registrar = registrars.get();}
 
         resumeCreateFacade.createResume(createResumeReq, resumeFile);
-        return CommonResponse.of(SuccessCode.CREATED, null);
+        return CommonResponse.of(SuccessCode.RESUME_CREATED, null);
     }
 
 
@@ -86,6 +87,17 @@ public class ResumeController {
         return CommonResponse.of(SuccessCode.RESUME_FETCH_OK, resumeResponse);
     }
 
+    @Operation(summary = "유저 이력서 조회")
+    @GetMapping("/resumes/user")
+    public CommonResponse<?> searchByUser() {
+        User user = userService.getLoginUser();
+        Slice<Resume> resumes = resumeService.getResumesByUser(user);
+        List<ResumeResponse> resumeResponses = resumes.stream()
+                .map(ResumeConverter::toResumeResponse)
+                .collect(Collectors.toList());
+        return CommonResponse.of(SuccessCode.OK, resumeResponses);
+    }
+
 
     @Operation(summary = "이력서 개별 조회")
     @GetMapping("/resumes/{resume_id}")
@@ -101,8 +113,8 @@ public class ResumeController {
 
     @Operation(summary = "여러 이력서 조회(페이지네이션)")
     @GetMapping(value = "/resumes")
-    public CommonResponse<List<PageableResumeResponse>> searchResumes(@RequestParam int page,
-                                                                      @RequestParam int size) {
+    public CommonResponse<List<PageableResumeResponse>> searchResumes(@RequestParam(name = "page") int page,
+                                                                      @RequestParam(name = "size") int size) {
         //ResumeService를 통해 페이지네이션된 이력서 목록을 가져옵니다.
         final Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
         Page<Resume> resumes = resumeService.getResumePage(pageable);
@@ -117,8 +129,8 @@ public class ResumeController {
 
     @Operation(summary = "이력서 태그 조회")
     @PostMapping("/resumes/search")
-    public CommonResponse<List<PageableResumeResponse>> searchResumesByTag(@RequestParam int page,
-                                                                           @RequestParam int size,
+    public CommonResponse<List<PageableResumeResponse>> searchResumesByTag(@RequestParam(name = "page") int page,
+                                                                           @RequestParam(name = "size") int size,
                                                                            @RequestBody ResumeSearchRequest dto) {
         final Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
         Page<Resume> resumeList = resumeService.searchByTages(dto, pageable);
