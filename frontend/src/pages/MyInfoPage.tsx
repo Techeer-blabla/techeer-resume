@@ -4,8 +4,6 @@ import Navbar from "../components/common/Navbar.tsx";
 import ResumeItem from "../components/MyInfoPage/ResumeItem.tsx";
 import BookmarkItem from "../components/MyInfoPage/BookmarkItem.tsx";
 
-import 
-
 interface Resume {
   id: number;
   version: string;
