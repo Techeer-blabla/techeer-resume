@@ -17,12 +17,10 @@ function ProtectedRoute() {
         });
 
         // 응답 코드가 USER_200일 경우 인증 성공
-        if (response.data?.message === "USER_200") {
-          console.log("성공: ", response.data?.message);
+        if (response.data?.code === "USER_200") {
           setIsAuthenticated(true);
           setLoginStatus(1);
         } else {
-          console.log("실패: ", response.data?.message);
           setIsAuthenticated(false);
           setLoginStatus(0);
         }
