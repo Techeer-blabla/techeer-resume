@@ -10,6 +10,7 @@ export type FeedbackPoint = {
 };
 
 export type ResumeData = {
+  feedbacks(feedbacks: any): unknown;
   resumeId: number;
   userName: string;
   position: string;
