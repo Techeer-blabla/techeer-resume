@@ -25,7 +25,7 @@ function Navbar() {
         });
 
         // 응답이 성공적일 경우 사용자 정보와 상태 설정
-        if (response.data?.message === "USER_200") {
+        if (response.data?.code === "USER_200") {
           setLoginStatus(1); // 로그인 상태 업데이트
           setUserName(response.data?.result.username); // 사용자 이름 설정
         } else {
@@ -38,7 +38,7 @@ function Navbar() {
     };
 
     checkAuth();
-  }, [setLoginStatus]);
+  }, [loginStatus]);
 
   const moveMainPage = () => {
     navigate("/");
