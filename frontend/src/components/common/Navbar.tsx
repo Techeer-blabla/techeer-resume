@@ -103,7 +103,7 @@ function Navbar() {
             <img
               src={search}
               alt="search"
-              className="mr-1 w-auto h-5 hover:cursor-pointer md:mr-0 sm:mr-0 mr-4"
+              className="mr-1 w-auto h-5 hover:cursor-pointer md:mr-0 sm:mr-0"
               onClick={searchName}
             />
           </div>
