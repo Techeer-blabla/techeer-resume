@@ -23,7 +23,7 @@ export default function App() {
               <Route path="/search" element={<SearchPage />} />
 
               <Route element={<ProtectedRoute />}>
-                <Route path="/feedback" element={<ResumeFeedbackPage />} />
+                <Route path="/feedback/:id" element={<ResumeFeedbackPage />} />
                 <Route path="/upload" element={<Upload />} />
                 <Route path="/myInfo" element={<MyInfoPage />} />
               </Route>

@@ -21,7 +21,7 @@ function MainPage() {
     try {
       const response = await viewResume(resumeId);
       setResumeId(response.resume_id);
-      navigate(`/feedback?${response.resume_id}`);
+      navigate(`/feedback/${response.resume_id}`);
       return response;
     } catch (error) {
       console.error("이력서 조회 오류:", error);
