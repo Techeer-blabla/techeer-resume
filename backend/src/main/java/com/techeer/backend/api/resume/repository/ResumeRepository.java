@@ -22,4 +22,6 @@ public interface ResumeRepository extends JpaRepository<Resume, Long>, ResumeRep
     Resume findFirstByUserOrderByCreatedAtDesc(User user);
 
     Slice<Resume> findResumeByUser(User user);
+
+    Resume findTopByUserOrderByCreatedAtDesc(User user);
 }
