@@ -54,6 +54,7 @@ public class UserService {
 
     public User getLoginUser() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println("userDetails = " + userDetails);
         // 유저 정보 조회
         return userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
@@ -93,4 +94,19 @@ public class UserService {
 
     }
 
+    public String mockSignup(String id) {
+        String accessToken = jwtService.createAccessToken(id);
+        String refreshToken = jwtService.createRefreshToken();
+
+        User user = User.builder()
+                .refreshToken(refreshToken)
+                .email(id)
+                .username("mock")
+                .role(Role.REGULAR)
+                .socialType(SocialType.GOOGLE)
+                .build();
+        userRepository.save(user);
+
+        return accessToken;
+    }
 }
