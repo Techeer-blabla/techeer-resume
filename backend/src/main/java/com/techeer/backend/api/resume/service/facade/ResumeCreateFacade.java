@@ -43,14 +43,16 @@ public class ResumeCreateFacade {
     // 이력서 생성
     @Transactional
     public void createResume(CreateResumeRequest req, MultipartFile multipartFile) {
-        String lockKey = "resume_creation_lock";
-        RLock lock = distributedLockService.getLock(lockKey, 10, 60, TimeUnit.SECONDS);
+        User user = userService.getLoginUser();
+        String lockKey = "resume_creation_lock_" + user.getId();
+
+        RLock lock = distributedLockService.acquireLock(lockKey, 5, 60, TimeUnit.SECONDS);
         if (lock == null) {
-            throw new BusinessException(ErrorCode.UPLOAD_IN_PROGRESS);
+            throw new BusinessException(ErrorCode.RESUME_UPLOAD_FAILED);
         }
 
         try {
-            String counterKey = "resume_creation_counter";
+            String counterKey = "resume_creation_counter" + user.getId();
             Long count = rateLimiterService.incrementAndCheckLimit(counterKey, 5, 1, TimeUnit.MINUTES);
 
             if (count > 5) {
@@ -58,7 +60,6 @@ public class ResumeCreateFacade {
             }
 
             // 이력서 생성 로직 수행
-            User user = userService.getLoginUser();
             List<TechStack> techStacks = techStackService.findOrCreateTechStacks(req.getTechStackNames());
             List<Company> companies = companyService.findOrCreateCompanies(req.getCompanyNames());
             Resume previousResume = resumeService.findLatestByUser(user);
@@ -88,17 +89,6 @@ public class ResumeCreateFacade {
             // 락 해제
             distributedLockService.releaseLock(lock);
         }
-    }
-
-    // 카운터 증가 및 TTL 설정
-    private Long incrementCounter(String counterKey) {
-        var atomicLong = distributedLockService.getRedissonClient().getAtomicLong(counterKey);
-        long currentCount = atomicLong.incrementAndGet();
-        if (currentCount == 1) {
-            // 첫 번째 호출 시 TTL 설정
-            atomicLong.expire(1, TimeUnit.MINUTES);
-        }
-        return currentCount;
     }
 
     private void addResumeTechStacks(Resume resume, List<TechStack> techStacks) {
