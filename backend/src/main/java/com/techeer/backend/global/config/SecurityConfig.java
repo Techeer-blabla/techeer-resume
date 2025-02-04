@@ -63,9 +63,6 @@ public class SecurityConfig {
 //                        .requestMatchers("/api/v1/resumes/**").hasAnyRole("ADMIN", "REGULAR") // resume
 //                        .anyRequest().permitAll()
 //                )
-//                .authorizeHttpRequests(requests ->
-//                        requests.anyRequest().permitAll() // 모든 요청을 모든 사용자에게 허용
-//                )
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 "/v3/api-docs/**",
@@ -77,7 +74,7 @@ public class SecurityConfig {
                                 "/swagger-ui/index.html/**",
                                 "/api-docs/**",
                                 "/signup.html",
-                                "/api/v1/reissue",
+                                "/login",
                                 "/api/v1/mock/signup"
                         ).permitAll()
                         .anyRequest().authenticated()
@@ -90,10 +87,6 @@ public class SecurityConfig {
                         .successHandler(oAuth2LoginSuccessHandler) // 2.
                         .failureHandler(oAuth2LoginFailureHandler) // 3.
                 )
-//          .exceptionHandling(authenticationManager ->authenticationManager
-//                  .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-//                  .accessDeniedHandler(jwtAccessDeniedHandler)
-//          )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtService, userRepository),
                         UsernamePasswordAuthenticationFilter.class);
         return http.build();
