@@ -13,6 +13,8 @@ import com.techeer.backend.api.tag.techStack.domain.TechStack;
 import com.techeer.backend.api.tag.techStack.service.TechStackService;
 import com.techeer.backend.api.user.domain.User;
 import com.techeer.backend.api.user.service.UserService;
+import com.techeer.backend.global.error.ErrorCode;
+import com.techeer.backend.global.error.exception.BusinessException;
 import com.techeer.backend.global.lock.DistributedLockService;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -36,76 +38,65 @@ public class ResumeCreateFacade {
     private final ResumePdfService resumePdfService;
     private final UserService userService;
 
-    // 추가: RedissonClient, DistributedLockService 의존성
     private final RedissonClient redissonClient;
     private final DistributedLockService distributedLockService;
 
     @Transactional
     public void createResume(CreateResumeRequest req, MultipartFile multipartFile) {
-        // 현재 로그인 유저
         User user = userService.getLoginUser();
         Long userId = user.getId();
 
-        // 1) 분산 락 획득 (동시에 들어오는 요청 충돌 방지)
+        // 1) 락 획득
         RLock lock = distributedLockService.acquireLock(
-                "resume-create-lock:" + userId, // 락 키
-                0,           // waitTime (대기 시간)
-                10,          // leaseTime (점유 시간: 자동 해제)
+                "resume-create-lock:" + userId,
+                0,
+                10,
                 TimeUnit.SECONDS
         );
-
-        // 획득 실패 시 null 반환 (기존 DistributedLockService 로직)
+        // 락 획득 실패(null 반환) 시 BusinessException
         if (lock == null) {
-            throw new IllegalStateException("다른 요청이 이미 처리 중입니다. 잠시 후 다시 시도해주세요.");
+            throw new BusinessException(ErrorCode.DUPLICATE_REQUEST);
         }
 
         try {
-            // 2) 1분 내 재등록 제한 로직
+            // 2) 1분 내 재등록 제한 검사
             RBucket<Long> lastCreatedBucket = redissonClient.getBucket("resume:lastCreated:" + userId);
             Long lastCreatedTime = lastCreatedBucket.get();
 
-            // 마지막 등록시각 존재 & 1분(60초) 이내라면 예외
             if (lastCreatedTime != null &&
                     (System.currentTimeMillis() - lastCreatedTime) < 60_000) {
-                throw new IllegalStateException("1분 내에는 이력서를 다시 등록할 수 없습니다.");
+                throw new BusinessException(ErrorCode.TOO_OFTEN_REQUEST);
             }
 
-            // 3) 기존 이력서 생성 로직 --------------------------------
-            // (a) 태그, 회사 조회/생성
+            // 3) 기존 이력서 등록 로직
             List<TechStack> techStacks = techStackService.findOrCreateTechStacks(req.getTechStackNames());
             List<Company> companies = companyService.findOrCreateCompanies(req.getCompanyNames());
 
-            // (b) 최신 이력서(이전에 등록된 이력서) 조회
             Resume previousResume = resumeService.findLatestByUser(user);
 
-            // (c) 새로운 Resume 엔티티 생성
             Resume resume = Resume.builder()
                     .user(user)
                     .position(req.getPosition())
                     .career(req.getCareer())
-                    .name("Resume of " + user.getUsername() + " - "
-                            + LocalDate.now(ZoneId.of("Asia/Seoul")))
+                    .name("Resume of " + user.getUsername() + " - " + LocalDate.now(ZoneId.of("Asia/Seoul")))
                     .previousResumeId(previousResume != null ? previousResume.getId() : null)
                     .build();
+
             resumeService.saveResume(resume);
 
             if (previousResume != null) {
                 previousResume.updateLaterResumeId(resume.getId());
             }
 
-            // (d) 관계 설정 (ResumeTechStack, ResumeCompany)
             addResumeTechStacks(resume, techStacks);
             addResumeCompanies(resume, companies);
 
-            // (e) PDF 저장
             ResumePdf resumePdf = resumePdfService.saveResumePdf(resume, multipartFile);
             resume.addResumePdf(resumePdf);
 
-            // (f) 유저 객체에 이력서 추가
             user.addResume(resume);
-            // ---------------------------------------------------
 
-            // 4) 등록 성공 -> "최근 등록 시각" 갱신, TTL = 60초
+            // 4) “최근 등록 시각” 기록 (1분 TTL)
             lastCreatedBucket.set(System.currentTimeMillis(), 60, TimeUnit.SECONDS);
 
         } finally {
@@ -127,5 +118,4 @@ public class ResumeCreateFacade {
             resume.addResumeCompany(resumeCompany);
         });
     }
-
 }
