@@ -37,9 +37,12 @@ public class UserService {
         }
     }
 
-    public void CreateRegularUser(Map<String, Object> attributes, String name, SocialType socialType) {
+    public void CreateRegularUser(String email, String name, SocialType socialType) {
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS);
+        }
         User user = User.builder()
-                .email((String) attributes.get("email"))
+                .email(email)
                 .username(name)
                 .socialType(socialType)
                 .role(Role.REGULAR)
