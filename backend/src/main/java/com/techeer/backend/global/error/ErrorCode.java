@@ -45,6 +45,13 @@ public enum ErrorCode {
     // AIFeedback Error
     AIFEEDBACK_NOT_FOUND(HttpStatus.NOT_FOUND, "AIFEEDBACK_404", "AI 피드백을 찾을 수 없습니다."),
 
+    UPLOAD_IN_PROGRESS(HttpStatus.CONFLICT, "E1001", "이력서 업로드가 이미 진행 중입니다."),
+    RESUME_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "E1002", "이력서 업로드에 실패했습니다."),
+    INVALID_FILE_TYPE(HttpStatus.BAD_REQUEST, "E1003", "허용되지 않는 파일 형식입니다."),
+
+    // redis error
+    DUPLICATE_REQUEST(HttpStatus.BAD_REQUEST, "E1004", "다른 요청이 이미 처리중입니다."),
+    TOO_OFTEN_REQUEST(HttpStatus.BAD_REQUEST, "E1005", "1분 내에는 이력서를 다시 등록할 수 없습니다."),
     ;
 
 

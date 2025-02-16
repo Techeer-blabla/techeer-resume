@@ -60,7 +60,7 @@ public class ResumeService {
         return resumes;
     }
 
-    public Resume findLaterByUser(User user) {
+    public Resume findLatestByUser(User user) {
         return resumeRepository.findFirstByUserOrderByCreatedAtDesc(user);
     }
 
