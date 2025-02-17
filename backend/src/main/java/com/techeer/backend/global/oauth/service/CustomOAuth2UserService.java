@@ -3,8 +3,7 @@ package com.techeer.backend.global.oauth.service;
 import com.techeer.backend.api.user.domain.SocialType;
 import com.techeer.backend.api.user.repository.UserRepository;
 import com.techeer.backend.api.user.service.UserService;
-import com.techeer.backend.global.error.ErrorCode;
-import com.techeer.backend.global.error.exception.BusinessException;
+import com.techeer.backend.global.oauth.EmailFetcher.GitHubEmailFetcher;
 import com.techeer.backend.global.oauth.OAuthAttributes;
 import com.techeer.backend.global.oauth.oauth2user.CustomOAuth2User;
 import java.util.Collections;
@@ -42,9 +41,14 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         extractAttributes = OAuthAttributes.of(registrationId, userNameAttributeName, attributes);
 
-        SocialType socialType = socialTypeExtractor(attributes);
-        String username = usernameExtractor(attributes);
-        String email = emailExtractor(attributes);
+        String email= extractAttributes.getSocialType().equals(SocialType.GITHUB) ? GitHubEmailFetcher.getGitHubPrimaryEmail(userRequest)
+                : (String) attributes.get("email");
+        String username = extractAttributes.getSocialType().equals(SocialType.GITHUB) ? (String) attributes.get("login")
+                : (String) attributes.get("name");
+
+        if (userRepository.findByEmailAndSocialType(email, extractAttributes.getSocialType()).isEmpty()) {
+            userService.CreateRegularUser(email, username, extractAttributes.getSocialType());
+        }
 
         userService.CreateRegularUser( email, username, socialType);
 
@@ -53,8 +57,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 .authorities(Collections.emptyList())
                 .attributes(attributes)
                 .nameAttributeKey(userNameAttributeName)
-                .name(extractAttributes.getOauth2UserInfo().getName())
-                .email(extractAttributes.getOauth2UserInfo().getEmail())
+                .name(username)
+                .email(email)
                 .socialType(extractAttributes.getSocialType())
                 .build();
     }

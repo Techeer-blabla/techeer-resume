@@ -38,9 +38,6 @@ public class UserService {
     }
 
     public void CreateRegularUser(String email, String name, SocialType socialType) {
-        if (userRepository.findByEmail(email).isPresent()) {
-            throw new BusinessException(ErrorCode.USER_ALREADY_EXISTS);
-        }
         User user = User.builder()
                 .email(email)
                 .username(name)
