@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
-    final private UserRepository userRepository;
     final private UserService userService;
 
     @Override
@@ -39,7 +38,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         // 소셜 로그인에서 API가 제공하는 userInfo의 Json 값(유저 정보들)
         Map<String, Object> attributes = oAuth2User.getAttributes();
-
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         extractAttributes = OAuthAttributes.of(registrationId, userNameAttributeName, attributes);
 
@@ -52,6 +50,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             userService.CreateRegularUser(email, username, extractAttributes.getSocialType());
         }
 
+        userService.CreateRegularUser( email, username, socialType);
+
         // DefaultOAuth2User를 구현한 CustomOAuth2User 객체를 생성해서 반환
         return CustomOAuth2User.builder()
                 .authorities(Collections.emptyList())
@@ -61,5 +61,20 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 .email(email)
                 .socialType(extractAttributes.getSocialType())
                 .build();
+    }
+
+    private String emailExtractor(Map<String, Object> attributes) {
+        if (attributes.get("email") == null) { throw new BusinessException(ErrorCode.USER_NOT_FOUND_BY_EMAIL); }
+        return (String) attributes.get("email");
+    }
+
+    private SocialType socialTypeExtractor(Map<String, Object> attributes) {
+        if (attributes.get("login") == null) {return SocialType.GOOGLE;}
+        return SocialType.GITHUB;
+    }
+
+    private  String usernameExtractor(Map<String, Object> attributes) {
+        if (attributes.get("login") == null) {return (String) attributes.get("name");}
+        return (String) attributes.get("login");
     }
 }
