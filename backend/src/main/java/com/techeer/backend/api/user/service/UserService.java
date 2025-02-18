@@ -37,9 +37,9 @@ public class UserService {
         }
     }
 
-    public void CreateRegularUser(Map<String, Object> attributes, String name, SocialType socialType) {
+    public void createRegularUser(String email, String name, SocialType socialType) {
         User user = User.builder()
-                .email((String) attributes.get("email"))
+                .email(email)
                 .username(name)
                 .socialType(socialType)
                 .role(Role.REGULAR)
@@ -65,28 +65,14 @@ public class UserService {
     public JwtToken reissueAccessToken(String refreshToken) {
 
         // Refresh Token 검증
-        if (!jwtService.isRefreshTokenValid(refreshToken)) {return null;}
+        if (!jwtService.isRefreshTokenValid(refreshToken)) {
+            return null;
+        }
 
         User user = this.getLoginUser();
         return JwtToken.builder()
                 .accessToken(jwtService.createAccessToken(user.getEmail()))
                 .refreshToken(refreshToken)
                 .build();
-    }
-
-    public String mockSignup(String id) {
-        String accessToken = jwtService.createAccessToken(id);
-        String refreshToken = jwtService.createRefreshToken();
-
-        User user = User.builder()
-                .refreshToken(refreshToken)
-                .email(id)
-                .username("mock")
-                .role(Role.REGULAR)
-                .socialType(SocialType.GOOGLE)
-                .build();
-        userRepository.save(user);
-
-        return accessToken;
     }
 }
